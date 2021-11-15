@@ -15,10 +15,18 @@ create_user <- function() {
     }
 
     cat(paste("Thanks! Creating new user",user_name,"now.\n"))
-    level <- 0
-    save(level,file=paste0(user_name,".Rdata"))
+    progress <- setup_user_progress()
+
+    world <- generate_user_world(user_name)
+    save(level,world,file=paste0(user_name,".Rdata"))
 
     intro(user_name)
+}
+
+setup_user_progress <- function() {
+    list(level=0,
+         percent_correct_overall=0,
+         percent_correct_basic_stats=0)
 }
 
 intro <- function(user_name) {
@@ -32,4 +40,15 @@ intro <- function(user_name) {
 
     done_intro <- TRUE
     save(done_intro,level=1, file=paste0(user_name,".Rdata"))
+}
+
+load_user <- function() {
+    user_name <- readline(prompt="Please enter the username to load:")
+
+    if (!file.exists(paste0(user_name,".Rdata"))) {
+        print("Sorry, no user found with that username. Please create a new user account instead.")
+        create_user()
+    } else {
+        load(paste0(user_name,".Rdata"))
+    }
 }
