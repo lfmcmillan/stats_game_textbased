@@ -198,7 +198,10 @@ generate_sample_question_set <- function(samples) {
         distractors[i,] <- generated_question$distractors
     }
 
-    display <- paste("There are",num,"samples. The plots show the means, medians, minima and maxima of the samples. Use the plots to answer the following questions.")
+    display <- paste("There are",num,"samples. The plots show the means, medians,
+                     minima and maxima of the samples. Navigate between the plots
+                     using the forward and back buttons in the plot window.
+                     Use the plots to answer the following questions.")
 
     list(display=display, questions=questions, answers=cbind(answers,distractors))
 }
