@@ -1,0 +1,100 @@
+Survival:
+- which crop rots more quickly in storage?
+
+- what actual proportion of the stored food has gone off, based on a small sample? (estimates and confidence intervals)
+
+- which stream has the most samples with amount of contamination below threshold X?
+
+- which part of the island has the most bore sites with water concentration of X below threshold Y?
+
+- does the island have more sunny days or rainy days per year?
+--> what kind of shelter to build?
+
+- which material is more effective for keeping out [rain/sun]?
+
+- which material is quicker to build with?
+
+- which material lasts longer in construction?
+
+Psychology:
+- are the surviving crew or passengers more traumatised?
+
+- compare solo travellers with travellers in groups
+
+- compare travellers on outbound or return journeys
+
+- compare old or young travellers
+
+- compare travellers with or without existing health conditions
+
+- compare able-bodied or disabled travellers
+
+- compare travellers with or without university education
+
+- assess survivors staying in existing buildings or in constructed shelters
+
+- assess survivors working in one or other part of the island
+
+- assess giving them a random extra ration of X or not
+
+- has average strength of survivors changed over time? (paired t-test)
+
+Biology:
+- which crop contains more protein/vitamin A/vitamin C/fibre/etc.?
+
+- which crop grows better in this season i.e. more of the seedlings germinate?
+
+- does this crop grow better with lots of water or not much water?
+
+- does this crop grow better with or without fertiliser?
+
+- does this crop grow better in site A or site B?
+
+- which crop growing site has at least X mm rainfall per day?
+
+- which crop growing site has higher average rainfall per day?
+
+Commerce:
+*** Questions about barter and trade amongst the survivors?? ***
+
+
+
+
+
+
+
+Master list of ideas, unfiltered by feasibility:
+- more rainy or more sunny? --> what kind of shelter to build
+- what resources are available?
+    * which are quicker to build with?
+    * which are more robust for building with?
+    * which keeps out rain better?
+- what types of food are already available?
+    * which will go off soonest?
+    * which set of tins are more likely to have gone off?
+- what is the best way to use ingredients for long-lasting food, pickling/james/salting/curing?
+- what are the typical weather conditions at each crop growing site?
+- which crops grow better in [sunny/shady] areas?
+- which crops need more watering?
+- which is the best time to plant this crop?
+- does this crop need fertiliser?
+- which crop contains more of X (nutritional component)?
+- which plant makes more robust clothing?
+- which plant makes warmer clothing?
+- which water source has least contamination?
+- which plant produces ropes with more tensile strength?
+- which plant regrows faster after harvesting for resources?
+- which material deteriorates faster when stored?
+- which crop produces highest yield?
+- which site is best to grow this crop for high nutritional yield?
+- which is [rainiest/sunniest/windiest] month? (time series)
+- is this food more nutritious when steamed/boiled/baked?
+- which type of soil does this crop grow best in?
+- is this crop growing site as productive as it was last year? (paired t-test)
+- does this creature emerge more often on rainy days or sunny days?
+- does this crop get eaten by creatures more often on rainy days or sunny days?
+- which method is more effective at keeping animals away from the crops?
+- which plans is eaten more by this species of animals?
+- is this species observed more often now than 10 years ago? (paired t-test)
+- which material produces warmer buildings on cold nights?
+- has the water become more contaminated since the recent landslip event?s
