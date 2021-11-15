@@ -1,4 +1,4 @@
-generate_two_samples <- function(seed=1) {
+generate_two_samples <- function(seed=1, params=NULL) {
 
     set.seed(seed)
     results_ok <- FALSE
@@ -8,10 +8,17 @@ generate_two_samples <- function(seed=1) {
         sample1_size <- sample(c(10,20,30,40,50),1)
         sample2_size <- sample(c(10,20,30,40,50),1)
 
-        sample1_mean <- runif(1, min=0, max=10)
-        sample2_mean <- runif(1, min=0, max=10)
+        if (is.null(params)) {
+            sample1_mean <- runif(1, min=0, max=10)
+            sample2_mean <- runif(1, min=0, max=10)
 
-        distribution_type <- sample(c("poisson","exponential","normal"),1,prob=c(0.3,0.2,0.5))
+            distribution_type <- sample(c("poisson","exponential","normal"),1,prob=c(0.3,0.2,0.5))
+        } else {
+            distribution_type <- params$distribution
+
+            sample1_mean <- params$means[1]
+            sample2_mean <- params$means[2]
+        }
 
         switch (distribution_type,
                 "poisson"={
@@ -106,17 +113,25 @@ plot_stats_two_samples <- function(samples) {
             names.arg=c("Sample A", "Sample B"), ylab="Maximum", col="darkblue")
 }
 
-generate_samples <- function(num=2, seed=1) {
+generate_samples <- function(seed=1, num=2, params=NULL) {
 
     set.seed(seed)
     results_ok <- FALSE
 
     while(!results_ok) {
+        if (is.null(params)) {
+            means <- runif(num, min=0, max=10)
+            SDs <- runif(num, min=1, max=10)
+
+            distribution_type <- sample(c("poisson","exponential","normal"),1,prob=c(0.3,0.2,0.5))
+        } else {
+            num <- length(params$means)
+            distribution_type <- params$distribution
+            means <- params$means
+            SDs <- params$SDs
+        }
 
         sizes <- sample(seq(10,50,10),num)
-        means <- runif(num, min=0, max=10)
-
-        distribution_type <- sample(c("poisson","exponential","normal"),1,prob=c(0.3,0.2,0.5))
 
         switch (distribution_type,
                 "poisson"={
@@ -126,8 +141,7 @@ generate_samples <- function(num=2, seed=1) {
                     samples <- mapply(rexp, sizes, 1/means)
                 },
                 "normal"={
-                    sds <- runif(num, min=1, max=10)
-                    samples <- mapply(rnorm, sizes, means, sds)
+                    samples <- mapply(rnorm, sizes, means, SDs)
                 }
         )
 
@@ -213,7 +227,7 @@ show_questions <- function(generated) {
     }
 }
 
-samples <- generate_samples(3, 1)
+samples <- generate_samples(1, 3)
 generated <- generate_sample_question_set(samples)
 plot_stats_samples(samples)
 show_questions(generated)
