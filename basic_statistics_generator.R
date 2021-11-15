@@ -5,16 +5,19 @@ generate_two_samples <- function(seed=1, params=NULL) {
 
     while(!results_ok) {
 
-        sample1_size <- sample(c(10,20,30,40,50),1)
-        sample2_size <- sample(c(10,20,30,40,50),1)
-
         if (is.null(params)) {
+            sample1_size <- sample(c(10,20,30,40,50),1)
+            sample2_size <- sample(c(10,20,30,40,50),1)
+
             sample1_mean <- runif(1, min=0, max=10)
             sample2_mean <- runif(1, min=0, max=10)
 
             distribution_type <- sample(c("poisson","exponential","normal"),1,prob=c(0.3,0.2,0.5))
         } else {
             distribution_type <- params$distribution
+
+            sample1_size <- params$sizes[1]
+            sample2_size <- params$sizes[2]
 
             sample1_mean <- params$means[1]
             sample2_mean <- params$means[2]
@@ -120,6 +123,8 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
 
     while(!results_ok) {
         if (is.null(params)) {
+            sizes <- sample(seq(10,50,10),num, replace=TRUE)
+
             means <- runif(num, min=0, max=10)
             SDs <- runif(num, min=1, max=10)
 
@@ -127,11 +132,11 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
         } else {
             num <- length(params$means)
             distribution_type <- params$distribution
+            sizes <- params$sizes
             means <- params$means
             SDs <- params$SDs
         }
 
-        sizes <- sample(seq(10,50,10),num)
 
         switch (distribution_type,
                 "poisson"={
