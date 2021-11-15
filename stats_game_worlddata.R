@@ -5,23 +5,19 @@ generate_user_world <- function(user_name) {
         if (recreate_yesno == 2) return()
     }
 
-    streams <- generate_stream_data(sample(1:2,1))
-
-    rainfall <-
+    streams <- generate_stream_params(sample(1:2,1))
 
     crop_values <- read.csv("crops.csv",header=TRUE)
     row.names(crop_values) <- crop_values$name
-
     crop_names <- c("sunflower","purple bean","speckled bean","orange cabbage",
                         "red broccoli","pebble melon","blue spinach","black tomato",
                         "purple seaweed","fronded seaweed","pink nut","purple potato")
     ncrops <- length(crop_names)
-
     crops <- data.frame(name=crop_names,
                         preferred_site=rep(NA,ncrops),
                         preferred_water=rep(NA,ncrops),
                         preferred_season=rep(NA,ncrops),
-                        protein=generate_crop_values(crop_names,crop_values,"protein")
+                        protein=generate_crop_params(crop_names,crop_values,"protein")
     )
     # vitC=generate_vitC(crop_names),
     # vitA=generate_vitA(crop_names),
@@ -36,15 +32,23 @@ generate_user_world <- function(user_name) {
     # sodium=generate_sodium(crop_na),
     # phosphorus=generate_phosphorus(crop_na)
 
+    list(streams=streams, crops=crops)
 }
 
-generate_stream_data <- function(more_contaminated_idx) {
+generate_stream_params <- function(most_contaminated_idx) {
+    mean1 <- runif(1, 3, 8)
+    mean2 <- runif(1, 3, 8) + sample(5:10,1)
+    means <- c(mean1, mean2)
 
+    if (most_contaminated_idx == 2) means <- sort(means, decreasing=FALSE)
 
-
+    params <- list(distribution="normal",
+                   names=c("Stream A","Stream B"),
+                   means=means,
+                   SDs=runif(2,1,5))
 }
 
-generate_crop_values <- function(crop_names, crop_values, value_type) {
+generate_crop_params <- function(crop_names, crop_values, value_type) {
     ncrops <- length(crop_names)
     output <- rep(NA,ncrops)
 
@@ -58,7 +62,7 @@ generate_crop_values <- function(crop_names, crop_values, value_type) {
     output
 }
 
-find_any_word(patterns,x) {
+find_any_word <- function(patterns, x) {
     any(sapply(patterns, function(pattern) {
         (length(grep(pattern,x)) > 0)
     }))
