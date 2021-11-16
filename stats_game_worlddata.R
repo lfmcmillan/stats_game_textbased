@@ -45,7 +45,8 @@ generate_stream_params <- function(most_contaminated_idx) {
     params <- list(distribution="normal",
                    names=c("Stream A","Stream B"),
                    means=means,
-                   SDs=runif(2,1,5))
+                   SDs=runif(2,1,5),
+                   sizes=c(24,24))
 }
 
 generate_crop_params <- function(crop_names, crop_values, value_type) {
