@@ -58,7 +58,7 @@ intro <- function(user_name, progress, world) {
     writeLines(strwrap("None of the other survivors knows anything about
                        statistics, but they will help as much as they can.",width=100))
 
-    cli::rule(line = 2)
+    writeLines(cli::rule(line = 2))
 
     progress$done_intro <- TRUE
     progress$level <- 1
