@@ -1,0 +1,3 @@
+R packages
+crayon -- allows colourful terminal output
+cli -- tools for command line interfaces inc. headlings, lists, alerts, paragraphs, and rules, boxes, trees and text styles
