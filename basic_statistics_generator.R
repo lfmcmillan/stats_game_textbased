@@ -90,10 +90,10 @@ generate_sample_question_set <- function(samples, direction) {
         distractors[i,] <- generated_question$distractors
     }
 
-    display <- paste("There are",num,"samples. The plots show the means, medians,
-                     minima and maxima of the samples. Navigate between the plots
-                     using the forward and back buttons in the plot window.
-                     Use the plots to answer the following questions.")
+    display <- strwrap(paste("There are",num,"samples. The plots show the means,
+                    medians, minima and maxima of the samples. Navigate between
+                    the plots using the forward and back buttons in the plot
+                    window. Use the plots to answer the following questions."), width=100)
 
     list(display=display, questions=questions, answers=cbind(answers,distractors))
 }
@@ -109,17 +109,23 @@ plot_stats_samples <- function(samples) {
 }
 
 show_questions <- function(generated) {
-    print(generated$display)
+    correct_answer <- rep(NA, nrow(generated$answers))
+
+    writeLines(generated$display)
     for (i in 1:nrow(generated$answers)) {
         # displayed_answers <- sample(unlist(generated$answers[i,]),ncol(generated$answers))
         displayed_answers <- sort(unlist(generated$answers[i,]))
         user_response <- menu(displayed_answers,title=generated$questions[i])
         if (displayed_answers[user_response] == generated$answers[i,1]) {
-            print("Yes! Correct answer.")
+            correct_answer <- TRUE
+            writeLines("Yes! Correct answer.")
         } else {
-            print("No, wrong answer.")
+            correct_answer <- FALSE
+            writeLines("No, wrong answer.")
         }
     }
+
+    correct_answer
 }
 
 # samples <- generate_samples(1, 3)
