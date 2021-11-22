@@ -99,6 +99,8 @@ generate_sample_question_set <- function(samples, direction) {
 }
 
 plot_stats_samples <- function(samples) {
+    if(!is.null(dev.list())) dev.off()
+
     num <- length(samples)
     for (stat in c("mean","median","min","max")) {
         stat_vals <- unlist(lapply(samples, stat))
