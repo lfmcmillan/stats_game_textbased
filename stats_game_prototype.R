@@ -13,10 +13,10 @@ game <- function() {
 
     quit <- FALSE
     while (!quit) {
-        run_level(user_name)
+        quit <- run_level(user_name)
     }
 
-    return()
+    return("Game Complete!")
 }
 
 create_user <- function() {
@@ -58,6 +58,7 @@ intro <- function(user_name, progress, world) {
     writeLines(strwrap("None of the other survivors knows anything about
                        statistics, but they will help as much as they can.",width=100))
 
+    readline(prompt="Please press [Enter] to continue")
     writeLines(cli::rule(line = 2))
 
     progress$done_intro <- TRUE
@@ -79,8 +80,10 @@ load_user <- function() {
 run_level <- function(user_name) {
     load(paste0(user_name,".Rdata"))
 
-    switch(progress$level,
-           "0" = {
+    quit <- FALSE
+
+    switch(as.character(progress$level),
+           "1" = {
                writeLines(strwrap("A few hours after you find the hut, one of the survivors
                      comes to find you. 'We've been exploring the island,' she
                      says, 'and there are two streams, but we don't know which
@@ -96,6 +99,21 @@ run_level <- function(user_name) {
                samples <- generate_samples(1, 2, world$streams)
                generated <- generate_sample_question_set(samples, "lowest")
                plot_stats_samples(samples)
-               show_questions(generated)
+               correct_answer <- show_questions(generated)
+               percent_correct <- calc_percent_correct(correct_answer)
+               progress$level <- progress$level+1
+               progress$percent_correct_overall <- percent_correct
+               progress$percent_correct_basic_stats <- percent_correct
+               save(progress, world, file=paste0(user_name,".Rdata"))
+           },
+           {
+               writeLines("Sorry, that's the end of the game, you can't go any further yet.")
+               writeLines(cli::rule(line = 2))
+               quit <- TRUE
            })
+    quit
+}
+
+calc_percent_correct <- function(correct_answer) {
+    sum(correct_answer)/length(correct_answer)*100
 }
