@@ -37,10 +37,12 @@ generate_user_world <- function(user_name) {
 
 generate_stream_params <- function(most_contaminated_idx) {
     mean1 <- runif(1, 3, 8)
-    mean2 <- runif(1, 3, 8) + sample(5:10,1)
+    mean2 <- runif(1, 3, 8) + sample(2:4,1)
     means <- c(mean1, mean2)
 
-    if (most_contaminated_idx == 2) means <- sort(means, decreasing=FALSE)
+    if (most_contaminated_idx == 1) {
+        means <- sort(means, decreasing=TRUE)
+    }
 
     params <- list(distribution="normal",
                    names=c("Stream A","Stream B"),
