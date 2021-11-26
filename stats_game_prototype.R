@@ -44,19 +44,18 @@ setup_user_progress <- function() {
 }
 
 intro <- function(user_name, progress, world) {
-    writeLines(strwrap("This is Stats Island. You and 100 other people crash-
-                       landed near the island and swam to shore. You discovered
-                       that the island is deserted, but there is a hut that has
-                       some scientific equipment and historical records. It
-                       appears that this island was once a research outpost.",width=100))
-    writeLines(strwrap("A crate washes ashore containing some luggage, including
-                       a laptop and a portable solar panel charger. You can use
-                       the hut to perform scientific experiments, and analyse
-                       data on the laptop. The existing data, and any new
-                       experiments, will help you work out how to survive on the
-                       island.", width=100))
-    writeLines(strwrap("None of the other survivors knows anything about
-                       statistics, but they will help as much as they can.",width=100))
+    show_text("This is Stats Island. You and 100 other people crash-landed near
+               the island and swam to shore. You discovered that the island is
+               deserted, but there is a hut that has some scientific equipment
+               and historical records. It appears that this island was once a
+               research outpost.")
+    show_text("A crate washes ashore containing some luggage, including a laptop
+               and a portable solar panel charger. You can use the hut to perform
+               scientific experiments, and analyse data on the laptop. The
+               existing data, and any new experiments, will help you work out
+               how to survive on the island.")
+    show_text("None of the other survivors knows anything about statistics, but
+              they will help as much as they can.")
 
     readline(prompt="Please press [Enter] to continue")
     writeLines(cli::rule(line = 2))
@@ -84,17 +83,17 @@ run_level <- function(user_name) {
 
     switch(as.character(progress$level),
            "1" = {
-               writeLines(strwrap("A few hours after you find the hut, one of the survivors
+               show_text("A few hours after you find the hut, one of the survivors
                      comes to find you. 'We've been exploring the island,' she
                      says, 'and there are two streams, but we don't know which
                      one is better to drink from. Are there any records that
-                     could help?'", width=100))
-               writeLines(strwrap("You look through the historical data in the hut, and find
+                     could help?'")
+               show_text("You look through the historical data in the hut, and find
                      a set of data from the two streams: samples taken from
-                     each of the two streams once per month for two years. Each
+                     each of the two streams once per month for a year. Each
                      time, the researchers measured the mass of contaminants
                      found in every 100ml of water from the stream. Analyse the
-                     results to see which stream is less contaminated.", width=100))
+                     results to see which stream is less contaminated.")
 
                samples <- generate_samples(1, 2, world$streams)
                generated <- generate_sample_question_set(samples, "lowest")
@@ -116,4 +115,8 @@ run_level <- function(user_name) {
 
 calc_percent_correct <- function(correct_answer) {
     sum(correct_answer)/length(correct_answer)*100
+}
+
+show_text <- function(display_text) {
+    writeLines(strwrap(display_text, width=100))
 }
