@@ -4,7 +4,8 @@ source("basic_statistics_generator.R")
 library(cli)
 
 game <- function() {
-    user_response <- menu(c("New user","Load user"),title="Welcome to Stats Island v1.0. What would you like to do?")
+    user_response <- menu(c("New user","Load user"),
+                          title="Welcome to Stats Island v1.0. What would you like to do?")
     if (user_response == 1) {
         user_name <- create_user()
     } else if (user_response == 2) {
@@ -99,11 +100,7 @@ run_level <- function(user_name) {
                generated <- generate_sample_question_set(samples, "lowest")
                plot_stats_samples(samples)
                correct_answer <- show_questions(generated)
-               percent_correct <- calc_percent_correct(correct_answer)
-               progress$level <- progress$level+1
-               progress$percent_correct_overall <- percent_correct
-               progress$percent_correct_basic_stats <- percent_correct
-               save(progress, world, file=paste0(user_name,".Rdata"))
+               update_progress(user_name, progress, world, correct_answer)
            },
            {
                writeLines("Sorry, that's the end of the game, you can't go any further yet.")
@@ -113,8 +110,12 @@ run_level <- function(user_name) {
     quit
 }
 
-calc_percent_correct <- function(correct_answer) {
-    sum(correct_answer)/length(correct_answer)*100
+update_progress <- function(user_name, progress, world, correct_answer) {
+    percent_correct <- sum(correct_answer)/length(correct_answer)*100
+    progress$level <- progress$level+1
+    progress$percent_correct_overall <- percent_correct
+    progress$percent_correct_basic_stats <- percent_correct
+    save(progress, world, file=paste0(user_name,".Rdata"))
 }
 
 show_text <- function(display_text) {
