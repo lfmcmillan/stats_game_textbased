@@ -70,8 +70,13 @@ load_user <- function() {
     user_name <- readline(prompt="Please enter the username to load:")
 
     if (!file.exists(paste0(user_name,".Rdata"))) {
-        print("Sorry, no user found with that username. Please create a new user account instead.")
-        create_user()
+        user_response <- menu(c("New user","Load user"),
+                              title="Sorry, no user found with that username. Please try a different username or create a new one:")
+        if (user_response == 1) {
+            user_name <- create_user()
+        } else if (user_response == 2) {
+            user_name <- load_user()
+        }
     }
 
     user_name
