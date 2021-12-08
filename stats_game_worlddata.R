@@ -7,11 +7,15 @@ generate_user_world <- function(user_name) {
 
     streams <- generate_stream_params(sample(1:2,1))
 
+    weather <- list(rainfall=generate_weather_data("rainfall"),
+                    max_temp=generate_weather_data("max_temp"),
+                    min_temp=generate_weather_data("min_temp"))
+
     crop_values <- read.csv("crops.csv",header=TRUE)
     row.names(crop_values) <- crop_values$name
     crop_names <- c("sunflower","purple bean","speckled bean","orange cabbage",
-                        "red broccoli","pebble melon","blue spinach","black tomato",
-                        "purple seaweed","fronded seaweed","pink nut","purple potato")
+                    "red broccoli","pebble melon","blue spinach","black tomato",
+                    "purple seaweed","fronded seaweed","pink nut","purple potato")
     ncrops <- length(crop_names)
     crops <- data.frame(name=crop_names,
                         preferred_site=rep(NA,ncrops),
@@ -47,8 +51,67 @@ generate_stream_params <- function(most_contaminated_idx) {
     params <- list(distribution="normal",
                    names=c("Stream A","Stream B"),
                    means=means,
-                   SDs=runif(2,1,5),
-                   sizes=c(24,24))
+                   SDs=runif(2,3,5),
+                   sizes=c(12,12))
+}
+
+generate_weather_data <- function(type) {
+    nyears <- 4
+
+    year <- rep(2017:2020,each=12)
+    month_num <- rep(1:12, times=nyears)
+    month_name <- rep(month.abb, times=nyears)
+    switch(tolower(type),
+           "max_temp"={
+               # basic_seq <- seq(0,1,length=12)
+               # full_seq <- rep(basic_seq, times=nyears)
+               # randomness <- runif(12*nyears,-0.25,0.25) +
+               #     rep(seq(from=0,by=0.1,length.out=nyears), each=12)
+               # sinusoidal <- sin((full_seq+0.12)*2*pi) + randomness
+               # values <- sinusoidal*(35-10)/2+20
+               max_temp <- read.csv("monthly_max_temp_hong_kong.csv", header=TRUE)
+               subset_years <- sample_years(max_temp, nyears)
+               value <- max_temp$Temperature[max_temp$Year %in% subset_years]
+               ylab <- "Temperature (degrees C)"
+               plot_title <- "Maximum Temperature"
+               question_name <- "maximum monthly temperature"
+               direction <- "highest"
+           },
+           "min_temp"={
+               min_temp <- read.csv("monthly_min_temp_hong_kong.csv", header=TRUE)
+               subset_years <- sample_years(min_temp, nyears)
+               value <- min_temp$Temperature[min_temp$Year %in% subset_years]
+               ylab <- "Temperature (degrees C)"
+               plot_title <- "Minimum Temperature"
+               question_name <- "minimum monthly temperature"
+               direction <- "lowest"
+           },
+           "rainfall"={
+               rain <- read.csv("monthly_rainfall_hong_kong_longformat.csv", header=TRUE)
+               subset_years <- sample_years(rain, nyears)
+               value <- rain$Rainfall[rain$Year %in% subset_years]
+               ylab <- "Total Rainfall (mm)"
+               plot_title <- "Rainfall"
+               question_name <- "total monthly rainfall"
+               direction <- "highest"
+           },
+           "windspeed"={
+
+           })
+
+    df <- data.frame(year=year, month_num=month_num, month_name=month_name, value=value)
+    output <- list(type=type, ylab=ylab, plot_title=plot_title,
+                   question_name=question_name, direction=direction, df=df)
+
+    output
+}
+
+sample_years <- function(series, nyears) {
+    years <- unique(series$Year)
+    year_mat <- matrix(years, ncol=10)
+    year_row_idx <- sample(1:nrow(year_mat),1)
+    year_row <- year_mat[year_row_idx,]
+    subset_years <- sample(year_row, nyears)
 }
 
 generate_crop_params <- function(crop_names, crop_values, value_type) {
@@ -70,3 +133,4 @@ find_any_word <- function(patterns, x) {
         (length(grep(pattern,x)) > 0)
     }))
 }
+
