@@ -119,10 +119,10 @@ show_questions <- function(generated) {
         displayed_answers <- sort(unlist(generated$answers[i,]))
         user_response <- menu(displayed_answers,title=generated$questions[i])
         if (displayed_answers[user_response] == generated$answers[i,1]) {
-            correct_answer <- TRUE
+            correct_answer[i] <- TRUE
             writeLines("Yes! Correct answer.")
         } else {
-            correct_answer <- FALSE
+            correct_answer[i] <- FALSE
             writeLines("No, wrong answer.")
         }
     }
