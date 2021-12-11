@@ -50,6 +50,12 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
                 break
             }
         }
+
+        if (is.null(params$names)) {
+            names(samples) <- paste("Sample",LETTERS[1:num])
+        } else {
+            names(samples) <- params$names
+        }
     }
 
     samples
@@ -73,7 +79,7 @@ generate_sample_question <- function(samples, stat="mean", direction="highest") 
     list(question=question, answer=answer, distractors=distractors)
 }
 
-generate_sample_question_set <- function(samples, direction) {
+generate_sample_question_set <- function(samples, direction, display_is_plot=TRUE) {
     num <- length(samples)
 
     questions <- rep(NA,4)
@@ -90,10 +96,16 @@ generate_sample_question_set <- function(samples, direction) {
         distractors[i,] <- generated_question$distractors
     }
 
+    if (display_is_plot) {
     display <- strwrap(paste("There are",num,"samples. The plots show the means,
                     medians, minima and maxima of the samples. Navigate between
                     the plots using the forward and back buttons in the plot
                     window. Use the plots to answer the following questions."), width=100)
+    } else {
+        display <- strwrap(paste("There are",num,"samples. Use the table of
+                                 summary statistics above to answer the following
+                                 questions."), width=100)
+    }
 
     list(display=display, questions=questions, answers=cbind(answers,distractors))
 }
@@ -105,9 +117,20 @@ plot_stats_samples <- function(samples) {
     for (stat in c("mean","median","min","max")) {
         stat_vals <- unlist(lapply(samples, stat))
 
-        barplot(stat_vals, names.arg=paste("Sample",LETTERS[1:num]),
+        barplot(stat_vals, names.arg=names(samples),
                 main=stat, ylab=stat, col="darkblue")
     }
+}
+
+table_stats_samples <- function(samples) {
+    stats <- c("mean","median","min","max","sd")
+    stat_vals <- lapply(stats, function(stat) {
+        round(unlist(lapply(samples, stat)),1)
+    })
+    tab <- do.call(cbind, stat_vals)
+    rownames(tab) <- names(samples)
+    colnames(tab) <- c("Mean","Median","Min","Max","SD")
+    print(tab)
 }
 
 show_questions <- function(generated) {
@@ -130,7 +153,11 @@ show_questions <- function(generated) {
     correct_answer
 }
 
-# samples <- generate_samples(1, 3)
-# generated <- generate_sample_question_set(samples, direction="highest")
-# plot_stats_samples(samples)
-# show_questions(generated)
+samples <- generate_samples(1, 3)
+generated <- generate_sample_question_set(samples, direction="highest", display_is_plot=TRUE)
+plot_stats_samples(samples)
+show_questions(generated)
+
+table_stats_samples(samples)
+generated <- generate_sample_question_set(samples, direction="highest", display_is_plot=FALSE)
+show_questions(generated)
