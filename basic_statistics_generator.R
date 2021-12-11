@@ -153,11 +153,11 @@ show_questions <- function(generated) {
     correct_answer
 }
 
-samples <- generate_samples(1, 3)
-generated <- generate_sample_question_set(samples, direction="highest", display_is_plot=TRUE)
-plot_stats_samples(samples)
-show_questions(generated)
-
-table_stats_samples(samples)
-generated <- generate_sample_question_set(samples, direction="highest", display_is_plot=FALSE)
-show_questions(generated)
+# samples <- generate_samples(1, 3)
+# generated <- generate_sample_question_set(samples, direction="highest", display_is_plot=TRUE)
+# plot_stats_samples(samples)
+# show_questions(generated)
+#
+# table_stats_samples(samples)
+# generated <- generate_sample_question_set(samples, direction="highest", display_is_plot=FALSE)
+# show_questions(generated)
