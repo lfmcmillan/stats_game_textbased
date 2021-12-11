@@ -114,7 +114,7 @@ run_level <- function(user_name) {
                          nights don't seem to be too cold here. You start to
                          wonder what the typical weather is like on this island.")
                show_text("Digging through the old records, you find that the
-                         scientists were here kept thorough records for years
+                         scientists who were here kept thorough records for years
                          of the daily temperature, rainfall and highest wind
                          speed. So you can look through them to see what the
                          island's weather patterns are like.")
