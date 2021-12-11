@@ -1,0 +1,52 @@
+- basic statistics (mean, median, min, max)
+[plots and summary stats]
+
+- interpreting plots
+[bar charts, complex bar charts, box plots, scatter plots, line plots]
+
+- estimates vs. parameters
+[definition of symbols, and then what's value of each object for this data?]
+
+- experiment vs. observational study
+
+- probability questions
+  * independence
+  * mutual exclusion
+  * conditionality
+
+- normal and binomial distributions {no Poisson}
+
+- p-values
+
+- contingency tables
+
+- t-tests
+[means, difference of means] {proportions NOT TAUGHT but mentioned}
+
+- type I and type II errors
+
+- sign tests
+(and how binomial distribution relates to sign test)
+
+- ANOVA
+
+- confidence intervals
+[means] {proportions?}
+
+- chi-squared tests
+
+- linear regression
+  * assumptions
+  * equations/predictions/residuals
+  * confidence intervals interpret
+  * p-value interpret
+
+- bootstrapping vs. normality-based CIs
+
+- permutation tests vs. normality-based hypothesis tests
+
+
+Types of questions to add to Shiny app version:
+* drag-and-drop wording of conclusions (i.e. drag phrases into sentence)
+* distribution diagram with slider that is either tied to the p-value area or to the test statistic value, and the user has to drag the slider to give the approx p-value area or approx test statistic for this numerical result
+

@@ -1,0 +1,17 @@
+Next steps
+=========
+
+Build more levels:
+- Implement plot question levels 2-4
+- Implement estimate/parameter question level 5
+- Implement varied plots level 6
+- Make a large number of additional plots/estimate/parameter levels
+
+Add topics:
+- Build probability levels
+
+Add features:
+- Add recommendation question at the end of each level
+- Add option to show correct answer immediately or at the end of the level
+- Add function that monitors the proportion of correct answers from the different
+  levels and assigns difficulty to the different types of levels accordingly
