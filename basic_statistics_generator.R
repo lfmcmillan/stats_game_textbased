@@ -69,11 +69,11 @@ generate_sample_question <- function(samples, stat="mean", direction="highest") 
     question <- paste0("Which of the samples has the ",direction," ",stat,"?")
 
     if (direction == "highest") {
-        answer <- paste("Sample",LETTERS[1:num])[which.max(stat_vals)]
-        distractors <- paste("Sample",LETTERS[1:num])[-which.max(stat_vals)]
+        answer <- names(samples)[which.max(stat_vals)]
+        distractors <- names(samples)[-which.max(stat_vals)]
     } else {
-        answer <- paste("Sample",LETTERS[1:num])[which.min(stat_vals)]
-        distractors <- paste("Sample",LETTERS[1:num])[-which.min(stat_vals)]
+        answer <- names(samples)[which.min(stat_vals)]
+        distractors <- names(samples)[-which.min(stat_vals)]
     }
 
     list(question=question, answer=answer, distractors=distractors)
