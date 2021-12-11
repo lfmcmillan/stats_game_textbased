@@ -1,5 +1,6 @@
 source("stats_game_worlddata.R")
 source("basic_statistics_generator.R")
+source("basic_plot_generator.R")
 
 library(cli)
 
@@ -105,6 +106,19 @@ run_level <- function(user_name) {
                generated <- generate_sample_question_set(samples, "lowest")
                plot_stats_samples(samples)
                correct_answer <- show_questions(generated)
+               update_progress(user_name, progress, world, correct_answer)
+           },
+           "2" = {
+               show_text("Somehow, the survivors all find places to sleep, in the
+                         few existing huts or in makeshift shelters. At least the
+                         nights don't seem to be too cold here. You start to
+                         wonder what the typical weather is like on this island.")
+               show_text("Digging through the old records, you find that the
+                         scientists were here kept thorough records for years
+                         of the daily temperature, rainfall and highest wind
+                         speed. So you can look through them to see what the
+                         island's weather patterns are like.")
+               correct_answer <- show_weather_questions(world$weather)
                update_progress(user_name, progress, world, correct_answer)
            },
            {

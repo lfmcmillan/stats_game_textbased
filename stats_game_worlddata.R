@@ -36,7 +36,7 @@ generate_user_world <- function(user_name) {
     # sodium=generate_sodium(crop_na),
     # phosphorus=generate_phosphorus(crop_na)
 
-    list(streams=streams, crops=crops)
+    list(streams=streams, crops=crops, weather=weather)
 }
 
 generate_stream_params <- function(most_contaminated_idx) {
@@ -108,7 +108,14 @@ generate_weather_data <- function(type) {
 
 sample_years <- function(series, nyears) {
     years <- unique(series$Year)
-    year_mat <- matrix(years, ncol=10)
+    total_years <- length(years)
+    if (total_years %% 10 == 0) {
+        year_mat <- matrix(years, ncol=10)
+    } else if (total_years %% 7 == 0) {
+        year_mat <- matrix(years, ncol=7)
+    } else {
+        browser()
+    }
     year_row_idx <- sample(1:nrow(year_mat),1)
     year_row <- year_mat[year_row_idx,]
     subset_years <- sample(year_row, nyears)
