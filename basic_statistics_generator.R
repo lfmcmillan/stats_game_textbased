@@ -97,7 +97,7 @@ generate_sample_question_set <- function(samples, direction, display_is_plot=TRU
     }
 
     if (display_is_plot) {
-    display <- strwrap(paste("There are",num,"samples. The plots show the means,
+        display <- strwrap(paste("There are",num,"samples. The plots show the means,
                     medians, minima and maxima of the samples. Navigate between
                     the plots using the forward and back buttons in the plot
                     window. Use the plots to answer the following questions."), width=100)
@@ -153,6 +153,38 @@ show_questions <- function(generated) {
     correct_answer
 }
 
+plot_boxplot <- function(samples, ylab) {
+    if(!is.null(dev.list())) dev.off()
+
+    boxplot(samples, names=names(samples), col="lightblue", ylab=ylab)
+}
+
+generate_boxplot_question_set <- function(samples) {
+    num <- length(samples)
+
+    questions <- rep(NA,4)
+    answers <- rep(NA,4)
+    distractors <- matrix(rep(NA,4*(num-1)),nrow=4)
+
+    stats <- sample(c("median","IQR","min","max"),4)
+
+    for (i in 1:4) {
+        stat <- stats[i]
+        if (stat == 'min') direction <- "lowest"
+        else direction <- "highest"
+        generated_question <- generate_sample_question(samples, stat, direction)
+        questions[i] <- generated_question$question
+        answers[i] <- generated_question$answer
+        distractors[i,] <- generated_question$distractors
+    }
+
+    display <- strwrap(paste("There are",num,"samples. This is a boxplot of
+                              the two samples. Use the boxplot to answer the
+                              following questions."), width=100)
+
+    list(display=display, questions=questions, answers=cbind(answers,distractors))
+}
+
 # samples <- generate_samples(1, 3)
 # generated <- generate_sample_question_set(samples, direction="highest", display_is_plot=TRUE)
 # plot_stats_samples(samples)
@@ -160,4 +192,9 @@ show_questions <- function(generated) {
 #
 # table_stats_samples(samples)
 # generated <- generate_sample_question_set(samples, direction="highest", display_is_plot=FALSE)
+# show_questions(generated)
+#
+# samples <- generate_samples(10, 3)
+# generated <- generate_boxplot_question_set(samples)
+# plot_boxplot(samples, ylab="Amount (mm)")
 # show_questions(generated)
