@@ -3,6 +3,9 @@ source("basic_statistics_generator.R")
 source("basic_plot_generator.R")
 
 library(cli)
+library(RColorBrewer)
+library(truncnorm)
+library(greekLetters)
 
 game <- function() {
     user_response <- menu(c("New user","Load user"),
@@ -139,6 +142,42 @@ run_level <- function(user_name) {
                plot_boxplot(samples, "Total rain leaked (mm)")
                correct_answer <- show_questions(generated)
                update_progress(user_name, progress, world, correct_answer)
+           },
+           "4" = {
+               show_text("A few days later, on the tenth day since the crash,
+                         the psychiatrist comes to find you.")
+               show_text("I want to evaluate how traumatised all of the survivors
+                         are, but it's very time consuming. I could use the
+                         survivors' self-assessments of how they are feeling,
+                         to decide who to prioritise, but I don't know how
+                         accurate their self-assessments are.")
+               show_text("Here are the self-assessments and my assessments for a
+                         subset of 30 survivors. They completed the
+                         self-assessments before I did my assessments. Each
+                         assessment is a score from 1 meaning 'Feeling very well'
+                         to 10 meaning 'Feeling very bad'. Would you please
+                         compare them, to see whether the self-assessments would
+                         be good enough for me to use for triage?")
+               ### SCATTER PLOT -- psychiatrist vs. self-assessment
+               update_progress(user_name, progress, world, correct_answer)
+           },
+           "5" = {
+               ### BAR CHARTS for 2 variables? Or 1 var and > 2 categories?
+           },
+           "6" = {
+               ### ESTIMATES VS. PARAMETERS [normal distribution]
+           },
+           "7" = {
+               ### MIXTURE OF PLOTS (different factors related to trauma):
+               # age
+               # number of flights taken/countries visited in the past
+               # height
+               # weight
+               # income
+               # education level
+           },
+           "8" = {
+               ### ESTIMATES VS. PARAMETERS [proportion] (rainy vs. dry days)
            },
            {
                writeLines("Sorry, that's the end of the game, you can't go any further yet.")
