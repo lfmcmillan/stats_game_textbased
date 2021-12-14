@@ -30,13 +30,18 @@ generate_weather_value_question <- function(series) {
                        "rainfall"=-1, 0)
     if (series$direction == "highest") {
         answer <- round(max_val,rounding)
-        distractors <- round(c(max_val + (max_val - min_val)/4,
-                               max_val - (max_val - min_val)/5), rounding)
-
+        all_distractors <- round(c(max_val + (max_val - min_val)/3,
+                                   max_val + (max_val - min_val)/4,
+                                   max_val - (max_val - min_val)/3.5,
+                                   max_val - (max_val - min_val)/5), rounding)
+        distractors <- sample(all_distractors,2)
     } else {
         answer <- round(min_val,rounding)
-        distractors <- round(c(min_val + (max_val - min_val)/3,
-                               max(min_val - (max_val - min_val)/4,0)), rounding)
+        all_distractors <- round(c(min_val + (max_val - min_val)/3,
+                               min_val + (max_val - min_val)/4,
+                               max(min_val - (max_val - min_val)/4,0),
+                               max(min_val - (max_val - min_val)/5,0)), rounding)
+        distractors <- sample(all_distractors,2)
     }
 
     list(question=question, answer=answer, distractors=distractors)
