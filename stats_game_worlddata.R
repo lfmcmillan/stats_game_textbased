@@ -11,6 +11,8 @@ generate_user_world <- function(user_name) {
                     max_temp=generate_weather_data("max_temp"),
                     min_temp=generate_weather_data("min_temp"))
 
+    shelter_materials <- generate_shelter_material_params(sample(1:2,1))
+
     crop_values <- read.csv("crops.csv",header=TRUE)
     row.names(crop_values) <- crop_values$name
     crop_names <- c("sunflower","purple bean","speckled bean","orange cabbage",
@@ -119,6 +121,22 @@ sample_years <- function(series, nyears) {
     year_row_idx <- sample(1:nrow(year_mat),1)
     year_row <- year_mat[year_row_idx,]
     subset_years <- sample(year_row, nyears)
+}
+
+generate_shelter_material_params <- function(most_effective_idx) {
+    mean1 <- runif(1, 3, 8)
+    mean2 <- runif(1, 3, 8) + sample(2:4,1)
+    means <- c(mean1, mean2)
+
+    if (most_effective_idx == 2) {
+        means <- sort(means, decreasing=TRUE)
+    }
+
+    params <- list(distribution="normal",
+                   names=c("Palm","Pacific Etang"),
+                   means=means,
+                   SDs=runif(2,3,5),
+                   sizes=c(12,12))
 }
 
 generate_crop_params <- function(crop_names, crop_values, value_type) {

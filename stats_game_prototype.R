@@ -121,6 +121,25 @@ run_level <- function(user_name) {
                correct_answer <- show_weather_questions(world$weather)
                update_progress(user_name, progress, world, correct_answer)
            },
+           "3" = {
+               show_text("Later in the day, another survivor comes to find you.
+                         We've got two different materials we can build shelter
+                         roofs from: palm leaves, or some kind of tree that looks
+                         like a variety of willow. Is there any data on which one
+                         is better for building?")
+               show_text("Looking through the hut datasets, you find that the
+                         scientists who were here called the willow-like tree
+                         'pacific etang', and they tested both it and palm leaves
+                         by building shelters out of them and then testing how much
+                         rain got in on each rainy day. That won't account for
+                         how well-built the shelters were, but it would be a good
+                         place to start.")
+               samples <- generate_samples(1, 2, world$shelter_materials)
+               generated <- generate_boxplot_question_set(samples)
+               plot_boxplot(samples, "Total rain leaked (mm)")
+               correct_answer <- show_questions(generated)
+               update_progress(user_name, progress, world, correct_answer)
+           },
            {
                writeLines("Sorry, that's the end of the game, you can't go any further yet.")
                writeLines(cli::rule(line = 2))
