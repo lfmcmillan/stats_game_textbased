@@ -3,6 +3,7 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
     set.seed(seed)
     results_ok <- FALSE
 
+    
     while(!results_ok) {
         if (is.null(params)) {
             sizes <- sample(seq(10,50,10),num, replace=TRUE)
