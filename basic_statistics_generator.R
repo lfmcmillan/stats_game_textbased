@@ -3,7 +3,7 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
     set.seed(seed)
     results_ok <- FALSE
 
-    
+
     while(!results_ok) {
         if (is.null(params)) {
             sizes <- sample(seq(10,50,10),num, replace=TRUE)
@@ -11,7 +11,7 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
             means <- runif(num, min=0, max=10)
             SDs <- runif(num, min=1, max=10)
 
-            distribution_type <- sample(c("poisson","exponential","normal"),1,prob=c(0.3,0.2,0.5))
+            distribution_type <- sample(c("truncated normal","normal","poisson","exponential","normal"),1,prob=c(0.3,0.3,0.2,0.2))
         } else {
             num <- length(params$means)
             distribution_type <- params$distribution
@@ -30,6 +30,11 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
                 },
                 "normal"={
                     samples <- mapply(rnorm, sizes, means, SDs, SIMPLIFY=FALSE)
+                },
+                "truncated normal"={
+                    # The first and second parameters of truncnorm are the
+                    # lower and upper bounds for truncation
+                    samples <- mapply(rtruncnorm, sizes, rep(0,num), rep(Inf,num), means, SDs, SIMPLIFY=FALSE)
                 }
         )
 

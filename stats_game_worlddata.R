@@ -50,7 +50,7 @@ generate_stream_params <- function(most_contaminated_idx) {
         means <- sort(means, decreasing=TRUE)
     }
 
-    params <- list(distribution="normal",
+    params <- list(distribution="truncated normal",
                    names=c("Stream A","Stream B"),
                    means=means,
                    SDs=runif(2,3,5),
@@ -132,7 +132,7 @@ generate_shelter_material_params <- function(most_effective_idx) {
         means <- sort(means, decreasing=TRUE)
     }
 
-    params <- list(distribution="normal",
+    params <- list(distribution="truncated normal",
                    names=c("Palm","Pacific Etang"),
                    means=means,
                    SDs=runif(2,3,5),
