@@ -50,18 +50,18 @@ setup_user_progress <- function() {
 }
 
 intro <- function(user_name, progress, world) {
-    show_text("This is Stats Island. You and 100 other people crash-landed near
+    show_text(c("This is Stats Island. You and 100 other people crash-landed near
                the island and swam to shore. You discovered that the island is
                deserted, but there is a hut that has some scientific equipment
                and historical records. It appears that this island was once a
-               research outpost.")
-    show_text("A crate washes ashore containing some luggage, including a laptop
+               research outpost.",
+               "A crate washes ashore containing some luggage, including a laptop
                and a portable solar panel charger. You can use the hut to perform
                scientific experiments, and analyse data on the laptop. The
                existing data, and any new experiments, will help you work out
-               how to survive on the island.")
-    show_text("None of the other survivors knows anything about statistics, but
-              they will help as much as they can.")
+               how to survive on the island.",
+               "None of the other survivors knows anything about statistics, but
+               they will help as much as they can."))
 
     readline(prompt="Please press [Enter] to continue")
     writeLines(cli::rule(line = 2))
