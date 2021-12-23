@@ -13,6 +13,8 @@ generate_user_world <- function(user_name) {
 
     shelter_materials <- generate_shelter_material_params(sample(1:2,1))
 
+    trauma_assessments <- generate_trauma_assessments()
+
     crop_values <- read.csv("crops.csv",header=TRUE)
     row.names(crop_values) <- crop_values$name
     crop_names <- c("sunflower","purple bean","speckled bean","orange cabbage",
@@ -38,7 +40,9 @@ generate_user_world <- function(user_name) {
     # sodium=generate_sodium(crop_na),
     # phosphorus=generate_phosphorus(crop_na)
 
-    list(streams=streams, crops=crops, weather=weather)
+    list(streams=streams, crops=crops, weather=weather,
+         shelter_materials=shelter_materials,
+         trauma_assessments=trauma_assessments)
 }
 
 generate_stream_params <- function(most_contaminated_idx) {
@@ -96,9 +100,6 @@ generate_weather_data <- function(type) {
                plot_title <- "Rainfall"
                question_name <- "total monthly rainfall"
                direction <- "highest"
-           },
-           "windspeed"={
-
            })
 
     df <- data.frame(year=year, month_num=month_num, month_name=month_name, value=value)
@@ -138,6 +139,26 @@ generate_shelter_material_params <- function(most_effective_idx) {
                    SDs=runif(2,3,5),
                    sizes=c(12,12))
 }
+
+generate_trauma_assessments <- function() {
+    psychologist_assessments <- rtgamma(30, shape=2.8, scale=0.5, truncation=10)
+    slope_param <- runif(1,0.6,1.3)
+    self_assessments <- -0.5 + slope_param*psychologist_assessments + rnorm(30, 0, 1.5)
+
+    psychologist_assessments <- ceiling(psychologist_assessments)
+    self_assessments <- ceiling(self_assessments)
+    self_assessments[self_assessments > 10] <- 10
+
+    ## Add some jitter to split up the points for plotting (because the raw
+    ## assessment values are integers from 1 to 10)
+    psychologist_assessments_jitter <- jitter(psychologist_assessments, amount=0.1)
+    self_assessments_jitter <- jitter(self_assessments, amount=0.1)
+
+    list(xraw=psychologist_assessments, yraw=self_assessments,
+         x=psychologist_assessments_jitter, y=self_assessments_jitter,
+         xlab="Psychologist Assessment", ylab="Self Assessment")
+}
+
 
 generate_crop_params <- function(crop_names, crop_values, value_type) {
     ncrops <- length(crop_names)

@@ -6,6 +6,7 @@ library(cli)
 library(RColorBrewer)
 library(truncnorm)
 library(greekLetters)
+library(heavy) # For the truncated gamma distribution functions
 
 game <- function() {
     user_response <- menu(c("New user","Load user"),
@@ -158,7 +159,8 @@ run_level <- function(user_name) {
                          to 10 meaning 'Feeling very bad'. Would you please
                          compare them, to see whether the self-assessments would
                          be good enough for me to use for triage?")
-               ### SCATTER PLOT -- psychiatrist vs. self-assessment
+               plot_scatterplot(world$trauma_assessments)
+               correct_answer <- show_scatterplot_questions(world$trauma_assessments, linear=TRUE)
                update_progress(user_name, progress, world, correct_answer)
            },
            "5" = {

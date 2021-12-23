@@ -31,16 +31,16 @@ generate_weather_value_question <- function(series) {
     if (series$direction == "highest") {
         answer <- round(max_val,rounding)
         all_distractors <- round(c(max_val + (max_val - min_val)/3,
-                                   max_val + (max_val - min_val)/4,
+                                   max_val + (max_val - min_val)/5.5,
                                    max_val - (max_val - min_val)/3.5,
                                    max_val - (max_val - min_val)/5), rounding)
         distractors <- sample(all_distractors,2)
     } else {
         answer <- round(min_val,rounding)
         all_distractors <- round(c(min_val + (max_val - min_val)/3,
-                               min_val + (max_val - min_val)/4,
-                               max(min_val - (max_val - min_val)/4,0),
-                               max(min_val - (max_val - min_val)/5,0)), rounding)
+                                   min_val + (max_val - min_val)/6,
+                                   max(min_val - (max_val - min_val)/4,0),
+                                   max(min_val - (max_val - min_val)/5,0)), rounding)
         distractors <- sample(all_distractors,2)
     }
 
@@ -114,6 +114,65 @@ show_weather_questions <- function(weather) {
         } ## End of this question
     } ## End of questions for this weather plot
 
+    correct_answer
+}
+
+plot_scatterplot <- function(scatter_data) {
+    if(!is.null(dev.list())) dev.off()
+
+    plot(scatter_data$x, scatter_data$y, xlab=scatter_data$xlab,
+         ylab=scatter_data$ylab)
+}
+
+show_scatterplot_questions <- function(scatter_data, linear) {
+    actual_correlation <- cor(scatter_data$x,scatter_data$y)
+    if (-0.5 < actual_correlation & actual_correlation < 0.5) stop("Correlation is too low for linear answers")
+
+    linearity_question <- paste0("Is there a linear relationship between ",
+                                 scatter_data$xlab," and ",scatter_data$ylab,"?")
+    if (linear) {
+        linearity_answer <- "Yes"
+        linearity_distractor <- "No"
+
+        direction_question <- paste0("Is the relationship positive or negative?")
+        if (actual_correlation > 0) {
+            direction_answer <- "Positive"
+            direction_distractor <- "Negative"
+        } else {
+            direction_answer <- "Negative"
+            direction_distractor <- "Positive"
+        }
+
+        correlation_question <- paste0("Which of these correlations do you think is closest to the true correlation?")
+        correlation_answer <- round(actual_correlation,1)
+        if (actual_correlation > 0.5) {
+            correlation_distractor <- round(runif(1,0,0.3),1)
+        } else if (actual_correlation < -0.5) {
+            correlation_distractor <- round(runif(1,-0.3,0),1)
+        }
+
+        questions <- c(linearity_question, direction_question, correlation_question)
+        answers <- c(linearity_answer, direction_answer, correlation_answer)
+        distractors <- c(linearity_distractor, direction_distractor, correlation_distractor)
+    } else {
+        questions <- linearity_question
+        answers <- c("Yes")
+        distractors <- c("No")
+    }
+
+    num <- length(questions)
+    correct_answer <- rep(NA,num)
+    for (i in 1:num) {
+        displayed_answers <- c(answers[i], distractors[i])
+        user_response <- menu(displayed_answers,title=questions[i])
+        if (displayed_answers[user_response] == answers[i]) {
+            correct_answer[i] <- TRUE
+            writeLines("Yes! Correct answer.")
+        } else {
+            correct_answer[i] <- FALSE
+            writeLines("No, wrong answer.")
+        }
+    }
     correct_answer
 }
 
