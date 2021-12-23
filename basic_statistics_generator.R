@@ -139,26 +139,6 @@ table_stats_samples <- function(samples) {
     print(tab)
 }
 
-show_questions <- function(generated) {
-    correct_answer <- rep(NA, nrow(generated$answers))
-
-    writeLines(generated$display)
-    for (i in 1:nrow(generated$answers)) {
-        # displayed_answers <- sample(unlist(generated$answers[i,]),ncol(generated$answers))
-        displayed_answers <- sort(unlist(generated$answers[i,]))
-        user_response <- menu(displayed_answers,title=generated$questions[i])
-        if (displayed_answers[user_response] == generated$answers[i,1]) {
-            correct_answer[i] <- TRUE
-            writeLines("Yes! Correct answer.")
-        } else {
-            correct_answer[i] <- FALSE
-            writeLines("No, wrong answer.")
-        }
-    }
-
-    correct_answer
-}
-
 plot_boxplot <- function(samples, ylab) {
     if(!is.null(dev.list())) dev.off()
 

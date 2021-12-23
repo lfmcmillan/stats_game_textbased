@@ -106,10 +106,10 @@ show_weather_questions <- function(weather) {
             user_response <- menu(displayed_answers,title=generated$question)
             if (displayed_answers[user_response] == generated$answer) {
                 correct_answer[(i-1)*nquestion+j] <- TRUE
-                writeLines("Yes! Correct answer.")
+                writeLines(correct_answer_text)
             } else {
                 correct_answer[(i-1)*nquestion+j] <- FALSE
-                writeLines("No, wrong answer.")
+                writeLines(wrong_answer_text)
             }
         } ## End of this question
     } ## End of questions for this weather plot
@@ -167,10 +167,10 @@ show_scatterplot_questions <- function(scatter_data, linear) {
         user_response <- menu(displayed_answers,title=questions[i])
         if (displayed_answers[user_response] == answers[i]) {
             correct_answer[i] <- TRUE
-            writeLines("Yes! Correct answer.")
+            writeLines(correct_answer_text)
         } else {
             correct_answer[i] <- FALSE
-            writeLines("No, wrong answer.")
+            writeLines(wrong_answer_text)
         }
     }
     correct_answer

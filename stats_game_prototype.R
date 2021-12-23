@@ -1,3 +1,4 @@
+source("stats_game_text_elements.R")
 source("stats_game_worlddata.R")
 source("basic_statistics_generator.R")
 source("basic_plot_generator.R")
@@ -10,7 +11,7 @@ library(heavy) # For the truncated gamma distribution functions
 
 game <- function() {
     user_response <- menu(c("New user","Load user"),
-                          title="Welcome to Stats Island v1.0. What would you like to do?")
+                          title=welcome_question)
     if (user_response == 1) {
         user_name <- create_user()
     } else if (user_response == 2) {
@@ -199,4 +200,24 @@ update_progress <- function(user_name, progress, world, correct_answer) {
 
 show_text <- function(display_text) {
     writeLines(strwrap(display_text, width=100))
+}
+
+show_questions <- function(generated) {
+    correct_answer <- rep(NA, nrow(generated$answers))
+
+    writeLines(generated$display)
+    for (i in 1:nrow(generated$answers)) {
+        # displayed_answers <- sample(unlist(generated$answers[i,]),ncol(generated$answers))
+        displayed_answers <- sort(unlist(generated$answers[i,]))
+        user_response <- menu(displayed_answers,title=generated$questions[i])
+        if (displayed_answers[user_response] == generated$answers[i,1]) {
+            correct_answer[i] <- TRUE
+            writeLines(correct_answer_text)
+        } else {
+            correct_answer[i] <- FALSE
+            writeLines(wrong_answer_text)
+        }
+    }
+
+    correct_answer
 }
