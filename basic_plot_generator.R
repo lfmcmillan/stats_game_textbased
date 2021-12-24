@@ -29,14 +29,14 @@ generate_weather_value_question <- function(series) {
     rounding <- switch(tolower(series$type),
                        "rainfall"=-1, 0)
     if (series$direction == "highest") {
-        answer <- round(max_val,rounding)
+        answers <- round(max_val,rounding)
         all_distractors <- round(c(max_val + (max_val - min_val)/3,
                                    max_val + (max_val - min_val)/5.5,
                                    max_val - (max_val - min_val)/3.5,
                                    max_val - (max_val - min_val)/5), rounding)
         distractors <- sample(all_distractors,2)
     } else {
-        answer <- round(min_val,rounding)
+        answers <- round(min_val,rounding)
         all_distractors <- round(c(min_val + (max_val - min_val)/3,
                                    min_val + (max_val - min_val)/6,
                                    max(min_val - (max_val - min_val)/4,0),
@@ -44,7 +44,7 @@ generate_weather_value_question <- function(series) {
         distractors <- sample(all_distractors,2)
     }
 
-    list(question=question, answer=answer, distractors=distractors)
+    list(question=question, answers=answers, distractors=distractors)
 }
 
 generate_weather_year_question <- function(series) {
@@ -52,15 +52,23 @@ generate_weather_year_question <- function(series) {
     question <- paste0("Which year had the ",series$direction,
                        " value of ", series$question_name,"?")
 
+    ## Round the entire series, so that when checking for min or max, find all
+    ## entries that, when rounded, are equal to the rounded min or max
+    rounding <- switch(tolower(series$type),
+                       "rainfall"=-1, 0)
+    vals <- round(series$df$value, rounding)
+
     years <- unique(series$df$year)
     if (series$direction == "highest") {
-        answer <- series$df$year[which.max(series$df$value)]
+        max_val <- max(vals)
+        answers <- series$df$year[vals == max_val]
     } else {
-        answer <- series$df$year[which.min(series$df$value)]
+        min_val <- min(vals)
+        answers <- series$df$year[vals == min_val]
     }
-    distractors <- years[years != answer]
+    distractors <- years[!(years %in% answers)]
 
-    list(question=question, answer=answer, distractors=distractors)
+    list(question=question, answers=answers, distractors=distractors)
 }
 
 generate_weather_month_question <- function(series) {
@@ -69,50 +77,50 @@ generate_weather_month_question <- function(series) {
                        series$direction," ", series$question_name,"?")
 
     if (tolower(series$type) == "rainfall") {
-        answers <- c("April to September","October to March")
+        raw_answers <- c("April to September","October to March")
     } else {
-        answers <- c("May to October","November to April")
+        raw_answers <- c("May to October","November to April")
     }
 
     if (series$direction == "highest") {
-        answer <- answers[1]
-        distractors <- answers[2]
+        answers <- raw_answers[1]
+        distractors <- raw_answers[2]
     } else {
-        answer <- answers[2]
-        distractors <- answers[1]
+        answers <- raw_answers[2]
+        distractors <- raw_answers[1]
     }
 
-    list(question=question, answer=answer, distractors=distractors)
+    list(question=question, answers=answers, distractors=distractors)
 }
 
 show_weather_questions <- function(weather) {
-    nquestion <- 3
+    nquestion_type <- 3
     nweather <- length(weather)
-    correct_answer <- rep(NA, nweather*nquestion)
+    correct_answer <- rep(NA, nweather*nquestion_type)
     for (i in 1:nweather) {
         plot_weather_timeseries(weather[[i]])
 
-        for (j in 1:nquestion) {
-            generated <- switch(j,
-                                generate_weather_value_question(weather[[i]]),
-                                generate_weather_year_question(weather[[i]]),
-                                generate_weather_month_question(weather[[i]]))
+        for (j in 1:nquestion_type) {
+            qna <- switch(j,
+                          generate_weather_value_question(weather[[i]]),
+                          generate_weather_year_question(weather[[i]]),
+                          generate_weather_month_question(weather[[i]]))
 
             if (j == 2) {
-                displayed_answers <- sort(c(generated$answer,generated$distractors))
+                displayed_answers <- sort(c(qna$answers,qna$distractors))
             } else {
-                displayed_answers <- shuffle_answers(c(generated$answer,generated$distractors))
+                displayed_answers <- shuffle_answers(c(qna$answers,qna$distractors))
             }
-            user_response <- menu(displayed_answers,title=generated$question)
-            if (displayed_answers[user_response] == generated$answer) {
-                correct_answer[(i-1)*nquestion+j] <- TRUE
+            user_response <- menu(displayed_answers,title=qna$question)
+            if (displayed_answers[user_response] %in% qna$answers) {
+                correct_answer[(i-1)*nquestion_type+j] <- TRUE
                 writeLines(correct_answer_text)
             } else {
-                correct_answer[(i-1)*nquestion+j] <- FALSE
+                correct_answer[(i-1)*nquestion_type+j] <- FALSE
                 writeLines(wrong_answer_text)
             }
         } ## End of this question
-    } ## End of questions for this weather plot
+    } ## End of qna for this weather plot
 
     correct_answer
 }
@@ -124,56 +132,54 @@ plot_scatterplot <- function(scatter_data) {
          ylab=scatter_data$ylab)
 }
 
-show_scatterplot_questions <- function(scatter_data, linear) {
+generate_scatterplot_question_set <- function(scatter_data, linear) {
     actual_correlation <- cor(scatter_data$x,scatter_data$y)
     if (-0.5 < actual_correlation & actual_correlation < 0.5) stop("Correlation is too low for linear answers")
 
     linearity_question <- paste0("Is there a linear relationship between ",
                                  scatter_data$xlab," and ",scatter_data$ylab,"?")
     if (linear) {
-        linearity_answer <- "Yes"
-        linearity_distractor <- "No"
+        linearity_answers <- "Yes"
+        linearity_distractors <- "No"
 
         direction_question <- paste0("Is the relationship positive or negative?")
         if (actual_correlation > 0) {
-            direction_answer <- "Positive"
-            direction_distractor <- "Negative"
+            direction_answers <- "Positive"
+            direction_distractors <- "Negative"
         } else {
-            direction_answer <- "Negative"
-            direction_distractor <- "Positive"
+            direction_answers <- "Negative"
+            direction_distractors <- "Positive"
         }
 
         correlation_question <- paste0("Which of these correlations do you think is closest to the true correlation?")
-        correlation_answer <- round(actual_correlation,1)
+        correlation_answers <- round(actual_correlation,1)
         if (actual_correlation > 0.5) {
-            correlation_distractor <- round(runif(1,0,0.3),1)
+            correlation_distractors <- c(round(runif(1,0,0.3),1),
+                                         round(runif(1,-0.4,0),1),
+                                         round(runif(1,-1,-0.6),1))
         } else if (actual_correlation < -0.5) {
-            correlation_distractor <- round(runif(1,-0.3,0),1)
+            correlation_distractors <- c(round(runif(1,-0.3,0),1),
+                                         round(runif(1,0,0.4),1),
+                                         round(runif(1,0.6,1),1))
         }
 
-        questions <- c(linearity_question, direction_question, correlation_question)
-        answers <- c(linearity_answer, direction_answer, correlation_answer)
-        distractors <- c(linearity_distractor, direction_distractor, correlation_distractor)
+        linearity_qna <- list(question=linearity_question,
+                              answers=linearity_answers,
+                              distractors=linearity_distractors)
+        direction_qna <- list(question=direction_question,
+                              answers=direction_answers,
+                              distractors=direction_distractors)
+        correlation_qna <- list(question=correlation_question,
+                                answers=correlation_answers,
+                                distractors=correlation_distractors)
+        qna <- list(linearity_qna, direction_qna, correlation_qna)
     } else {
-        questions <- linearity_question
-        answers <- c("Yes")
-        distractors <- c("No")
+        linearity_answers <- "No"
+        linearity_distractors <- "Yes"
+        qna <- list(list(question=linearity_question, answers=linearity_answers,
+                         distractors=linearity_distractors))
     }
-
-    num <- length(questions)
-    correct_answer <- rep(NA,num)
-    for (i in 1:num) {
-        displayed_answers <- c(answers[i], distractors[i])
-        user_response <- menu(displayed_answers,title=questions[i])
-        if (displayed_answers[user_response] == answers[i]) {
-            correct_answer[i] <- TRUE
-            writeLines(correct_answer_text)
-        } else {
-            correct_answer[i] <- FALSE
-            writeLines(wrong_answer_text)
-        }
-    }
-    correct_answer
+    list(display="",qna=qna)
 }
 
 shuffle_answers <- function(answers) {

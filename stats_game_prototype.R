@@ -107,7 +107,8 @@ run_level <- function(user_name) {
            "4" = {
                show_text(level_text[[4]])
                plot_scatterplot(world$trauma_assessments)
-               correct_answer <- show_scatterplot_questions(world$trauma_assessments, linear=TRUE)
+               generated <- generate_scatterplot_question_set(world$trauma_assessments, linear=TRUE)
+               correct_answer <- show_questions(generated)
                update_progress(user_name, progress, world, correct_answer)
            },
            {
@@ -131,14 +132,16 @@ show_text <- function(display_text) {
 }
 
 show_questions <- function(generated) {
-    correct_answer <- rep(NA, nrow(generated$answers))
+    ## 'qna' stands for 'Question and Answers' i.e. the combined question and its answers and distractors
+    qna <- generated$qna
+    numq <- length(qna)
+    correct_answer <- rep(NA, numq)
 
     writeLines(generated$display)
-    for (i in 1:nrow(generated$answers)) {
-        # displayed_answers <- sample(unlist(generated$answers[i,]),ncol(generated$answers))
-        displayed_answers <- sort(unlist(generated$answers[i,]))
-        user_response <- menu(displayed_answers,title=generated$questions[i])
-        if (displayed_answers[user_response] == generated$answers[i,1]) {
+    for (i in 1:numq) {
+        displayed_answers <- sort(c(qna[[i]]$answers,qna[[i]]$distractors))
+        user_response <- menu(displayed_answers,title=qna[[i]]$question)
+        if (displayed_answers[user_response] %in% qna[[i]]$answers) {
             correct_answer[i] <- TRUE
             writeLines(correct_answer_text)
         } else {

@@ -3,7 +3,6 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
     set.seed(seed)
     results_ok <- FALSE
 
-
     while(!results_ok) {
         if (is.null(params)) {
             sizes <- sample(seq(10,50,10),num, replace=TRUE)
@@ -19,7 +18,6 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
             means <- params$means
             SDs <- params$SDs
         }
-
 
         switch (distribution_type,
                 "poisson"={
@@ -75,31 +73,24 @@ generate_sample_question <- function(samples, stat="mean", direction="highest") 
     question <- paste0("Which of the samples has the ",direction," ",stat,"?")
 
     if (direction == "highest") {
-        answer <- names(samples)[which.max(stat_vals)]
+        answers <- names(samples)[which.max(stat_vals)]
         distractors <- names(samples)[-which.max(stat_vals)]
     } else {
-        answer <- names(samples)[which.min(stat_vals)]
+        answers <- names(samples)[which.min(stat_vals)]
         distractors <- names(samples)[-which.min(stat_vals)]
     }
 
-    list(question=question, answer=answer, distractors=distractors)
+    list(question=question, answers=answers, distractors=distractors)
 }
 
 generate_sample_question_set <- function(samples, direction, display_is_plot=TRUE) {
     num <- length(samples)
 
-    questions <- rep(NA,4)
-    answers <- rep(NA,4)
-    distractors <- matrix(rep(NA,4*(num-1)),nrow=4)
+    qna <- list()
 
     stats <- sample(c("mean","median","min","max"),4)
-
     for (i in 1:4) {
-        stat <- stats[i]
-        generated_question <- generate_sample_question(samples, stat, direction)
-        questions[i] <- generated_question$question
-        answers[i] <- generated_question$answer
-        distractors[i,] <- generated_question$distractors
+        qna[[i]] <- generate_sample_question(samples, stats[i], direction)
     }
 
     if (display_is_plot) {
@@ -113,7 +104,7 @@ generate_sample_question_set <- function(samples, direction, display_is_plot=TRU
                                  questions."), width=100)
     }
 
-    list(display=display, questions=questions, answers=cbind(answers,distractors))
+    list(display=display, qna=qna)
 }
 
 plot_stats_samples <- function(samples) {
@@ -148,9 +139,7 @@ plot_boxplot <- function(samples, ylab) {
 generate_boxplot_question_set <- function(samples) {
     num <- length(samples)
 
-    questions <- rep(NA,4)
-    answers <- rep(NA,4)
-    distractors <- matrix(rep(NA,4*(num-1)),nrow=4)
+    qna <- list()
 
     stats <- sample(c("median","IQR","min","max"),4)
 
@@ -158,17 +147,14 @@ generate_boxplot_question_set <- function(samples) {
         stat <- stats[i]
         if (stat == 'min') direction <- "lowest"
         else direction <- "highest"
-        generated_question <- generate_sample_question(samples, stat, direction)
-        questions[i] <- generated_question$question
-        answers[i] <- generated_question$answer
-        distractors[i,] <- generated_question$distractors
+        qna[[i]] <- generate_sample_question(samples, stat, direction)
     }
 
     display <- strwrap(paste("There are",num,"samples. This is a boxplot of
                               the two samples. Use the boxplot to answer the
                               following questions."), width=100)
 
-    list(display=display, questions=questions, answers=cbind(answers,distractors))
+    list(display=display, qna=qna)
 }
 
 # samples <- generate_samples(1, 3)
