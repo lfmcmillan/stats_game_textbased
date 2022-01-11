@@ -1,17 +1,29 @@
 Next steps
 =========
 
+Priorities:
+- Fix weather level for case when two different years have same max/min value
+- Add recommendation question at the end of each level
+- Refactor to separate showing questions from generating questions
+
 Build more levels:
-- Implement plot question levels 2-4
 - Implement estimate/parameter question level 5
-- Implement varied plots level 6
+- Implement varied plots levels 6-9
 - Make a large number of additional plots/estimate/parameter levels
 
 Add topics:
 - Build probability levels
 
+Build different difficulty levels
+- Implement easy/medium/hard versions of each level, using same context [not for first 10 levels?]
+{However, note that this pre-supposes that we know what would be easy or hard,
+which is a different mentality compared with tracking which types of levels the
+user finds easy or hard and thus picking from the topics they find easy or hard.}
+
 Add features:
-- Add recommendation question at the end of each level
 - Add option to show correct answer immediately or at the end of the level
 - Add function that monitors the proportion of correct answers from the different
   levels and assigns difficulty to the different types of levels accordingly
+
+Later additions:
+- Option to select whether they're confident or not about the answer
