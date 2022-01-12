@@ -33,9 +33,9 @@ QuestionSelect <- function(){
     questionNumber <- input2
     
   } else(questionNumber <- sample(c(1:9), 1))
-         
-         
-        return(as.numeric(questionNumber))
+  
+  
+  return(as.numeric(questionNumber))
   
 }
 
@@ -52,10 +52,10 @@ difficultyInitialise <- function(){
   while(TRUE){
     input = readline()
     
-       ifelse(input == "1" || input == "2" || input == "3", 
-        break,
-        print(noquote("Please select a valid option"))
-       )
+    ifelse(input == "1" || input == "2" || input == "3", 
+           break,
+           print(noquote("Please select a valid option"))
+    )
   }
   
   difficultyAnswer <- as.numeric(input)
@@ -85,12 +85,72 @@ difficultyInitialise <- function(){
   return(difficulty)
 }
 
+updateDifficultyAuto <- function(difficulty, difficultyTemp){
+  
+  difficulty["Concept",] <- difficulty["Concept",] + min((difficultyTemp[1] - 2), -1)
+  difficulty["Concept",] <- min(difficulty["Concept",], 1)
+  difficulty["Concept",] <- max(difficulty["Concept",], 3)
+  
+  difficulty["Calculation",] <- difficulty["Calculation",] + min((difficultyTemp[1] - 2), -1)
+  difficulty["Calculation",] <- min(difficulty["Calculation",], 1)
+  difficulty["Calculation",] <- max(difficulty["Calculation",], 3)
+  
+  return(difficulty)
+}
+
+updateDifficultyManual <- function(difficulty, difficultyTemp){
+  
+  QuestionString <- paste0(c("You answered ", difficultyTemp[1], " out of ", difficultyTemp[3], " concept questions correctly. How did you find those questions?"), collapse = "")
+  answers <- c("Too easy", "Just right", "Too hard")
+  
+  print(noquote(QuestionString))
+  for(i in 1:3){
+    print(noquote(paste0(c(i, ". ", answers[i]), collapse = "")))
+  }
+  
+  while(TRUE){
+    input = readline()
+    
+    ifelse(input == "1" || input == "2" || input == "3", 
+           break,
+           print(noquote("Please select a valid option"))
+    )
+  }  
+  
+  difficulty["Concept",] <- difficulty["Concept",] - (as.numeric(input) - 2)
+  difficulty["Concept",] <- min(difficulty["Concept",], 1)
+  difficulty["Concept",] <- max(difficulty["Concept",], 3)
+  
+  QuestionString <- paste0(c("You answered ", difficultyTemp[2], " out of ", difficultyTemp[4], " calculation questions correctly. How did you find those questions?"), collapse = "")
+  answers <- c("Too easy", "Just right", "Too hard")
+  
+  print(noquote(QuestionString))
+  for(i in 1:3){
+    print(noquote(paste0(c(i, ". ", answers[i]), collapse = "")))
+  }
+  
+  while(TRUE){
+    input = readline()
+    
+    ifelse(input == "1" || input == "2" || input == "3", 
+           break,
+           print(noquote("Please select a valid option"))
+    )
+    
+    difficulty["Calculation",] <- difficulty["Calculation",] - (as.numeric(input) - 2)
+    difficulty["Calculation",] <- min(difficulty["Calculation",], 1)
+    difficulty["Calculation",] <- max(difficulty["Calculation",], 3)
+  }  
+  
+  return(difficulty)
+}
+
 findAlpha <- function(difficulty){
   
   alpha <-  switch(difficulty,
-    0.95,
-    sample(c(0.9, 0.95, 0.99), 1),
-    round(runif(1, 0.8, 1), 2))
+                   0.95,
+                   sample(c(0.9, 0.95, 0.99), 1),
+                   round(runif(1, 0.8, 1), 2))
   
   return(alpha)
   
@@ -98,10 +158,10 @@ findAlpha <- function(difficulty){
 
 findN <- function(difficulty){
   
-     n <- switch(difficulty,
-                    100,
-                   (round(runif(1, 6, 15), 0))**2,
-                    round(runif(1, 30, 250), 0))
+  n <- switch(difficulty,
+              100,
+              (round(runif(1, 6, 15), 0))**2,
+              round(runif(1, 30, 250), 0))
   
   return(n)
 }
@@ -109,148 +169,148 @@ findN <- function(difficulty){
 findMu0 <- function(number, difficulty){
   
   muNaught <- switch(difficulty,
-             switch(number,
-                    sample(c(70, 75, 80), 1),
-                    sample(c(70, 75, 80), 1),
-                    sample(c(70, 75, 80), 1),
-                    sample(c(15, 20, 25), 1),
-                    sample(c(8, 10, 12), 1),
-                    sample(c(15, 20, 25), 1)),
-             switch(number,
-                    round(runif(1, 70, 80), 1),
-                    round(runif(1, 70, 80), 1),
-                    round(runif(1, 70, 80), 1),
-                    round(runif(1, 15, 25), 1),
-                    round(runif(1, 8, 12), 1),
-                    round(runif(1, 15, 25), 1)),
-             switch(number,
-                    round(runif(1, 50, 95), 2),
-                    round(runif(1, 50, 95), 2),
-                    round(runif(1, 50, 95), 2),
-                    round(runif(1, 10, 30), 2),
-                    round(runif(1, 5, 15), 2),
-                    round(runif(1, 10, 30), 2))
-             )
-
+                     switch(number,
+                            sample(c(70, 75, 80), 1),
+                            sample(c(70, 75, 80), 1),
+                            sample(c(70, 75, 80), 1),
+                            sample(c(15, 20, 25), 1),
+                            sample(c(8, 10, 12), 1),
+                            sample(c(15, 20, 25), 1)),
+                     switch(number,
+                            round(runif(1, 70, 80), 1),
+                            round(runif(1, 70, 80), 1),
+                            round(runif(1, 70, 80), 1),
+                            round(runif(1, 15, 25), 1),
+                            round(runif(1, 8, 12), 1),
+                            round(runif(1, 15, 25), 1)),
+                     switch(number,
+                            round(runif(1, 50, 95), 2),
+                            round(runif(1, 50, 95), 2),
+                            round(runif(1, 50, 95), 2),
+                            round(runif(1, 10, 30), 2),
+                            round(runif(1, 5, 15), 2),
+                            round(runif(1, 10, 30), 2))
+  )
+  
   return(muNaught)
 }
 
 findMu <- function(number, muNaught, tail, difficulty){
-    
+  
   mu <- switch(difficulty,
-         switch(number,
-                switch(tail,
-                        muNaught - (0.05*muNaught),
-                        muNaught + (0.05*muNaught),
-                        muNaught + sample(c((0.05*muNaught), -(0.05*muNaught)), 1)),
-                switch(tail,
-                        muNaught - (0.05*muNaught),
-                        muNaught + (0.05*muNaught),
-                        muNaught + sample(c((0.05*muNaught), -(0.05*muNaught)), 1)),
-                switch(tail,
-                       muNaught + (0.05*muNaught),
-                       muNaught - (0.05*muNaught),
-                       muNaught + sample(c((0.05*muNaught), -(0.05*muNaught)), 1)),
-                switch(tail,
-                       muNaught - (0.1*muNaught),
-                       muNaught + (0.1*muNaught),
-                       muNaught + sample(c((0.1*muNaught), -(0.1*muNaught)), 1)),
-                switch(tail,
-                       muNaught - (0.1*muNaught),
-                       muNaught + (0.1*muNaught),
-                       muNaught + sample(c((0.1*muNaught), -(0.1*muNaught)), 1)),
-                switch(tail,
-                       muNaught + (0.1*muNaught),
-                       muNaught - (0.1*muNaught),
-                       muNaught + sample(c((0.1*muNaught), -(0.1*muNaught)), 1))),
-         switch(number,
-                switch(tail,
-                      (muNaught - (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
-                      (muNaught + (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
-                      (muNaught + sample(c((sample(c(0.01, 0.05, 0.1), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1))),
-               switch(tail,
-                      (muNaught - (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
-                      (muNaught + (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
-                      (muNaught + sample(c((sample(c(0.01, 0.05, 0.1), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1))),
-               switch(tail,
-                     (muNaught + (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
-                     (muNaught - (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
-                     (muNaught + sample(c((sample(c(0.01, 0.05, 0.1), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1))),
-               switch(tail,
-                      (muNaught - (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
-                      (muNaught + (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
-                      (muNaught + sample(c((sample(c(0.05, 0.1, 0.15), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1))),
-               switch(tail,
-                      (muNaught - (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
-                      (muNaught + (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
-                      (muNaught + sample(c((sample(c(0.05, 0.1, 0.15), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1))),
-               switch(tail,
-                      (muNaught + (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
-                      (muNaught - (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
-                      (muNaught + sample(c((sample(c(0.05, 0.1, 0.15), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1)))),
-         switch(number,
-                switch(tail,
-                      (muNaught - runif(1, 0.01, 0.1)*muNaught),
-                      (muNaught + runif(1, 0.01, 0.1)*muNaught),
-                      (muNaught + sample(c(runif(1, 0.01, 0.1), -runif(1, 0.01, 0.1)), 1)*muNaught)),
-                switch(tail,
-                       (muNaught - runif(1, 0.01, 0.1)*muNaught),
-                       (muNaught + runif(1, 0.01, 0.1)*muNaught),
-                       (muNaught + sample(c(runif(1, 0.01, 0.1), -runif(1, 0.01, 0.1)), 1)*muNaught)),
-                switch(tail,
-                       (muNaught + runif(1, 0.01, 0.1)*muNaught),
-                       (muNaught - runif(1, 0.01, 0.1)*muNaught),
-                       (muNaught + sample(c(runif(1, 0.01, 0.1), -runif(1, 0.01, 0.1)), 1)*muNaught)),
-                switch(tail,
-                       (muNaught - runif(1, 0.05, 0.15)*muNaught),
-                       (muNaught + runif(1, 0.05, 0.15)*muNaught),
-                       (muNaught + sample(c(runif(1, 0.05, 0.15), -runif(1, 0.01, 0.1)), 1)*muNaught)),
-                switch(tail,
-                       (muNaught - runif(1, 0.05, 0.15)*muNaught),
-                       (muNaught + runif(1, 0.05, 0.15)*muNaught),
-                       (muNaught + sample(c(runif(1, 0.05, 0.15), -runif(1, 0.01, 0.1)), 1)*muNaught)),
-                switch(tail,
-                       (muNaught + runif(1, 0.05, 0.15)*muNaught),
-                       (muNaught - runif(1, 0.05, 0.15)*muNaught),
-                       (muNaught + sample(c(runif(1, 0.05, 0.15), -runif(1, 0.01, 0.1)), 1)*muNaught)))
-         )
- 
+               switch(number,
+                            switch(tail,
+                                   muNaught - (0.05*muNaught),
+                                   muNaught + (0.05*muNaught),
+                                   muNaught + sample(c((0.05*muNaught), -(0.05*muNaught)), 1)),
+                            switch(tail,
+                                   muNaught - (0.05*muNaught),
+                                   muNaught + (0.05*muNaught),
+                                   muNaught + sample(c((0.05*muNaught), -(0.05*muNaught)), 1)),
+                            switch(tail,
+                                   muNaught + (0.05*muNaught),
+                                   muNaught - (0.05*muNaught),
+                                   muNaught + sample(c((0.05*muNaught), -(0.05*muNaught)), 1)),
+                            switch(tail,
+                                   muNaught - (0.1*muNaught),
+                                   muNaught + (0.1*muNaught),
+                                   muNaught + sample(c((0.1*muNaught), -(0.1*muNaught)), 1)),
+                            switch(tail,
+                                   muNaught - (0.1*muNaught),
+                                   muNaught + (0.1*muNaught),
+                                   muNaught + sample(c((0.1*muNaught), -(0.1*muNaught)), 1)),
+                            switch(tail,
+                                   muNaught + (0.1*muNaught),
+                                   muNaught - (0.1*muNaught),
+                                   muNaught + sample(c((0.1*muNaught), -(0.1*muNaught)), 1))),
+               switch(number,
+                            switch(tail,
+                                   (muNaught - (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
+                                   (muNaught + (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
+                                   (muNaught + sample(c((sample(c(0.01, 0.05, 0.1), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1))),
+                            switch(tail,
+                                   (muNaught - (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
+                                   (muNaught + (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
+                                   (muNaught + sample(c((sample(c(0.01, 0.05, 0.1), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1))),
+                            switch(tail,
+                                   (muNaught + (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
+                                   (muNaught - (sample(c(0.01, 0.05, 0.1), 1)*muNaught)),
+                                   (muNaught + sample(c((sample(c(0.01, 0.05, 0.1), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1))),
+                            switch(tail,
+                                   (muNaught - (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
+                                   (muNaught + (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
+                                   (muNaught + sample(c((sample(c(0.05, 0.1, 0.15), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1))),
+                            switch(tail,
+                                   (muNaught - (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
+                                   (muNaught + (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
+                                   (muNaught + sample(c((sample(c(0.05, 0.1, 0.15), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1))),
+                            switch(tail,
+                                   (muNaught + (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
+                                   (muNaught - (sample(c(0.05, 0.1, 0.15), 1)*muNaught)),
+                                   (muNaught + sample(c((sample(c(0.05, 0.1, 0.15), 1)*muNaught), -(sample(c(0.01, 0.05, 0.1), 1)*muNaught)), 1)))),
+               switch(number,
+                            switch(tail,
+                                   (muNaught - runif(1, 0.01, 0.1)*muNaught),
+                                   (muNaught + runif(1, 0.01, 0.1)*muNaught),
+                                   (muNaught + sample(c(runif(1, 0.01, 0.1), -runif(1, 0.01, 0.1)), 1)*muNaught)),
+                            switch(tail,
+                                   (muNaught - runif(1, 0.01, 0.1)*muNaught),
+                                   (muNaught + runif(1, 0.01, 0.1)*muNaught),
+                                   (muNaught + sample(c(runif(1, 0.01, 0.1), -runif(1, 0.01, 0.1)), 1)*muNaught)),
+                            switch(tail,
+                                   (muNaught + runif(1, 0.01, 0.1)*muNaught),
+                                   (muNaught - runif(1, 0.01, 0.1)*muNaught),
+                                   (muNaught + sample(c(runif(1, 0.01, 0.1), -runif(1, 0.01, 0.1)), 1)*muNaught)),
+                            switch(tail,
+                                   (muNaught - runif(1, 0.05, 0.15)*muNaught),
+                                   (muNaught + runif(1, 0.05, 0.15)*muNaught),
+                                   (muNaught + sample(c(runif(1, 0.05, 0.15), -runif(1, 0.01, 0.1)), 1)*muNaught)),
+                            switch(tail,
+                                   (muNaught - runif(1, 0.05, 0.15)*muNaught),
+                                   (muNaught + runif(1, 0.05, 0.15)*muNaught),
+                                   (muNaught + sample(c(runif(1, 0.05, 0.15), -runif(1, 0.01, 0.1)), 1)*muNaught)),
+                            switch(tail,
+                                   (muNaught + runif(1, 0.05, 0.15)*muNaught),
+                                   (muNaught - runif(1, 0.05, 0.15)*muNaught),
+                                   (muNaught + sample(c(runif(1, 0.05, 0.15), -runif(1, 0.01, 0.1)), 1)*muNaught)))
+  )
+  
   # Confirm that generated number fits context
   mu <- switch(number,
-          min(mu, 100),
-          min(mu, 100),
-          min(mu, 100),
-          max(mu, 0),
-          max(mu, 0),
-          max(mu, 0))
+               min(mu, 100),
+               min(mu, 100),
+               min(mu, 100),
+               max(mu, 0),
+               max(mu, 0),
+               max(mu, 0))
   
-  return(round(mu, difficulty - 1))
+  round(as.numeric(mu), as.numeric(difficulty - 1))
 }
 
-findSigma <- function(number, muDiff, difficulty){
+findSigma <- function(number, muNaught, difficulty){
   
   sigma <- switch(difficulty,
-         switch(number,
-                      round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(100 - muDiff)/3, 1),
-                      round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(1 - muDiff)/3, 1),
-                      round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(100 - muDiff)/3, 1),
-                      round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(50 - muDiff)/3, 1),
-                      round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(muDiff)/3, 1),
-                      round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(50 - muDiff)/3, 1)),
-         switch(number,
-                      round(runif(1, 0.9, 1.1)*(100 - muDiff)/3, 1),
-                      round(runif(1, 0.9, 1.1)*(1 - muDiff)/3, 1),
-                      round(runif(1, 0.9, 1.1)*(100 - muDiff)/3, 1),
-                      round(runif(1, 0.9, 1.1)*(50 - muDiff)/3, 1),
-                      round(runif(1, 0.9, 1.1)*(muDiff)/3, 1),
-                      round(runif(1, 0.9, 1.1)*(50 - muDiff)/3, 1)),
-         switch(number,
-                      round(runif(1, .9, 1.1)*(100 - muDiff)/3, 2),
-                      round(runif(1, .9, 1.1)*(1 - muDiff)/3, 2),
-                      round(runif(1, .9, 1.1)*(100 - muDiff)/3, 2),
-                      round(runif(1, .9, 1.1)*(50 - muDiff)/3, 2),
-                      round(runif(1, .9, 1.1)*(muDiff)/3, 2),
-                      round(runif(1, .9, 1.1)*(50 - muDiff)/3, 2))
+                  switch(number,
+                         round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(100 - muNaught)/3, 1),
+                         round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(100 - muNaught)/3, 1),
+                         round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(muNaught)/3, 1),
+                         round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(muNaught)/3, 1),
+                         round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(muNaught)/3, 1),
+                         round(sample(c(0.9, 0.95, 1, 1.05, 1.1), 1)*(muNaught)/3, 1)),
+                  switch(number,
+                         round(runif(1, 0.9, 1.1)*(100 - muNaught)/3, 1),
+                         round(runif(1, 0.9, 1.1)*(100 - muNaught)/3, 1),
+                         round(runif(1, 0.9, 1.1)*(muNaught)/3, 1),
+                         round(runif(1, 0.9, 1.1)*(muNaught)/3, 1),
+                         round(runif(1, 0.9, 1.1)*(muNaught)/3, 1),
+                         round(runif(1, 0.9, 1.1)*(muNaught)/3, 1)),
+                  switch(number,
+                         round(runif(1, .9, 1.1)*(100 - muNaught)/3, 2),
+                         round(runif(1, .9, 1.1)*(100 - muNaught)/3, 2),
+                         round(runif(1, .9, 1.1)*(muNaught)/3, 2),
+                         round(runif(1, .9, 1.1)*(muNaught)/3, 2),
+                         round(runif(1, .9, 1.1)*(muNaught)/3, 2),
+                         round(runif(1, .9, 1.1)*(muNaught)/3, 2))
   )
   
   return(sigma)
@@ -262,10 +322,10 @@ findSigma <- function(number, muDiff, difficulty){
 
 findTail <- function(number, difficulty){
   
- tail <- switch(difficulty,
-         1,
-         sample(c(1,2), 1),
-         sample(c(1,2,3), 1)
+  tail <- switch(difficulty,
+                 1,
+                 sample(c(1,2), 1),
+                 sample(c(1,2,3), 1)
   )
   
   return(tail)
@@ -284,11 +344,11 @@ ParametersMu <- function(number, difficulty){
   
   mu <- findMu(number, muNaught, tail, difficulty)
   
-  sigma <- findSigma(number, abs(muNaught - mu), difficulty)
+  sigma <- findSigma(number, muNaught, difficulty)
   
   parameters <- data.frame(c(n, alpha, mu, muNaught, sigma, tail), 
    row.names = c("n", "alpha", "mu", "muNaught", "sigma", "tail"))
-
+  
   return(parameters)
 }
 
@@ -299,16 +359,16 @@ ParametersP <- function(number, difficulty){
   n <- findN(difficulty)
   
   tail <- findTail(number, difficulty)
-
+  
   pNaught <- findMu0(number, difficulty)
   
   p <- findMu(number, pNaught, tail, difficulty)
   
-  sigma <- findSigma(number, abs(pNaught - p), difficulty)
-
-
-parameters <- data.frame(c(n, alpha, p/100, pNaught/100, sigma, tail), 
-row.names = c("n", "alpha", "p", "pNaught", "sigma", "tail"))
+  sigma <- findSigma(number, pNaught, difficulty)
+  
+  
+  parameters <- data.frame(c(n, alpha, p/100, pNaught/100, sigma/100, tail), 
+                           row.names = c("n", "alpha", "p", "pNaught", "sigma", "tail"))
   return(parameters)
 }
 
@@ -317,39 +377,35 @@ ParametersDiff <- function(number, difficulty){
   alpha <- findAlpha(difficulty)
   
   n <- findN(difficulty)
-    
+  
   tail <- findTail(number, difficulty)
   
   muNaught <- findMu0(number, difficulty)
-
+  
   mu <- findMu(number, muNaught, tail, difficulty)
   
   mu2 <- findMu(number, mu, tail, difficulty)
   
-  sigmaDiff <- findSigma(number, abs(mu2 - mu), difficulty)
- 
+  sigmaDiff <- findSigma(number, muNaught, difficulty)
+  
   parameters <- data.frame(c(n, alpha, mu, mu2, sigmaDiff, tail), 
-  row.names = c("n", "alpha", "mu", "mu2", "sigmaDiff", "tail")) 
+                           row.names = c("n", "alpha", "mu", "mu2", "sigmaDiff", "tail")) 
   
   return(parameters)
 }
 
 Parameters <- function(number, type, difficulty){
   
-  switch(type,
-        parameters <- ParametersMu(number, difficulty),
-        parameters <- ParametersP(number, difficulty),
-        parameters <- ParametersDiff(number, difficulty)
-        )
+  parameters <- switch(type,
+                ParametersMu(number, difficulty),
+                 ParametersP(number, difficulty),
+                 ParametersDiff(number, difficulty)
+  )
   
   return(parameters)
 }
 
-Run <- function(){
-  library("greekLetters")
-  
-  number <- QuestionSelect()
-  difficulty <- difficultyInitialise()
+Game <- function(number, difficulty){
   
   type <- ((number - 1)%%3) + 1
   parameters <- Parameters(number, type, difficulty["Calculation",])
@@ -358,133 +414,140 @@ Run <- function(){
   print(PrintQuestion(number, type, parameters))
   print(noquote(""))
   
-  difficultyChangeTotal <- c(0, 0)
-  
+  difficultyTemp <- c(0, 0, 3, 3)
+  difficultyTemp[3] <- switch(difficulty["Concept",],
+                              3,
+                              2,
+                              0)
   for(stage in 1:6){
     
-      
-      correctAnswerArray <- switch(stage,
-                              ifelse(difficulty["Concept",] < 2,
-                                AskParameter(type),
-                                next),
-                              ifelse(difficulty["Concept",] < 3,
-                              AskH0(parameters, type),
-                              next),
-                              AskH1(parameters, type, difficulty["Calculation",]),
-                              ifelse(difficulty["Concept",] < 3,
-                              AskTFormula(type),
-                              next),
-                              AskT(parameters, type),
-                              AskRejection(parameters, type))
-      
-      correctAnswer <- correctAnswerArray[1]
-      correctAnswerIndex <- correctAnswerArray[2]
-      
-      questionType <- switch(stage,
-                             1,
-                             1,
-                             2,
-                             1,
-                             2,
-                             2)
-      
-      AnswerCheck(correctAnswer, correctAnswerIndex)
-      print(noquote(""))
-        }
+    questionType <- switch(stage,
+                           1,
+                           1,
+                           2,
+                           1,
+                           2,
+                           2)
+    
+    correctAnswerArray <- switch(stage,
+                                 if(difficulty["Concept",] < 2){
+                                        AskParameter(type)}else(next),
+                                 if(difficulty["Concept",] < 3){
+                                        AskH0(parameters, type)}else(next),
+                                 AskH1(parameters, type, difficulty["Calculation",]),
+                                 if(difficulty["Concept",] < 3){
+                                        AskTFormula(type)}else(next),
+                                 AskT(parameters, type),
+                                 AskRejection(parameters, type))
+
+    point <- AnswerCheck(correctAnswerArray)
+    
+    difficultyTemp[questionType] <- difficultyTemp[questionType] + point
+    
+    print(noquote(""))
+  }
+  
+  
+  
+  return(difficultyTemp)
 }
 
 
 PrintQuestion <- function(number, type, parameters){
   
   tailString <- switch(number,
-         switch(parameters["tail",],
-                "a worsening",
-                "an improvement",
-                "a difference"),
-         switch(parameters["tail",],
-                "a worsening",
-                "an improvement",
-                "a difference"),
-         switch(parameters["tail",],
-                "a worsening",
-                "an improvement",
-                "a difference"),
-         switch(parameters["tail",],
-                "worse",
-                "better",
-                "differently"),
-         switch(parameters["tail",],
-                "only",
-                "at least",
-                "approximately"),
-         switch(parameters["tail",],
-                "improved",
-                "worsened",
-                "changed")
+                       switch(parameters["tail",],
+                              "a worsening",
+                              "an improvement",
+                              "a difference"),
+                       switch(parameters["tail",],
+                              "a worsening",
+                              "an improvement",
+                              "a difference"),
+                       switch(parameters["tail",],
+                              "a worsening",
+                              "an improvement",
+                              "a difference"),
+                       switch(parameters["tail",],
+                              "worse",
+                              "better",
+                              "differently"),
+                       switch(parameters["tail",],
+                              "only",
+                              "at least",
+                              "approximately"),
+                       switch(parameters["tail",],
+                              "improved",
+                              "worsened",
+                              "changed")
   )
-
+  
   string <- switch(number,
-            paste0(
-                  c("In 2020, the pandemic caused a series of disruptions to teaching. A STAT 193 lecturer wants to test whether this has led to ", tailString,
-                    " in results in his class of ", parameters["n",],
-                    " students. They will be testing at a ", parameters["alpha",]*100,
-                    "% significance level. The average score on the STAT 193 final exam was ", parameters["mu",],
-                    ". Typically, the average score is ", parameters["muNaught",],
-                    ", with a standard deviation of ", parameters["sigma",], "."), collapse = ""),
-            paste0(
-                 c("In 2020, the pandemic caused a series of disruptions to teaching. A STAT 193 lecturer wants to test whether this has led to ", tailString,
-                   " in results in his class of ", parameters["n",],
-                   " students. They will be testing at a ", parameters["alpha",]*100,
-                   "% significance level. After the final exam has been marked, the lecturer notes that ", parameters["p",]*100,
-                   "% passed the course, when the typical pass rate is ", parameters["pNaught",],
-                   ", with a standard deviation of ", parameters["sigma",], "."), collapse = ""),
-            paste0(
-                 c("In 2020, the pandemic caused a series of disruptions to teaching. A STAT 193 lecturer wants to test whether this has led to ", tailString,
-                   " in results in his class of ", parameters["n",],
-                   " students. They will be testing at a ", parameters["alpha",]*100,
-                   "% significance level. The average score on the STAT 193 final exam was ", parameters["mu",],
-                   ". Another lecturer teaches a different section of STAT 193. They notice the students get an average score of ", parameters["mu2",],
-                   ", with a standard deviation of ",  parameters["sigmaDiff",], "."), collapse = ""),
-            paste0(
-                  c("A company wants to test a new line of manufacturing batteries. They sample ", parameters["n",],
-                    " batteries at a significance level of ", parameters["alpha",],
-                    ". They want to check whether the batteries perform ", tailString,
-                    " than their other lines. The sample lasts for an average of ", parameters["mu",],
-                    " hours, compared to a typical lifetime of ", parameters["muNaught",],
-                    " hours and a standard deviation of ", parameters["sigma",],
-                    "."), collapse = ""),
-            paste0(
-              c("A company wants to test a new line of manufacturing batteries. They sample ", parameters["n",],
-                " batteries at a significance level of ", parameters["alpha",]*100,
-                "%. According to safety regulations, it is assumed that ", tailString, " ", parameters["pNaught",]*100,
-                "% of the batteries can be defective, With an expected standard deviation of ", parameters["sigma",],
-                ". Out of the sample, the company noticed that there were ", round(parameters["p",]*parameters["n",], 0),
-                " defective batteries."), collapse = ""),
-            paste0(
-              c("A company wants to test a new line of manufacturing batteries. They sample ", parameters["n",],
-                " batteries at a significance level of ", parameters["alpha",]*100,
-                ". To test the batteries, they use a battery testing device. When using a second testing device to see whether the results ", tailString,
-                ". They notice that on average the batteries lasted ", parameters["mu2",],
-                " hours using the second device, compared to the average on the first device of ", parameters["mu",], 
-                " hours, with a standard deviation of ", parameters["sigmaDiff",]), collapse = "")
-            )
-
+                   paste0(
+                     c(questions[1, number], tailString,
+                       questions[2, number], parameters["n",],
+                       questions[3, number], parameters["alpha",]*100,
+                       questions[4, number], parameters["mu",],
+                       questions[5, number], parameters["muNaught",],
+                       questions[6, number], parameters["sigma",], 
+                       questions[7, number]), collapse = ""),
+                   paste0(
+                     c(questions[1, number], tailString,
+                       questions[2, number], parameters["n",],
+                       questions[3, number], parameters["alpha",]*100,
+                       questions[4, number], parameters["p",]*100,
+                       questions[5, number], parameters["pNaught",],
+                       questions[6, number], parameters["sigma",], 
+                       questions[7, number]), collapse = ""),
+                   paste0(
+                     c(questions[1, number], tailString,
+                       questions[2, number], parameters["n",],
+                       questions[3, number], parameters["alpha",]*100,
+                       questions[4, number], parameters["mu",],
+                       questions[5, number], parameters["mu2",],
+                       questions[6, number],  parameters["sigmaDiff",], 
+                       questions[7, number]), collapse = ""),
+                   paste0(
+                     c(questions[1, number], parameters["n",],
+                       questions[2, number], parameters["alpha",],
+                       questions[3, number], tailString,
+                       questions[4, number], parameters["mu",],
+                       questions[5, number], parameters["muNaught",],
+                       questions[6, number], parameters["sigma",],
+                       questions[7, number]), collapse = ""),
+                   paste0(
+                     c(questions[1, number], parameters["n",],
+                       questions[2, number], parameters["alpha",]*100,
+                       questions[3, number], tailString, " ", parameters["pNaught",]*100,
+                       questions[4, number], parameters["sigma",],
+                       questions[5, number], round(parameters["p",]*parameters["n",], 0),
+                       questions[6, number]), collapse = ""),
+                   paste0(
+                     c(questions[1, number], parameters["n",],
+                       questions[2, number], parameters["alpha",]*100,
+                       questions[3, number], tailString,
+                       questions[4, number], parameters["mu2",],
+                       questions[5, number], parameters["mu",], 
+                       questions[6, number], parameters["sigmaDiff",], 
+                       questions[7, number]), collapse = "")
+  )
+  
   return(noquote(string))
 }
 
-AnswerCheck <- function(answer, answerIndex){
+AnswerCheck <- function(answerArray){
   
   input <- readline()
   
-  result <- ifelse(input %in% answerIndex, "Correct", "Incorrect")
+  result <- ifelse(input %in% answerArray[2:length(answerArray)], "Correct", "Incorrect")
   
   answerString <- ifelse(result == "Incorrect",
-    ifelse(length(answer) > 1,
-      paste0(c("The correct answer is ", answer[1], " or ", answer[2]), collapse = ""),
-      paste0(c("The correct answer is ", answer), collapse = "")),
-    "")
+                        paste0(c("The correct answer is ", answerArray[1]), collapse = ""),
+                         "")
   
   print(noquote(paste0(c(result, ". ", answerString), collapse = "")))
+  
+  return(ifelse(result == "Incorrect", 0, 1))
   
 }
 
@@ -597,7 +660,7 @@ AskParameter <- function(type){
 }
 
 AskH0 <- function(parameters, type, difficulty){
-
+  
   QuestionString <- paste0(c("What is H", "\u2080", "?"), collapse = "")
   
   
@@ -643,14 +706,13 @@ AskH0 <- function(parameters, type, difficulty){
   
   correctAnswer <- Answer1
   correctAnswerIndex <- which(Answers == correctAnswer)
-
+  
   print(noquote(QuestionString))
   
   for(i in 1:4){
     print(noquote(paste0(i, ". ", Answers[i])))
-    
-
   }
+  
   return(c(correctAnswer, correctAnswerIndex))
 }
 
@@ -795,11 +857,11 @@ AskT <- function(parameters, type){
   QuestionString <- paste0('What is T?')
   
   Answer1 <- round(switch(type,
-                    (parameters["mu",] - parameters["muNaught",])/(parameters["sigma",]/(parameters["n",]^0.5)),
-                    (parameters["p",] - parameters["pNaught",])/(parameters["sigma",]/(parameters["n",]^0.5)),
-                    (parameters["mu",] - parameters["mu2",])/(parameters["sigmaDiff",]/(parameters["n",]^0.5))
+                          (parameters["mu",] - parameters["muNaught",])/(parameters["sigma",]/(parameters["n",]^0.5)),
+                          (parameters["p",] - parameters["pNaught",])/(parameters["sigma",]/(parameters["n",]^0.5)),
+                          (parameters["mu",] - parameters["mu2",])/(parameters["sigmaDiff",]/(parameters["n",]^0.5))
   ), 2)
-                    
+  
   
   Answer2 <- round(sample(c(1, -1), 1)*runif(1, 0.95, 1.1)*Answer1, 2)
   
@@ -824,7 +886,7 @@ AskT <- function(parameters, type){
 }
 
 AskRejection <- function(parameters, type){
-
+  
   t <- switch(type,
               (parameters["mu",] - parameters["muNaught",])/(parameters["sigma",]/(parameters["n",]^0.5)),
               (parameters["p",] - parameters["pNaught",])/(parameters["sigma",]/(parameters["n",]^0.5)),
@@ -840,11 +902,11 @@ AskRejection <- function(parameters, type){
   solution <- ifelse(abs(t) > abs(critical), 1, 2)
   
   if(parameters["tail",] == 3){ 
-     critical <- paste0(c("\u00B1", abs(critical)), collapse = "")}
-    
+    critical <- paste0(c("\u00B1", abs(critical)), collapse = "")}
+  
   QuestionString <- paste0(c("If the critical value is ", critical, ", what is the conclusion"), collapse = "")
   
-
+  
   
   Answer1 <- switch(solution, 
                     "Reject H\u2080",
@@ -871,8 +933,8 @@ AskRejection <- function(parameters, type){
                           Answer1)
   
   correctAnswerIndex <- switch(solution,
-  c(which(Answers == AnswersBase[1]), which(Answers == AnswersBase[2])),
-  which(Answers == (AnswersBase[1]))
+                               c(which(Answers == AnswersBase[1]), which(Answers == AnswersBase[2])),
+                               which(Answers == (AnswersBase[1]))
   )
   
   print(noquote(QuestionString))
@@ -884,6 +946,55 @@ AskRejection <- function(parameters, type){
   return(c(correctAnswer, correctAnswerIndex))
 }
 
+Run <- function(){
+  library("greekLetters")
+  library("rjson")
+  
+  difficulty <- difficultyInitialise()
+  difficultyOverall <- c(0, 0, 0, 0)
+  
+  questions <- data.frame(fromJSON(file = "questions.js"))
+  
+  while(TRUE){
+    
+    number <- QuestionSelect()
+    
+    difficultyTemp <- Game(number, difficulty)
+    difficulty <- switch(difficulty["UpdateAnswer",],
+                         updateDifficultyAuto(difficulty, difficultyTemp),
+                         updateDifficultyManual(difficulty, difficultyTemp))
+    
+    difficultyOverall <- difficultyTemp + difficultyOverall
+    
+    QuestionString <- "Would you like to continue?"
+    answers <- c("Yes", "No")
+    
+    print(noquote(QuestionString))
+    for(i in 1:2){
+      print(noquote(paste0(c(i, ". ", answers[i]), collapse = "")))
+    }
+    
+    while(TRUE){
+      input = readline()
+      
+      ifelse(input == "1" || input == "2", 
+             break,
+             print(noquote("Please select a valid option"))
+      )
+    }
+    ifelse(input == "2", break, next)
+  }
+  
+  ConclusionString1 <- paste0(c("You answered ", difficultyOverall[1], 
+                                " out of ", difficultyOverall[3], " concept questions correctly."), collapse = "")
+  ConclusionString2 <- paste0(c("You also answered ", difficultyOverall[2], " out of ", 
+                                difficultyOverall[4], " calculation questions correctly."), collapse = "")
+  
+  print(noquote(ConclusionString1))
+  print(noquote(ConclusionString2))
+}
+
 Run()
 
-PrintQuestion(5, 2, Parameters(5, 2, 2))
+library("rjson")
+questions <- data.frame(fromJSON(file = "questions.json"))
