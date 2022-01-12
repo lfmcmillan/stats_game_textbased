@@ -82,40 +82,42 @@ run_level <- function(user_name) {
 
     quit <- FALSE
 
+    max_level <- 5
+    if (progress$level <= max_level) show_text(level_text[[progress$level]])
     switch(as.character(progress$level),
            "1" = {
-               show_text(level_text[[1]])
                samples <- generate_samples(1, 2, world$streams)
                generated <- generate_sample_question_set(samples, "lowest")
                plot_stats_samples(samples)
                correct_answer <- show_questions(generated)
-               update_progress(user_name, progress, world, correct_answer)
            },
            "2" = {
-               show_text(level_text[[2]])
-               correct_answer <- show_weather_questions(world$weather)
-               update_progress(user_name, progress, world, correct_answer)
+               correct_answer <- show_weather_questions(world$monthly_weather)
            },
            "3" = {
-               show_text(level_text[[3]])
+               generated <- generate_histogram_question_set(world$daily_weather$windspeed)
+               plot_histogram(world$daily_weather$windspeed)
+               correct_answer <- show_questions(generated)
+           },
+           "4" = {
                samples <- generate_samples(1, 2, world$shelter_materials)
                generated <- generate_boxplot_question_set(samples)
                plot_boxplot(samples, "Total rain leaked (mm)")
                correct_answer <- show_questions(generated)
-               update_progress(user_name, progress, world, correct_answer)
            },
-           "4" = {
-               show_text(level_text[[4]])
+           "5" = {
                plot_scatterplot(world$trauma_assessments)
                generated <- generate_scatterplot_question_set(world$trauma_assessments, linear=TRUE)
                correct_answer <- show_questions(generated)
-               update_progress(user_name, progress, world, correct_answer)
            },
            {
                writeLines("Sorry, that's the end of the game, you can't go any further yet.")
                writeLines(cli::rule(line = 2))
                quit <- TRUE
            })
+
+    if (progress$level <= max_level) update_progress(user_name, progress, world, correct_answer)
+    writeLines(cli::rule(line = 2))
     quit
 }
 

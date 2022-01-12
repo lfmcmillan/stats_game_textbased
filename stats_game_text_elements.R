@@ -35,7 +35,10 @@ level_text <- list("1"=c("A few hours after you find the hut, one of the survivo
                          of the daily temperature, rainfall and highest wind
                          speed. So you can look through them to see what the
                          island's weather patterns are like."),
-                   "3"=c("Later in the day, another survivor comes to find you.
+                   "3"=c("You are still examining the island's weather data,
+                         now looking at the daily wind speed patterns for this
+                         month."),
+                   "4"=c("Later in the day, another survivor comes to find you.
                          We've got two different materials we can build shelter
                          roofs from: palm leaves, or some kind of tree that looks
                          like a variety of willow. Is there any data on which one
@@ -47,7 +50,7 @@ level_text <- list("1"=c("A few hours after you find the hut, one of the survivo
                          rain got in on each rainy day. That won't account for
                          how well-built the shelters were, but it would be a good
                          place to start."),
-                   "4"=c("A few days later, on the tenth day since the crash,
+                   "5"=c("A few days later, on the tenth day since the crash,
                          the psychiatrist comes to find you.",
                          "I want to evaluate how traumatised all of the survivors
                          are, but it's very time consuming. I could use the

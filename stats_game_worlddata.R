@@ -7,9 +7,10 @@ generate_user_world <- function(user_name) {
 
     streams <- generate_stream_params(sample(1:2,1))
 
-    weather <- list(rainfall=generate_weather_data("rainfall"),
-                    max_temp=generate_weather_data("max_temp"),
-                    min_temp=generate_weather_data("min_temp"))
+    monthly_weather <- list(rainfall=generate_monthly_weather_data("rainfall"),
+                            max_temp=generate_monthly_weather_data("max_temp"),
+                            min_temp=generate_monthly_weather_data("min_temp"))
+    daily_weather <- list(windspeed=generate_daily_weather_data("windspeed"))
 
     shelter_materials <- generate_shelter_material_params(sample(1:2,1))
 
@@ -40,7 +41,8 @@ generate_user_world <- function(user_name) {
     # sodium=generate_sodium(crop_na),
     # phosphorus=generate_phosphorus(crop_na)
 
-    list(streams=streams, crops=crops, weather=weather,
+    list(streams=streams, crops=crops,
+         monthly_weather=monthly_weather, daily_weather=daily_weather,
          shelter_materials=shelter_materials,
          trauma_assessments=trauma_assessments)
 }
@@ -61,7 +63,7 @@ generate_stream_params <- function(most_contaminated_idx) {
                    sizes=c(12,12))
 }
 
-generate_weather_data <- function(type) {
+generate_monthly_weather_data <- function(type) {
     nyears <- 4
 
     year <- rep(2017:2020,each=12)
@@ -122,6 +124,43 @@ sample_years <- function(series, nyears) {
     year_row_idx <- sample(1:nrow(year_mat),1)
     year_row <- year_mat[year_row_idx,]
     subset_years <- sample(year_row, nyears)
+}
+
+generate_daily_weather_data <- function(type) {
+    switch(tolower(type),
+           "windspeed"={
+               wind <- read.csv("daily_windspeed_hong_kong_longformat.csv", header=TRUE)
+
+               idx <- NA
+               results_ok <- FALSE
+               while(!results_ok) {
+                   idx <- sample(1:12,1)
+                   month <- month.abb[idx]
+                   month_name <- month.name[idx]
+                   value <- wind$WindSpeed[wind$Month == month]
+                   h <- hist(value, breaks=10, plot=FALSE)
+                   mid_range_value <- round((h$breaks[length(h$breaks)]-h$breaks[1])/2,1)
+                   mean_value <- round(mean(value),1)
+
+                   lower_threshold <- mean_value/10
+                   upper_threshold <- mean_value/5
+
+                   diff <- abs(mid_range_value - mean_value)
+                   if (diff < lower_threshold || diff > upper_threshold) {
+                       results_ok <- TRUE
+                       skewed <- ifelse(diff < lower_threshold, FALSE, TRUE)
+                   }
+               }
+               xlab <- "Daily Mean Wind Speed (km/h)"
+               plot_title <- paste("Daily wind speed for all years in",month_name)
+               question_name <- "daily wind speed"
+           })
+
+    df <- data.frame(month_num=idx, month_name=month_name, value=value)
+    output <- list(type=type, xlab=xlab, plot_title=plot_title,
+                   question_name=question_name, skewed=skewed, df=df)
+
+    output
 }
 
 generate_shelter_material_params <- function(most_effective_idx) {
