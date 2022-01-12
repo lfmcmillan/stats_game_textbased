@@ -1,0 +1,42 @@
+{ 
+   "1":["In 2020, the pandemic caused a series of disruptions to teaching. A STAT 193 lecturer wants to test whether this has led to ",
+	" in results in his class of ",
+	" students. They will be testing at a ",
+	"% significance level. The average score on the STAT 193 final exam was ",
+	". Typically, the average score is ",
+	", with a standard deviation of ", "."],
+
+   "2":["In 2020, the pandemic caused a series of disruptions to teaching. A STAT 193 lecturer wants to test whether this has led to ",
+	" in results in his class of ",
+	" students. They will be testing at a ",
+	"% significance level. After the final exam has been marked, the lecturer notes that ",
+	"% passed the course, when the typical pass rate is ", ", with a standard deviation of ", "."],
+
+   "3":["In 2020, the pandemic caused a series of disruptions to teaching. A STAT 193 lecturer wants to test whether this has led to ",
+	" in results in his class of ",
+	" students. They will be testing at a ",
+	"% significance level. The average score on the STAT 193 final exam was ",
+	". Another lecturer teaches a different section of STAT 193. They notice the students get an average score of ",
+	", with a standard deviation of ", "."],
+
+   "4":["A company wants to test a new line of manufacturing batteries. They sample ",
+	" batteries at a significance level of ",
+	". They want to check whether the batteries perform ",
+	" than their other lines. The sample lasts for an average of ",
+	" hours, compared to a typical lifetime of ",
+	" hours and a standard deviation of ","."],
+
+   "5":["A company wants to test a new line of manufacturing batteries. They sample ",
+	" batteries at a significance level of ",
+	"%. According to safety regulations, it is assumed that ", " ",
+	"% of the batteries can be defective, With an expected standard deviation of ",
+	". Out of the sample, the company noticed that there were ",
+	" defective batteries."],
+
+   "6":["A company wants to test a new line of manufacturing batteries. They sample ",
+	" batteries at a significance level of ",
+	". To test the batteries, they use a battery testing device. When using a second testing device to see whether the results ",
+	". They notice that on average the batteries lasted ",
+	" hours using the second device, compared to the average on the first device of ",
+	" hours, with a standard deviation of ", "."]
+}
