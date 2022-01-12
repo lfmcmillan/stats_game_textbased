@@ -9,11 +9,11 @@ library(truncnorm)
 library(greekLetters)
 library(heavy) # For the truncated gamma distribution functions
 
-game <- function() {
+game <- function(first_level) {
     user_response <- menu(c("New user","Load user"),
                           title=welcome_question)
     if (user_response == 1) {
-        user_name <- create_user()
+        user_name <- create_user(first_level)
     } else if (user_response == 2) {
         user_name <- load_user()
     }
@@ -26,7 +26,7 @@ game <- function() {
     return("Game Complete!")
 }
 
-create_user <- function() {
+create_user <- function(first_level) {
     user_name <- readline(prompt="Please enter the username you want:")
 
     while (file.exists(paste0(user_name,".Rdata"))) {
@@ -39,7 +39,7 @@ create_user <- function() {
     world <- generate_user_world(user_name)
     save(progress,world,file=paste0(user_name,".Rdata"))
 
-    intro(user_name, progress, world)
+    intro(user_name, progress, world, first_level)
 
     user_name
 }
@@ -50,14 +50,14 @@ setup_user_progress <- function() {
          percent_correct_basic_stats=0)
 }
 
-intro <- function(user_name, progress, world) {
+intro <- function(user_name, progress, world, first_level=1) {
     show_text(intro_text)
 
     readline(prompt="Please press [Enter] to continue")
     writeLines(cli::rule(line = 2))
 
     progress$done_intro <- TRUE
-    progress$level <- 1
+    progress$level <- first_level
     save(progress, world, file=paste0(user_name,".Rdata"))
 }
 
