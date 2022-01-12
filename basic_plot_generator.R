@@ -182,6 +182,72 @@ generate_scatterplot_question_set <- function(scatter_data, linear) {
     list(display="",qna=qna)
 }
 
+plot_histogram <- function(hist_data) {
+    if(!is.null(dev.list())) dev.off()
+
+    hist(hist_data$df$value, xlab=hist_data$xlab, main=hist_data$plot_title, col="lightblue")
+}
+
+generate_histogram_question_set <- function(hist_data) {
+    value <- hist_data$df$value
+
+    h <- hist(hist_data$df$value, plot=FALSE)
+    min_approx <- h$breaks[1]
+    max_approx <- h$breaks[length(h$breaks)]
+    range_approx <- max_approx - min_approx
+    skewed <- hist_data$skewed
+    question_name <- hist_data$question_name
+
+    mode_question <- paste0("What is the approximate mode for ",question_name,"?")
+    mode_bin_idx <- which.max(h$density)
+    mode_bin_name <- paste(h$breaks[mode_bin_idx],"to",h$breaks[mode_bin_idx+1])
+    mode_answers <- mode_bin_name
+
+    other_bin_idxs <- sample((1:length(h$density))[-mode_bin_idx],2)
+    mode_distractors <- sapply(other_bin_idxs, function(idx) {
+        paste(h$breaks[idx],"to",h$breaks[idx+1])
+    })
+    mode_qna <- list(question=mode_question, answers=mode_answers,
+                     distractors=mode_distractors)
+
+    min_question <- paste0("What is the approximate minimum ",question_name,"?")
+    min_answers <- min_approx
+    all_possible_min_distractors <- round(unique(c(max(0,min_approx - range_approx/4),
+                                                   max(0,min_approx - range_approx/6),
+                                                   min_approx + range_approx/6,
+                                                   min_approx + range_approx/4)))
+    all_possible_min_distractors <- all_possible_min_distractors[all_possible_min_distractors != min_approx]
+    min_distractors <- sample(all_possible_min_distractors, 2)
+    min_qna <- list(question=min_question, answers=min_answers,
+                    distractors=min_distractors)
+
+    max_question <- paste0("What is the approximate maximum ",question_name,"?")
+    max_answers <- max_approx
+    all_possible_max_distractors <- round(c(max_approx - range_approx/4,
+                                            max_approx - range_approx/6,
+                                            max_approx + range_approx/6,
+                                            max_approx + range_approx/4))
+    max_distractors <- sample(all_possible_max_distractors, 2)
+    max_qna <- list(question=max_question, answers=max_answers,
+                    distractors=max_distractors)
+
+    use_skewed <- sample(c("skewed","symmetric"),1)
+    if (use_skewed == "skewed") {
+        skewed_question <- "Is this distribution skewed?"
+        skewed_answers <- ifelse(skewed,"Yes","No")
+        skewed_distractors <- ifelse(skewed,"No","Yes")
+    } else {
+        skewed_question <- "Is this distribution approximately symmetric?"
+        skewed_answers <- ifelse(skewed,"No","Yes")
+        skewed_distractors <- ifelse(skewed,"Yes","No")
+    }
+    skewed_qna <- list(question=skewed_question, answers=skewed_answers,
+                       distractors=skewed_distractors)
+
+    qna <- list(mode_qna, min_qna, max_qna, skewed_qna)
+    list(display="",qna=qna)
+}
+
 shuffle_answers <- function(answers) {
     sample(answers, length(answers))
 }
