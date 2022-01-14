@@ -107,7 +107,7 @@ generate_sample_question_set <- function(samples, direction, display_is_plot=TRU
     list(display=display, qna=qna)
 }
 
-plot_stats_samples <- function(samples) {
+plot_summary_stat_barplots <- function(samples) {
     if(!is.null(dev.list())) dev.off()
 
     num <- length(samples)

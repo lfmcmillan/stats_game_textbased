@@ -88,7 +88,7 @@ run_level <- function(user_name) {
            "1" = {
                samples <- generate_samples(1, 2, world$streams)
                generated <- generate_sample_question_set(samples, "lowest")
-               plot_stats_samples(samples)
+               plot_summary_stat_barplots(samples)
                correct_answer <- show_questions(generated)
            },
            "2" = {
