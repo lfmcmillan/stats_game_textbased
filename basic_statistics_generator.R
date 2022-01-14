@@ -203,6 +203,16 @@ generate_dotplot_question_set <- function(samples, direction) {
                                              stat_text=stats_text[i])
     }
 
+    skewed_question <- "Which sample is the most skewed?"
+    means <- unlist(lapply(samples,mean))
+    medians <- unlist(lapply(samples,median))
+    diffs <- abs(means - medians)
+    skewed_answers <- names(samples)[which.max(diffs)]
+    skewed_distractors <- names(samples)[-which.max(diffs)]
+
+    qna[[length(stats)+1]] <- list(question=skewed_question, answers=skewed_answers,
+                                   distractors=skewed_distractors)
+
     display <- strwrap(paste("There are",num,"samples. These are dot plots of
                               the samples. Use the dot plots to answer the
                               following questions."), width=100)
