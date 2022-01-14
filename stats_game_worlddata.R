@@ -16,6 +16,8 @@ generate_user_world <- function(user_name) {
 
     trauma_assessments <- generate_trauma_assessments()
 
+    fruit_rot <- generate_fruit_rot_params(sample(1:2,1))
+
     crop_values <- read.csv("crops.csv",header=TRUE)
     row.names(crop_values) <- crop_values$name
     crop_names <- c("sunflower","purple bean","speckled bean","orange cabbage",
@@ -44,7 +46,7 @@ generate_user_world <- function(user_name) {
     list(streams=streams, crops=crops,
          monthly_weather=monthly_weather, daily_weather=daily_weather,
          shelter_materials=shelter_materials,
-         trauma_assessments=trauma_assessments)
+         trauma_assessments=trauma_assessments, fruit_rot=fruit_rot)
 }
 
 generate_stream_params <- function(most_contaminated_idx) {
@@ -139,7 +141,7 @@ generate_daily_weather_data <- function(type) {
                    month_name <- month.name[idx]
                    value <- wind$WindSpeed[wind$Month == month]
                    h <- hist(value, breaks=10, plot=FALSE)
-                   mid_range_value <- round((h$breaks[length(h$breaks)]-h$breaks[1])/2,1)
+                   mid_range_value <- round((tail(h$breaks,1)-h$breaks[1])/2,1)
                    mean_value <- round(mean(value),1)
 
                    lower_threshold <- mean_value/10
@@ -213,9 +215,24 @@ generate_crop_params <- function(crop_names, crop_values, value_type) {
     output
 }
 
+generate_fruit_rot_params <- function(fastest_rotted_idx) {
+    mean1 <- runif(1, 2, 4)
+    mean2 <- runif(1, 2, 4) + sample(3:5,1)
+    means <- c(mean1, mean2)
+
+    if (fastest_rotted_idx == 1) {
+        means <- sort(means, decreasing=TRUE)
+    }
+
+    params <- list(distribution="truncated exponential",
+                   names=c("spiky fruit","long fruit"),
+                   means=means,
+                   lower_bound=1, upper_bound=10,
+                   sizes=c(25,25))
+}
+
 find_any_word <- function(patterns, x) {
     any(sapply(patterns, function(pattern) {
         (length(grep(pattern,x)) > 0)
     }))
 }
-

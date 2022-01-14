@@ -1,4 +1,4 @@
-generate_samples <- function(seed=1, num=2, params=NULL) {
+generate_samples <- function(seed=1, num=2, params=NULL, summary_stats=TRUE) {
 
     set.seed(seed)
     results_ok <- FALSE
@@ -10,7 +10,7 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
             means <- runif(num, min=0, max=10)
             SDs <- runif(num, min=1, max=10)
 
-            distribution_type <- sample(c("truncated normal","normal","poisson","exponential","normal"),1,prob=c(0.3,0.3,0.2,0.2))
+            distribution_type <- sample(c("truncated normal","normal","poisson","exponential"),1,prob=c(0.3,0.3,0.2,0.2))
         } else {
             num <- length(params$means)
             distribution_type <- params$distribution
@@ -26,19 +26,35 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
                 "exponential"={
                     samples <- mapply(rexp, sizes, 1/means, SIMPLIFY=FALSE)
                 },
+                "truncated exponential"={
+                    samples <- mapply(rtrunc, sizes, spec="exp",
+                                      a=rep(params$lower_bound,num),
+                                      b=rep(params$upper_bound,num),
+                                      1/means, SIMPLIFY=FALSE)
+                },
                 "normal"={
                     samples <- mapply(rnorm, sizes, means, SDs, SIMPLIFY=FALSE)
                 },
                 "truncated normal"={
                     # The first and second parameters of truncnorm are the
                     # lower and upper bounds for truncation
-                    samples <- mapply(rtruncnorm, sizes, rep(0,num), rep(Inf,num), means, SDs, SIMPLIFY=FALSE)
+                    if (is.null(params$lower_bound)) params$lower_bound <- 0
+                    if (is.null(params$upper_bound)) params$upper_bound <- Inf
+                    samples <- mapply(rtruncnorm, sizes,
+                                      rep(params$lower_bound,num),
+                                      rep(params$upper_bound,num),
+                                      means, SDs, SIMPLIFY=FALSE)
                 }
         )
 
         scale <- mean(abs(unlist(lapply(samples, mean))))/4
 
-        for (stat in c("mean","median","min","max")) {
+        if (!summary_stats) {
+            stats_to_check <- "mean"
+        } else {
+            stats_to_check <- c("mean","median","min","max")
+        }
+        for (stat in stats_to_check) {
             stat_vals <- unlist(lapply(samples, stat))
 
             diffs_mat <- outer(stat_vals, stat_vals, "-")
@@ -46,8 +62,8 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
             ## Find all diffs of pairs of different samples
             diffs <- abs(diffs_mat[upper.tri(diffs_mat, diag=FALSE)])
 
-            if (all(diffs > 1)) {
-                if (stat == "max") results_ok <- TRUE
+            if (all(diffs > scale)) {
+                if (stat == tail(stats_to_check,1)) results_ok <- TRUE
             } else {
                 seed <- seed+1
                 set.seed(seed)
@@ -65,12 +81,13 @@ generate_samples <- function(seed=1, num=2, params=NULL) {
     samples
 }
 
-generate_sample_question <- function(samples, stat="mean", direction="highest") {
+generate_sample_question <- function(samples, stat="mean", direction="highest",
+                                     stat_text=stat) {
     num <- length(samples)
 
     stat_vals <- unlist(lapply(samples, stat))
 
-    question <- paste0("Which of the samples has the ",direction," ",stat,"?")
+    question <- paste0("Which of the samples has the ",direction," ",stat_text,"?")
 
     if (direction == "highest") {
         answers <- names(samples)[which.max(stat_vals)]
@@ -151,15 +168,52 @@ generate_boxplot_question_set <- function(samples) {
     }
 
     display <- strwrap(paste("There are",num,"samples. This is a boxplot of
-                              the two samples. Use the boxplot to answer the
+                              the samples. Use the boxplot to answer the
                               following questions."), width=100)
 
     list(display=display, qna=qna)
 }
 
+plot_dotplot <- function(samples, xlab) {
+    if(!is.null(dev.list())) dev.off()
+
+    values <- do.call(c, samples)
+    values <- round(values, 1)
+    sample_names_list <- lapply(1:length(samples), function(s) {
+        rep(names(samples)[s], times=length(samples[[s]]))
+    })
+    sample_names <- do.call(c, sample_names_list)
+    df <- data.frame(y=values, g=sample_names)
+
+    stripchart(values ~ sample_names, data=df, xlab=xlab, pch=1, cex=1.3, method="stack")
+}
+
+generate_dotplot_question_set <- function(samples, direction) {
+    num <- length(samples)
+
+    qna <- list()
+
+    random_order <- sample(1:2,2)
+    stats <- c("mean","sd")[random_order]
+    stats_text <- c("average","spread")[random_order]
+
+    for (i in 1:length(stats)) {
+        stat <- stats[i]
+        qna[[i]] <- generate_sample_question(samples, stats[i], direction,
+                                             stat_text=stats_text[i])
+    }
+
+    display <- strwrap(paste("There are",num,"samples. These are dot plots of
+                              the samples. Use the dot plots to answer the
+                              following questions."), width=100)
+
+    list(display=display, qna=qna)
+}
+
+
 # samples <- generate_samples(1, 3)
 # generated <- generate_sample_question_set(samples, direction="highest", display_is_plot=TRUE)
-# plot_stats_samples(samples)
+# plot_summary_stat_barplots(samples)
 # show_questions(generated)
 #
 # table_stats_samples(samples)

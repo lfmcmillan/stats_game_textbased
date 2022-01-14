@@ -4,9 +4,10 @@ source("basic_statistics_generator.R")
 source("basic_plot_generator.R")
 
 library(cli)
+library(greekLetters)
 library(RColorBrewer)
 library(truncnorm)
-library(greekLetters)
+library(truncdist)
 library(heavy) # For the truncated gamma distribution functions
 
 game <- function(first_level) {
@@ -82,7 +83,7 @@ run_level <- function(user_name) {
 
     quit <- FALSE
 
-    max_level <- 5
+    max_level <- 6
     if (progress$level <= max_level) show_text(level_text[[progress$level]])
     switch(as.character(progress$level),
            "1" = {
@@ -108,6 +109,13 @@ run_level <- function(user_name) {
            "5" = {
                plot_scatterplot(world$trauma_assessments)
                generated <- generate_scatterplot_question_set(world$trauma_assessments, linear=TRUE)
+               correct_answer <- show_questions(generated)
+           },
+           "6" = {
+               samples <- generate_samples(1, 2, world$fruit_rot)
+               plot_dotplot(samples, "Days from picking till first rot")
+               generated <- generate_dotplot_question_set(samples,
+                                    direction = sample(c("lowest","highest"),1))
                correct_answer <- show_questions(generated)
            },
            {

@@ -63,6 +63,16 @@ level_text <- list("1"=c("A few hours after you find the hut, one of the survivo
                          assessment is a score from 1 meaning 'Feeling very well'
                          to 10 meaning 'Feeling very bad'. Would you please
                          compare them, to see whether the self-assessments would
-                         be good enough for me to use for triage?")
+                         be good enough for me to use for triage?"),
+                   "6"=c("A survivor comes to find you, saying 'We have been
+                         picking fruit from the trees to eat, but some of it rots
+                         quickly. We'd like to know if one type of fruit rots
+                         more quickly than another, so we picked 20 fruits of
+                         each type all on the same day, and kept them all in the
+                         same place, but with each fruit separated from the others,
+                         and then checked them frequently to see how many days it
+                         took them to develop brown patches or mould.",
+                         "You can look at the data for the two types of fruit to
+                         answer the question.")
 )
 
