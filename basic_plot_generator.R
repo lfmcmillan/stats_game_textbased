@@ -193,7 +193,7 @@ generate_histogram_question_set <- function(hist_data) {
 
     h <- hist(hist_data$df$value, plot=FALSE)
     min_approx <- h$breaks[1]
-    max_approx <- h$breaks[length(h$breaks)]
+    max_approx <- tail(h$breaks,1)
     range_approx <- max_approx - min_approx
     skewed <- hist_data$skewed
     question_name <- hist_data$question_name
