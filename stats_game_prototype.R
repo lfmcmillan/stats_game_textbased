@@ -10,7 +10,7 @@ library(truncnorm)
 library(truncdist)
 library(heavy) # For the truncated gamma distribution functions
 
-game <- function(first_level) {
+game <- function(first_level=1) {
     user_response <- menu(c("New user","Load user"),
                           title=welcome_question)
     if (user_response == 1) {
