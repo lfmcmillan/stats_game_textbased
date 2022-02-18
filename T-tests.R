@@ -323,6 +323,7 @@ Game <- function(number, difficulty, questionsDF){
                            1,
                            2,
                            2)
+    
     solutionMethod <- sample(1:2, 1)
     
     correctAnswerArray <- switch(stage,
@@ -358,8 +359,43 @@ Game <- function(number, difficulty, questionsDF){
   return(difficultyTemp)
 }
 
+questionStage <- function(parameters, type, difficulty, stage){
+  
+  solutionMethod <- sample(1:2, 1)
+  
+  AnswerArray <- switch(difficulty$Concept,
+                        switch(stage,
+                               AskParameter(type),
+                               AskH0(parameters, type, difficulty$Calculation),
+                               AskH1(parameters, type, difficulty$Calculation),
+                               AskTFormula(type),
+                               AskPFormula(parameters, type),
+                               AskT(parameters, type),
+                               switch(solutionMethod,
+                                      AskRejectionT(parameters, type),
+                                      AskRejectionP(parameters, type))),
+                        switch(stage,
+                               AskH0(parameters, type, difficulty$Calculation),
+                               AskH1(parameters, type, difficulty$Calculation),
+                               AskTFormula(type),
+                               AskPFormula(parameters, type), 
+                               AskT(parameters, type),
+                               switch(solutionMethod,
+                                      AskRejectionT(parameters, type),
+                                      AskRejectionP(parameters, type))),
+                        switch(stage,
+                               AskH1(parameters, type, difficulty$Calculation),
+                               AskT(parameters, type),
+                               switch(solutionMethod,
+                                      AskRejectionT(parameters, type),
+                                      AskRejectionP(parameters, type)))
+  )
+  
+  
+  return(AnswerArray)
+}
 
-PrintQuestion <- function(number, type, parameters, questionsDF){
+PrintQuestion <- function(number, type, parameters, questions){
   
   tailString <- switch(number,
                        switch(parameters$tail,
@@ -441,7 +477,7 @@ PrintQuestion <- function(number, type, parameters, questionsDF){
                        questions[4, number], parameters$pNaught*100,
                        questions[5, number], parameters$sigma,
                        questions[6, number], round(parameters$p*parameters$n, 0),
-                       questions[7, number],), collapse = ""),
+                       questions[7, number]), collapse = ""),
                    paste0(
                      c(questions[1, number], parameters$n,
                        questions[2, number], parameters$alpha*100,
@@ -487,10 +523,10 @@ AnswerCheck <- function(answerArray){
   result <- ifelse(input %in% answerArray$index, "Correct", "Incorrect")
   
   correctString <- ifelse(result == "Incorrect",
-                        switch(length(answerArray$correct),
-                        paste0(c("The correct answer is ", answerArray$correct), collapse = ""),
-                        paste0(c("The correct answer is ", answerArray$correct[1], " or ", answerArray$correct[2]), collapse = "")),      
-                         "")
+                          switch(length(answerArray$correct),
+                                 paste0(c("The correct answer is ", answerArray$correct), collapse = ""),
+                                 paste0(c("The correct answer is ", answerArray$correct[1], " or ", answerArray$correct[2]), collapse = "")),      
+                          "")
   
   answerString <- noquote(paste0(c(result, ". ", correctString), collapse = ""))
   
@@ -1009,8 +1045,7 @@ Run <- function(){
   difficulty <- difficultyInitialise()
   difficultyOverall <- c(0, 0, 0, 0)
   
-  questions <- data.frame(fromJSON(
-  file = "C:\\Users\\pearsoluke\\Desktop\\Project\\stats_game_textbased\\questions.json"))
+  questions <- data.frame(fromJSON(file = "C:\\Users\\pearsoluke\\Desktop\\Project\\stats_game_textbased\\questions.json"))
   
   while(TRUE){
     
@@ -1040,19 +1075,14 @@ Run <- function(){
   print(noquote(ConclusionString2))
 }
 
-Run()
-
-
-
-
-AnswerCheckShiny <- function(answerArray, input){
+AnswerCheckShiny <- function(correct, index, input){
   
-  result <- ifelse(input %in% answerArray$index, "Correct", "Incorrect")
+  result <- ifelse(input %in% index, "Correct", "Incorrect")
   
   correctString <- ifelse(result == "Incorrect",
-                          switch(length(answerArray$correct),
-                                 paste0(c("The correct answer is ", answerArray$correct), collapse = ""),
-                                 paste0(c("The correct answer is ", answerArray$correct[1], " or ", answerArray$correct[2]), collapse = "")),      
+                          switch(length(correct),
+                                 paste0(c("The correct answer is ", correct), collapse = ""),
+                                 paste0(c("The correct answer is ", correct[1], " or ", correct[2]), collapse = "")),      
                           "")
   
   answerString <- noquote(paste0(c(result, ". ", correctString), collapse = ""))
@@ -1062,50 +1092,101 @@ AnswerCheckShiny <- function(answerArray, input){
   
 }
 
-serverQuestion <- function(input, output){
+
+serverQuestion <- function(input, output, questionString, answerArray){
   
   output$context <- renderText(questionString)
   output$question <- renderText(answerArray$question)
   
-  check <- reactiveValues(string = NULL, point = NULL)
+  check <- reactiveValues(string = NULL, point = 0)
+  id <- NULL
   
-  observeEvent(input$button1, {
-    check$string <- AnswerCheckShiny(answerArray, 1)$string
-    check$point <- AnswerCheckShiny(answerArray, 1)$point
+  observeEvent(input$select,{
+    check$string <- AnswerCheckShiny(answerArray, input$button)$string
+    
+    if(!is.null(id)){
+      removeNotification(id)}
+    id <- showNotification(renderText(check$string))
   })
   
-  observeEvent(input$button2, {
-    check$string <- AnswerCheckShiny(answerArray, 2)$string
-    check$point <- AnswerCheckShiny(answerArray, 1)$point
-  })
-  
-  observeEvent(input$button3, {
-    check$string <- AnswerCheckShiny(answerArray, 3)$string
-    check$point <- AnswerCheckShiny(answerArray, 1)$point
-  })
-  
-  observeEvent(input$button4, {
-    check$string <- AnswerCheckShiny(answerArray, 4)$string
-    check$point <- AnswerCheckShiny(answerArray, 1)$point
-  })
-  
-  output$answer <- renderText(check$string)
-  
+  observeEvent(input$close, {
+    point <- AnswerCheckShiny(answerArray, input$button)$point
+    stopApp(point)})
 }
 
 shinyQuestion <- function(questionString, answerArray){
   
   uiQuestion <- fluidPage(
+    
     textOutput("context"),
-    textOutput("question"),
-    actionButton("button1", answerArray$answers[1]),
-    actionButton("button2", answerArray$answers[2]),
-    actionButton("button3", answerArray$answers[3]),
-    actionButton("button4", answerArray$answers[4]),
-    textOutput("answer")
-    ,
+    
+    inputPanel(radioButtons("button", label = answerArray$question,
+                            choiceNames = answerArray$answers,
+                            choiceValues = 1:4,
+                            selected = character(0)),
+               
+               actionButton("select", "Select")),
+    actionButton("close", "Close")
+    
   )
+  
+  appQuestion <- shinyApp(uiQuestion, serverQuestion)
+  point <- runApp(appQuestion)
+  
+  return(point)
+}
 
-  shinyApp(uiQuestion, serverQuestion)
+serverInitialise <- function(input, output, session){
+  
+  difficulty <- reactiveValues(concept = NULL, calculation = NULL, update = FALSE)
+  number <- NULL
+  
+  updateFalse <- "Select to have your difficulty automatically adjust to your answers"
+  updateTrue <- "Select to manually adjust your difficulty"
+  
+  observeEvent(input$difficultyUpdate, {
+    difficulty$update = !difficulty$update
+    if(difficulty$update){
+      updateActionButton(inputId = "difficultyUpdate", label = updateTrue)}
+    if(!difficulty$update){
+      updateActionButton(inputId = "difficultyUpdate", label = updateFalse)}
+  })
+  
+  observeEvent(input$numberRandom, {
+    randomNumber <- sample(1:9, 1)
+    updateNumericInput(session = session, inputId = "numberRandom", value = randomNumber)
+  })
+  
+  observeEvent(input$go, {
+    difficulty$concept = input$difficultySelect
+    difficulty$calculation = input$difficultySelect
+    number <- input$numberSelect
+    
+    Initialise <- list(diffConcept = as.numeric(difficulty$concept),
+                       diffCalculation = as.numeric(difficulty$calculation),
+                       diffUpdate = difficulty$update,
+                       number = number)
+    stopApp(Initialise)
+  })
+}
+
+shinyInitialise <- function(){
+    
+  uiInitialise <- fluidPage(
+    
+    inputPanel(radioButtons("difficultySelect", "Choose a difficulty", 
+                            choiceNames = c("Easy", "Medium", "Hard"),
+                            choiceValues = 1:3, selected = 2),
+               actionButton("difficultyUpdate", "Select to have your difficulty automatically adjust to your answers")),
+    inputPanel(numericInput("numberSelect", "Enter question number here", value = 1, min = 1, max = 9),
+               actionButton("numberRandom", "Select to generate a random question number")),
+    actionButton("go", "Go"),
+    
+  )
+  
+  appInitialise <- shinyApp(uiInitialise, serverInitialise)
+  initialiseArray <- runApp(appInitialise)
+  
+  return(initialiseArray)
 }
 
