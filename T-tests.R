@@ -176,7 +176,7 @@ findMu <- function(number, muNaught, tail, difficulty){
                max(mu, 0),
                max(mu, 0),
                max(mu, 120),
-               min(mu, 0),
+               max(mu, 0),
                max(mu, 120))
   
   round(mu, (difficulty - 1))
@@ -261,7 +261,7 @@ ParametersP <- function(number, difficulty){
   sigma <- findSigma(number, pNaught, difficulty)
   
   
-  parameters <- list(n = n, alpha = alpha, p = p/100, pNaught = pNaught/100, sigma = sigma/100, tail = tail)
+  parameters <- list(n = n, alpha = alpha, p = p, pNaught = pNaught, sigma = sigma/100, tail = tail)
 
   return(parameters)
 }
@@ -450,8 +450,8 @@ PrintQuestion <- function(number, type, parameters, questions){
                      c(questions[1, number], tailString,
                        questions[2, number], parameters$n,
                        questions[3, number], parameters$alpha*100,
-                       questions[4, number], parameters$p*100,
-                       questions[5, number], parameters$pNaught,
+                       questions[4, number], parameters$p,
+                       questions[5, number], parameters$pNaught/100,
                        questions[6, number], parameters$sigma, 
                        questions[7, number]), collapse = ""),
                    paste0(
@@ -474,9 +474,9 @@ PrintQuestion <- function(number, type, parameters, questions){
                      c(questions[1, number], parameters$n,
                        questions[2, number], parameters$alpha*100,
                        questions[3, number], tailString, 
-                       questions[4, number], parameters$pNaught*100,
+                       questions[4, number], parameters$pNaught,
                        questions[5, number], parameters$sigma,
-                       questions[6, number], round(parameters$p*parameters$n, 0),
+                       questions[6, number], round(parameters$p*parameters$n/100, 0),
                        questions[7, number]), collapse = ""),
                    paste0(
                      c(questions[1, number], parameters$n,
