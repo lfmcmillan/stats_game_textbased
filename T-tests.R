@@ -261,7 +261,7 @@ ParametersP <- function(number, difficulty){
   sigma <- findSigma(number, pNaught, difficulty)
   
   
-  parameters <- list(n = n, alpha = alpha, p = p, pNaught = pNaught, sigma = sigma/100, tail = tail)
+  parameters <- list(n = n, alpha = alpha, p = p, pNaught = pNaught, sigma = sigma, tail = tail)
 
   return(parameters)
 }
