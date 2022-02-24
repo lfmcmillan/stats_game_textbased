@@ -261,7 +261,7 @@ ParametersP <- function(number, difficulty){
   sigma <- findSigma(number, pNaught, difficulty)
   
   
-  parameters <- list(n = n, alpha = alpha, p = p, pNaught = pNaught, sigma = sigma/100, tail = tail)
+  parameters <- list(n = n, alpha = alpha, p = p, pNaught = pNaught, sigma = sigma, tail = tail)
 
   return(parameters)
 }
@@ -371,6 +371,7 @@ questionStage <- function(parameters, type, difficulty, stage){
                                AskTFormula(type),
                                AskPFormula(parameters, type),
                                AskT(parameters, type),
+                               AskT(parameters, type),
                                switch(solutionMethod,
                                       AskRejectionT(parameters, type),
                                       AskRejectionP(parameters, type))),
@@ -380,11 +381,13 @@ questionStage <- function(parameters, type, difficulty, stage){
                                AskTFormula(type),
                                AskPFormula(parameters, type), 
                                AskT(parameters, type),
+                               AskT(parameters, type),
                                switch(solutionMethod,
                                       AskRejectionT(parameters, type),
                                       AskRejectionP(parameters, type))),
                         switch(stage,
                                AskH1(parameters, type, difficulty$Calculation),
+                               AskT(parameters, type),
                                AskT(parameters, type),
                                switch(solutionMethod,
                                       AskRejectionT(parameters, type),
