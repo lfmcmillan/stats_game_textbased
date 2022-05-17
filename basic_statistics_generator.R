@@ -27,10 +27,10 @@ generate_samples <- function(seed=1, num=2, params=NULL, summary_stats=TRUE) {
                     samples <- mapply(rexp, sizes, 1/means, SIMPLIFY=FALSE)
                 },
                 "truncated exponential"={
-                    samples <- mapply(rtrunc, sizes, spec="exp",
+                    samples <- mapply(rtexp, sizes, 1/means,
                                       a=rep(params$lower_bound,num),
                                       b=rep(params$upper_bound,num),
-                                      1/means, SIMPLIFY=FALSE)
+                                      SIMPLIFY=FALSE)
                 },
                 "normal"={
                     samples <- mapply(rnorm, sizes, means, SDs, SIMPLIFY=FALSE)
@@ -121,19 +121,24 @@ generate_sample_question_set <- function(samples, direction, display_is_plot=TRU
                                  questions."), width=100)
     }
 
-    list(display=display, qna=qna)
+    list(display=display, qna=qna, shuffle=FALSE)
 }
 
 plot_summary_stat_barplots <- function(samples) {
     if(!is.null(dev.list())) dev.off()
+    plots <- list()
 
     num <- length(samples)
+    i <- 0
     for (stat in c("mean","median","min","max")) {
+        i <- i+1
         stat_vals <- unlist(lapply(samples, stat))
 
         barplot(stat_vals, names.arg=names(samples),
                 main=stat, ylab=stat, col="darkblue")
+        plots[[i]] <- recordPlot()
     }
+    plots
 }
 
 table_stats_samples <- function(samples) {
@@ -151,6 +156,10 @@ plot_boxplot <- function(samples, ylab) {
     if(!is.null(dev.list())) dev.off()
 
     boxplot(samples, names=names(samples), col="lightblue", ylab=ylab)
+
+    plots <- list()
+    plots[[1]] <- recordPlot()
+    plots
 }
 
 generate_boxplot_question_set <- function(samples) {
@@ -171,7 +180,7 @@ generate_boxplot_question_set <- function(samples) {
                               the samples. Use the boxplot to answer the
                               following questions."), width=100)
 
-    list(display=display, qna=qna)
+    list(display=display, qna=qna, shuffle=FALSE)
 }
 
 plot_dotplot <- function(samples, xlab) {
@@ -186,6 +195,10 @@ plot_dotplot <- function(samples, xlab) {
     df <- data.frame(y=values, g=sample_names)
 
     stripchart(values ~ sample_names, data=df, xlab=xlab, pch=1, cex=1.3, method="stack")
+
+    plots <- list()
+    plots[[1]] <- recordPlot()
+    plots
 }
 
 generate_dotplot_question_set <- function(samples, direction) {
@@ -217,7 +230,7 @@ generate_dotplot_question_set <- function(samples, direction) {
                               the samples. Use the dot plots to answer the
                               following questions."), width=100)
 
-    list(display=display, qna=qna)
+    list(display=display, qna=qna, shuffle=FALSE)
 }
 
 

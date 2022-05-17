@@ -1,6 +1,9 @@
-generate_user_world <- function(user_name) {
+generate_user_world <- function(username) {
 
-    while (file.exists(paste0(user_name,"_world.Rdata"))) {
+    seed <- sample(1:99999999, 1)
+    set.seed(seed)
+
+    while (file.exists(paste0(username,"_world.Rdata"))) {
         recreate_yesno <- menu(c("Yes","No"),title="World already exists for this username. Recreate?")
         if (recreate_yesno == 2) return()
     }
@@ -43,7 +46,8 @@ generate_user_world <- function(user_name) {
     # sodium=generate_sodium(crop_na),
     # phosphorus=generate_phosphorus(crop_na)
 
-    list(streams=streams, crops=crops,
+    list(seed=seed,
+         streams=streams, crops=crops,
          monthly_weather=monthly_weather, daily_weather=daily_weather,
          shelter_materials=shelter_materials,
          trauma_assessments=trauma_assessments, fruit_rot=fruit_rot)
@@ -182,7 +186,7 @@ generate_shelter_material_params <- function(most_effective_idx) {
 }
 
 generate_trauma_assessments <- function() {
-    psychologist_assessments <- rtgamma(30, shape=2.8, scale=0.5, truncation=10)
+    psychologist_assessments <- rtgamma(30, shape=2.8, scale=0.5, b=10)
     slope_param <- runif(1,0.6,1.3)
     self_assessments <- -0.5 + slope_param*psychologist_assessments + rnorm(30, 0, 1.5)
 

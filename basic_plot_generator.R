@@ -61,13 +61,12 @@ generate_weather_year_question <- function(series) {
     years <- unique(series$df$year)
     if (series$direction == "highest") {
         max_val <- max(vals)
-        answers <- series$df$year[vals == max_val]
+        answers <- unique(series$df$year[vals == max_val])
     } else {
         min_val <- min(vals)
-        answers <- series$df$year[vals == min_val]
+        answers <- unique(series$df$year[vals == min_val])
     }
     distractors <- years[!(years %in% answers)]
-
     list(question=question, answers=answers, distractors=distractors)
 }
 
@@ -93,11 +92,61 @@ generate_weather_month_question <- function(series) {
     list(question=question, answers=answers, distractors=distractors)
 }
 
+plot_weather_plots <- function(weather) {
+    plots <- list()
+    for (i in 1:length(weather)) {
+        plot_weather_timeseries(weather[[i]])
+        plots[[i]] <- recordPlot()
+    }
+    plots
+}
+
+generate_weather_questions <- function(weather) {
+    nquestion_type <- 3
+    nweather <- length(weather)
+    # correct_answer <- rep(NA, nweather*nquestion_type)
+    qna <- list()
+    q <- 0
+    for (i in 1:nweather) {
+
+        # plot_weather_timeseries(weather[[i]])
+
+        for (j in 1:nquestion_type) {
+            q <- q+1
+            qna[[q]] <- switch(j,
+                               generate_weather_value_question(weather[[i]]),
+                               generate_weather_year_question(weather[[i]]),
+                               generate_weather_month_question(weather[[i]]))
+
+            # if (j == 2) {
+            #     displayed_answers <- sort(c(qna$answers,qna$distractors))
+            # } else {
+            #     displayed_answers <- shuffle_answers(c(qna$answers,qna$distractors))
+            # }
+            # user_response <- menu(displayed_answers,title=qna$question)
+            # if (displayed_answers[user_response] %in% qna$answers) {
+            #     correct_answer[(i-1)*nquestion_type+j] <- TRUE
+            #     writeLines(correct_answer_text)
+            # } else {
+            #     correct_answer[(i-1)*nquestion_type+j] <- FALSE
+            #     writeLines(wrong_answer_text)
+            # }
+        } ## End of this question
+    } ## End of qna for this weather plot
+
+    shuffle <- rep(TRUE,nweather*nquestion_type)
+    shuffle[(2+(0:(nweather-1))*nquestion_type)] <- FALSE
+
+    # correct_answer
+    list(display="", qna=qna, shuffle=shuffle)
+}
+
 show_weather_questions <- function(weather) {
     nquestion_type <- 3
     nweather <- length(weather)
     correct_answer <- rep(NA, nweather*nquestion_type)
     for (i in 1:nweather) {
+
         plot_weather_timeseries(weather[[i]])
 
         for (j in 1:nquestion_type) {
@@ -130,6 +179,10 @@ plot_scatterplot <- function(scatter_data) {
 
     plot(scatter_data$x, scatter_data$y, xlab=scatter_data$xlab,
          ylab=scatter_data$ylab)
+
+    plots <- list()
+    plots[[1]] <- recordPlot()
+    plots
 }
 
 generate_scatterplot_question_set <- function(scatter_data, linear) {
@@ -179,13 +232,17 @@ generate_scatterplot_question_set <- function(scatter_data, linear) {
         qna <- list(list(question=linearity_question, answers=linearity_answers,
                          distractors=linearity_distractors))
     }
-    list(display="",qna=qna)
+    list(display="",qna=qna, shuffle=TRUE)
 }
 
 plot_histogram <- function(hist_data) {
     if(!is.null(dev.list())) dev.off()
 
     hist(hist_data$df$value, xlab=hist_data$xlab, main=hist_data$plot_title, col="lightblue")
+
+    plots <- list()
+    plots[[1]] <- recordPlot()
+    plots
 }
 
 generate_histogram_question_set <- function(hist_data) {
@@ -245,7 +302,7 @@ generate_histogram_question_set <- function(hist_data) {
                        distractors=skewed_distractors)
 
     qna <- list(mode_qna, min_qna, max_qna, skewed_qna)
-    list(display="",qna=qna)
+    list(display="",qna=qna, shuffle=TRUE)
 }
 
 shuffle_answers <- function(answers) {

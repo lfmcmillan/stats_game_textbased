@@ -7,42 +7,42 @@ library(cli)
 library(greekLetters)
 library(RColorBrewer)
 library(truncnorm)
-library(truncdist)
+library(TruncatedDistributions)
 library(heavy) # For the truncated gamma distribution functions
 
 game <- function(first_level=1) {
     user_response <- menu(c("New user","Load user"),
                           title=welcome_question)
     if (user_response == 1) {
-        user_name <- create_user(first_level)
+        username <- create_user(first_level)
     } else if (user_response == 2) {
-        user_name <- load_user()
+        username <- load_user()
     }
 
     quit <- FALSE
     while (!quit) {
-        quit <- run_level(user_name)
+        quit <- run_level(username)
     }
 
     return("Game Complete!")
 }
 
 create_user <- function(first_level) {
-    user_name <- readline(prompt="Please enter the username you want:")
+    username <- readline(prompt="Please enter the username you want:")
 
-    while (file.exists(paste0(user_name,".Rdata"))) {
-        user_name <- readline(prompt="Sorry, that username already exists. Please enter a different one:")
+    while (file.exists(paste0(username,".Rdata"))) {
+        username <- readline(prompt="Sorry, that username already exists. Please enter a different one:")
     }
 
-    cat(paste("Thanks! Creating new user",user_name,"now.\n"))
+    cat(paste("Thanks! Creating new user",username,"now.\n"))
     progress <- setup_user_progress()
 
-    world <- generate_user_world(user_name)
-    save(progress,world,file=paste0(user_name,".Rdata"))
+    world <- generate_user_world(username)
+    save(progress,world,file=paste0(username,".Rdata"))
 
-    intro(user_name, progress, world, first_level)
+    intro(username, progress, world, first_level)
 
-    user_name
+    username
 }
 
 setup_user_progress <- function() {
@@ -51,7 +51,7 @@ setup_user_progress <- function() {
          percent_correct_basic_stats=0)
 }
 
-intro <- function(user_name, progress, world, first_level=1) {
+intro <- function(username, progress, world, first_level=1) {
     show_text(intro_text)
 
     readline(prompt="Please press [Enter] to continue")
@@ -59,27 +59,27 @@ intro <- function(user_name, progress, world, first_level=1) {
 
     progress$done_intro <- TRUE
     progress$level <- first_level
-    save(progress, world, file=paste0(user_name,".Rdata"))
+    save(progress, world, file=paste0(username,".Rdata"))
 }
 
 load_user <- function() {
-    user_name <- readline(prompt="Please enter the username to load:")
+    username <- readline(prompt="Please enter the username to load:")
 
-    if (!file.exists(paste0(user_name,".Rdata"))) {
+    if (!file.exists(paste0(username,".Rdata"))) {
         user_response <- menu(c("New user","Load user"),
                               title="Sorry, no user found with that username. Please try a different username or create a new one:")
         if (user_response == 1) {
-            user_name <- create_user()
+            username <- create_user()
         } else if (user_response == 2) {
-            user_name <- load_user()
+            username <- load_user()
         }
     }
 
-    user_name
+    username
 }
 
-run_level <- function(user_name) {
-    load(paste0(user_name,".Rdata"))
+run_level <- function(username) {
+    load(paste0(username,".Rdata"))
 
     quit <- FALSE
 
@@ -124,17 +124,20 @@ run_level <- function(user_name) {
                quit <- TRUE
            })
 
-    if (progress$level <= max_level) update_progress(user_name, progress, world, correct_answer)
+    if (progress$level <= max_level) update_progress(username, progress, world, correct_answer)
     writeLines(cli::rule(line = 2))
     quit
 }
 
-update_progress <- function(user_name, progress, world, correct_answer) {
+update_progress <- function(username, progress, world, correct_answer) {
+
+    ## THIS IS WRONG! DOESN'T ACCUMULATE OVER MULTIPLE LEVELS!!
+
     percent_correct <- sum(correct_answer)/length(correct_answer)*100
     progress$level <- progress$level+1
     progress$percent_correct_overall <- percent_correct
     progress$percent_correct_basic_stats <- percent_correct
-    save(progress, world, file=paste0(user_name,".Rdata"))
+    save(progress, world, file=paste0(username,".Rdata"))
 }
 
 show_text <- function(display_text) {
