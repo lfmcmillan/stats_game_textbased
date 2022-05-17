@@ -271,18 +271,20 @@ ParametersDiff <- function(number, difficulty){
     alpha <- findAlpha(difficulty)
 
     n <- findN(difficulty)
+    n2 <- findN(difficulty)
 
     tail <- findTail(difficulty)
 
     muNought <- findMu0(number, difficulty)
+    muNought2 <- findMu2(number, muNought, tail, difficulty)
 
     mu <- findMu(number, muNought, tail, difficulty)
+    mu2 <- findMu(number, muNought2, tail, difficulty)
 
-    mu2 <- findMu2(number, mu, tail, difficulty)
+    s <- findSigma(number, muNought, difficulty)
+    s2 <- findSigma(number, muNought2, difficulty)
 
-    sigmaDiff <- findSigma(number, muNought, difficulty)
-
-    parameters <- list(n = n, alpha = alpha, mu = mu, mu2 = mu2, sigmaDiff = sigmaDiff, tail = tail)
+    parameters <- list(n = n, n2 = n2, alpha = alpha, muNought = muNought, muNought2 = muNought2, mu = mu, mu2 = mu2, s = s, s2 = s2, tail = tail)
 
     return(parameters)
 }
@@ -529,6 +531,14 @@ AnswerCheck <- function(answerArray){
 
 }
 
+calcT <- function(parameters, type) {
+    switch(type,
+           (parameters$mu - parameters$muNought)/(parameters$sigma/sqrt(parameters$n)),
+           (parameters$p - parameters$pNought)/(parameters$sigma/sqrt(parameters$n)),
+           (parameters$mu - parameters$mu2)/sqrt(parameters$s^2/parameters$n+parameters$s2^2/parameters$n)
+    )
+}
+
 AskParameter <- function(type){
     library("greekLetters")
 
@@ -538,8 +548,6 @@ AskParameter <- function(type){
                              c("n", "alpha", "mu", "mu2", "sigmaDiff", "SigmaSquared"))
 
     parameterIndex <- sample(1:length(parameterNames), 1)
-
-
 
     QuestionString <- paste0("What is ", switch(type,
                                                   switch(parameterIndex,
@@ -745,27 +753,27 @@ AskTFormula <- function(type){
     QuestionString <- paste0("How do you calculate t for a ", typeString, " t-test?")
 
     Answer1 <- switch(type,
-                      paste0("(xbar - ", greeks("mu"), "\u2080)/(", greeks("sigma"), "/\U221an)"),
-                      paste0("(sample_p - ", greeks("p"), "\u2080)/(", greeks("sigma"), "/\U221an)"),
-                      paste0("(xbar\u2081 - xbar\u2082)/(", greeks("sigma"), "/\U221an)")
+                      paste0("(xbar - ", greeks("mu"), "\u2080)/(s/\U221an)"),
+                      paste0("(sample_p - ", greeks("p"), "\u2080)/(s/\U221an)"),
+                      paste0("(xbar\u2081 - xbar\u2082)/\U221a(s\u2081\u00B2/n\u2081+s\u2082\u00B2/n\u2082)")
     )
 
     Answer2 <- switch(type,
-                      paste0("(xbar -",greeks("mu"), " - ", greeks("mu"), "\u2080)/(", greeks("sigma"), "\U00b2/n)"),
-                      paste0("(sample_p - ", greeks("p"), "\u2080)/(", greeks("sigma"), "\U00b2/\U221an)"),
-                      paste0("(xbar\u2081 - xbar\u2082)/(", greeks("sigma"), "\U00b2/n)")
+                      paste0("(xbar -",greeks("mu"), " - ", greeks("mu"), "\u2080)/(s\U00b2/n)"),
+                      paste0("(sample_p - ", greeks("p"), "\u2080)/(s\U00b2/\U221an)"),
+                      paste0("(xbar\u2081 - xbar\u2082)/(s\U00b2/n)")
     )
 
     Answer3 <- switch(type,
-                      paste0("(xbar - ", greeks("mu"), "\u2080)/", greeks("sigma")),
-                      paste0("(sample_p - ", greeks("p"), "\u2080)/", greeks("sigma")),
-                      paste0("(xbar\u2081 - xbar\u2082)/", greeks("sigma"))
+                      paste0("(xbar - ", greeks("mu"), "\u2080)/s"),
+                      paste0("(sample_p - ", greeks("p"), "\u2080)/s"),
+                      paste0("(xbar\u2081 - xbar\u2082)/(s\u2081 - s\u2082)")
     )
 
     Answer4 <- switch(type,
-                      paste0("xbar/(", greeks("sigma"), "\U221an)"),
-                      paste0("sample_p/(", greeks("sigma"), "\U221an)"),
-                      paste0("xbar\u2081/(", greeks("sigma"), "\U221an)")
+                      paste0("xbar/(s\U221an)"),
+                      paste0("sample_p/(s\U221an)"),
+                      paste0("xbar\u2081/(s\u2081\U221an)")
     )
 
     AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
@@ -842,17 +850,13 @@ AskT <- function(parameters, type){
 
     QuestionString <- paste0('What is T?')
 
-    Answer1 <- round(switch(type,
-                            (parameters$mu - parameters$muNought)/(parameters$sigma/(parameters$n^0.5)),
-                            (parameters$p - parameters$pNought)/(parameters$sigma/(parameters$n^0.5)),
-                            (parameters$mu - parameters$mu2)/(parameters$sigmaDiff/(parameters$n^0.5))
-    ), 2)
+    Answer1 <- signif(calcT(parameters, type),2)
 
-    Answer2 <- round(sample(c(1, -1), 1)*runif(1, 0.95, 1.1)*Answer1, 2)
+    Answer2 <- signif(sample(c(1, -1), 1)*runif(1, 0.95, 1.1)*Answer1, 2)
 
-    Answer3 <- round(sample(c(1, -1), 1)*runif(1, 0.9, 1.05)*Answer1, 2)
+    Answer3 <- signif(sample(c(1, -1), 1)*runif(1, 0.9, 1.05)*Answer1, 2)
 
-    Answer4 <- round(sample(c(1, -1), 1)*runif(1, 0.95, 1.05)*Answer1, 2)
+    Answer4 <- signif(sample(c(1, -1), 1)*runif(1, 0.95, 1.05)*Answer1, 2)
 
     AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
     AnswersIndex = sample(c(1, 2, 3, 4), 4)
@@ -871,11 +875,7 @@ AskT <- function(parameters, type){
 
 AskRejectionT <- function(parameters, type){
 
-    t <- switch(type,
-                (parameters$mu - parameters$muNought)/(parameters$sigma/(parameters$n^0.5)),
-                (parameters$p - parameters$pNought)/(parameters$sigma/(parameters$n^0.5)),
-                (parameters$mu - parameters$mu2)/(parameters$sigmaDiff/(parameters$n^0.5))
-    )
+    t <- calcT(parameters, type)
 
     probT <- switch(parameters$tail,
                     1 - parameters$alpha,
@@ -931,11 +931,7 @@ AskRejectionT <- function(parameters, type){
 
 AskRejectionP <- function(parameters, type){
 
-    t <- switch(type,
-                (parameters$mu - parameters$muNought)/(parameters$sigma/(parameters$n^0.5)),
-                (parameters$p - parameters$pNought)/(parameters$sigma/(parameters$n^0.5)),
-                (parameters$mu - parameters$mu2)/(parameters$sigmaDiff/(parameters$n^0.5))
-    )
+    t <- calcT(parameters, type)
 
     probP <- switch(parameters$tail,
                     1 - parameters$alpha,
