@@ -441,79 +441,70 @@ PrintQuestion <- function(number, type, parameters, questions){
     )
 
     string <- switch(number,
-                     paste0(
-                         c(questions[1, number], tailString,
+                     paste0(questions[1, number], tailString,
                            questions[2, number], parameters$n,
                            questions[3, number], parameters$alpha*100,
                            questions[4, number], parameters$mu,
                            questions[5, number], parameters$muNought,
                            questions[6, number], parameters$sigma,
-                           questions[7, number]), collapse = ""),
-                     paste0(
-                         c(questions[1, number], tailString,
+                           questions[7, number]),
+                     paste0(questions[1, number], tailString,
                            questions[2, number], parameters$n,
                            questions[3, number], parameters$alpha*100,
                            questions[4, number], parameters$p,
                            questions[5, number], parameters$pNought/100,
                            questions[6, number], parameters$sigma,
-                           questions[7, number]), collapse = ""),
-                     paste0(
-                         c(questions[1, number], tailString,
+                           questions[7, number]),
+                     paste0(questions[1, number], tailString,
                            questions[2, number], parameters$n,
                            questions[3, number], parameters$alpha*100,
                            questions[4, number], parameters$mu,
                            questions[5, number], parameters$mu2,
                            questions[6, number],  parameters$sigmaDiff,
-                           questions[7, number]), collapse = ""),
-                     paste0(
-                         c(questions[1, number], parameters$n,
+                           questions[7, number]),
+                     paste0(questions[1, number], parameters$n,
                            questions[2, number], parameters$alpha,
                            questions[3, number], tailString,
                            questions[4, number], parameters$mu,
                            questions[5, number], parameters$muNought,
                            questions[6, number], parameters$sigma,
-                           questions[7, number]), collapse = ""),
-                     paste0(
-                         c(questions[1, number], parameters$n,
+                           questions[7, number]),
+                     paste0(questions[1, number], parameters$n,
                            questions[2, number], parameters$alpha*100,
                            questions[3, number], tailString,
                            questions[4, number], parameters$pNought,
                            questions[5, number], parameters$sigma,
                            questions[6, number], round(parameters$p*parameters$n/100, 0),
-                           questions[7, number]), collapse = ""),
-                     paste0(
-                         c(questions[1, number], parameters$n,
+                           questions[7, number]),
+                     paste0(questions[1, number], parameters$n,
                            questions[2, number], parameters$alpha*100,
                            questions[3, number], tailString,
                            questions[4, number], parameters$mu2,
                            questions[5, number], parameters$mu,
                            questions[6, number], parameters$sigmaDiff,
-                           questions[7, number]), collapse = ""),
-                     paste0(
-                         c(questions[1, number], tailString,
+                           questions[7, number]),
+                     paste0(questions[1, number], tailString,
                            questions[2, number], parameters$alpha*100,
                            questions[3, number], parameters$n,
                            questions[4, number], parameters$mu,
                            questions[5, number], parameters$muNought,
                            questions[6, number], parameters$sigma,
-                           questions[7, number]), collapse = ""),
-                     paste0(
-                         c(questions[1, number], tailString,
+                           questions[7, number]),
+                     paste0(questions[1, number], tailString,
                            questions[2, number], parameters$alpha*100,
                            questions[3, number], parameters$n,
                            questions[4, number], parameters$p,
                            questions[5, number], tailString,
                            questions[6, number], parameters$pNought,
                            questions[7, number], parameters$sigma,
-                           questions[8, number]), collapse = ""),
-                     paste0(
-                         c(questions[1, number], tailString,
+                           questions[8, number]),
+                     paste0(questions[1, number], tailString,
                            questions[2, number], parameters$alpha*100,
                            questions[3, number], parameters$n,
                            questions[4, number], parameters$mu,
                            questions[5, number], parameters$mu2,
                            questions[6, number], parameters$sigmaDiff,
-                           questions[7, number]), collapse = "")
+                           questions[7, number])
     )
 
     return(noquote(string))
@@ -527,11 +518,11 @@ AnswerCheck <- function(answerArray){
 
     correctString <- ifelse(result == "Incorrect",
                             switch(length(answerArray$correct),
-                                   paste0(c("The correct answer is ", answerArray$correct), collapse = ""),
-                                   paste0(c("The correct answer is ", answerArray$correct[1], " or ", answerArray$correct[2]), collapse = "")),
+                                   paste0("The correct answer is ", answerArray$correct),
+                                   paste0("The correct answer is ", answerArray$correct[1], " or ", answerArray$correct[2])),
                             "")
 
-    answerString <- noquote(paste0(c(result, ". ", correctString), collapse = ""))
+    answerString <- noquote(paste0(result, ". ", correctString))
 
     checkArray <- list(string = answerString, point = ifelse(result == "Incorrect", 0, 1))
     return(checkArray)
@@ -550,29 +541,29 @@ AskParameter <- function(type){
 
 
 
-    QuestionString <- paste0(c("What is ", switch(type,
+    QuestionString <- paste0("What is ", switch(type,
                                                   switch(parameterIndex,
                                                          "n",
                                                          greeks("alpha"),
                                                          greeks("mu"),
-                                                         paste0(c(greeks("mu"), "\u2080"), collapse = ""),
+                                                         paste0(greeks("mu"), "\u2080"),
                                                          greeks("sigma"),
-                                                         paste0(c(greeks("sigma"), "\u00B2"), collapse = "")),
+                                                         paste0(greeks("sigma"), "\u00B2")),
                                                   switch(parameterIndex,
                                                          "n",
                                                          greeks("alpha"),
                                                          "p",
-                                                         paste0(c("p", "\u2080"), collapse = ""),
+                                                         "p\u2080"),
                                                          greeks("sigma"),
-                                                         paste0(c(greeks("sigma"), "\u00B2"), collapse = "")),
+                                                         paste0(greeks("sigma"), "\u00B2")),
                                                   switch(parameterIndex,
                                                          "n",
                                                          greeks("alpha"),
-                                                         paste0(c(greeks("mu"), "\u2081"), collapse = ""),
-                                                         paste0(c(greeks("mu"), "\u2082"), collapse = ""),
+                                                         paste0(greeks("mu"), "\u2081"),
+                                                         paste0(greeks("mu"), "\u2082"),
                                                          greeks("sigma"),
-                                                         paste0(c(greeks("sigma"), "\u00B2"), collapse = ""))),
-                               "?"), collapse = "")
+                                                         paste0(greeks("sigma"), "\u00B2")),
+                               "?")
 
     Answer1 <- switch(type,
                       switch(parameterIndex,
@@ -635,6 +626,7 @@ AskParameter <- function(type){
     Answers <- c(AnswersBase[AnswersIndex[1]], AnswersBase[AnswersIndex[2]], AnswersBase[AnswersIndex[3]], AnswersBase[AnswersIndex[4]])
 
     correctAnswer <- Answer1
+
     correctAnswerIndex <- which(Answers == correctAnswer)
 
     answerArray = list(question = QuestionString,
@@ -647,43 +639,30 @@ AskParameter <- function(type){
 
 AskH0 <- function(parameters, type, difficulty){
 
-    QuestionString <- paste0(c("What is H", "\u2080", "?"), collapse = "")
-
+    QuestionString <- paste0("What is H", "\u2080", "?")
 
     Answer1 <- switch(type,
-                      paste0(
-                          c(greeks("mu"), " = ", parameters$muNought), collapse = ""),
-                      paste0(
-                          c("p\u2080", " = ", parameters$pNought), collapse = ""),
-                      paste0(
-                          c(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082"), collapse = "")
+                      paste0(greeks("mu"), " = ", parameters$muNought),
+                      paste0("p\u2080", " = ", parameters$pNought),
+                      paste0(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082")
     )
 
     Answer2 <- switch(type,
-                      paste0(
-                          c(greeks("mu"), " < ", parameters$muNought), collapse = ""),
-                      paste0(
-                          c("p\u2080", " < ", parameters$pNought), collapse = ""),
-                      paste0(
-                          c(greeks("mu"), "\u2081", " < ", greeks("mu"), "\u2082"), collapse = "")
+                      paste0(greeks("mu"), " < ", parameters$muNought),
+                      paste0("p\u2080", " < ", parameters$pNought),
+                      paste0(greeks("mu"), "\u2081", " < ", greeks("mu"), "\u2082")
     )
 
     Answer3 <- switch(type,
-                      paste0(
-                          c(greeks("mu"), " > ", parameters$muNought), collapse = ""),
-                      paste0(
-                          c("p\u2080", " > ", parameters$pNought), collapse = ""),
-                      paste0(
-                          c(greeks("mu"), "\u2081", " > ", greeks("mu"), "\u2082"), collapse = "")
+                      paste0(greeks("mu"), " > ", parameters$muNought),
+                      paste0("p\u2080", " > ", parameters$pNought),
+                      paste0(greeks("mu"), "\u2081", " > ", greeks("mu"), "\u2082")
     )
 
     Answer4 <- switch(type,
-                      paste0(
-                          c(greeks("mu"), " =/= ", parameters$muNought), collapse = ""),
-                      paste0(
-                          c("p\u2080", " =/= ", parameters$pNought), collapse = ""),
-                      paste0(
-                          c(greeks("mu"), "\u2081", " =/= ", greeks("mu"), "\u2082"), collapse = "")
+                      paste0(greeks("mu"), " =/= ", parameters$muNought),
+                      paste0("p\u2080", " =/= ", parameters$pNought),
+                      paste0(greeks("mu"), "\u2081", " =/= ", greeks("mu"), "\u2082")
     )
 
     AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
@@ -691,6 +670,7 @@ AskH0 <- function(parameters, type, difficulty){
     Answers <- c(AnswersBase[AnswersIndex[1]], AnswersBase[AnswersIndex[2]], AnswersBase[AnswersIndex[3]], AnswersBase[AnswersIndex[4]])
 
     correctAnswer <- Answer1
+
     correctAnswerIndex <- which(Answers == correctAnswer)
 
     answerArray = list(question = QuestionString,
@@ -704,57 +684,39 @@ AskH0 <- function(parameters, type, difficulty){
 AskH1 <- function(parameters, type, difficulty){
 
     H0String <- switch(type,
-                       paste0(
-                           c(greeks("mu"), " = ", parameters$muNought), collapse = ""),
-                       paste0(
-                           c("p\u2080", " = ", parameters$pNought), collapse = ""),
-                       paste0(
-                           c(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082"), collapse = "")
+                       paste0(greeks("mu"), " = ", parameters$muNought),
+                       paste0("p\u2080", " = ", parameters$pNought),
+                       paste0(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082")
     )
 
     QuestionString <- switch(difficulty,
-                             paste0(
-                                 c("H", "\u2080", " is ", H0String, ". What is H", "\u2081", "?"), collapse = ""),
-                             paste0(
-                                 c("H", "\u2080", " is ", H0String, ". What is H", "\u2081", "?"), collapse = ""),
-                             paste0(
-                                 c("What is H", "\u2081", "?"), collapse = "")
+                             paste0("H", "\u2080", " is ", H0String, ". What is H", "\u2081", "?"),
+                             paste0("H", "\u2080", " is ", H0String, ". What is H", "\u2081", "?"),
+                             paste0("What is H", "\u2081", "?")
     )
 
     Answer1 <- switch(type,
-                      paste0(
-                          c(greeks("mu"), " = ", parameters$muNought), collapse = ""),
-                      paste0(
-                          c("p\u2080", " = ", parameters$pNought), collapse = ""),
-                      paste0(
-                          c(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082"), collapse = "")
+                      paste0(greeks("mu"), " = ", parameters$muNought),
+                      paste0("p\u2080", " = ", parameters$pNought),
+                      paste0(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082")
     )
 
     Answer2 <- switch(type,
-                      paste0(
-                          c(greeks("mu"), " < ", parameters$muNought), collapse = ""),
-                      paste0(
-                          c("p\u2080", " < ", parameters$pNought), collapse = ""),
-                      paste0(
-                          c(greeks("mu"), "\u2081", " < ", greeks("mu"), "\u2082"), collapse = "")
+                      paste0(greeks("mu"), " < ", parameters$muNought),
+                      paste0("p\u2080", " < ", parameters$pNought),
+                      paste0(greeks("mu"), "\u2081", " < ", greeks("mu"), "\u2082")
     )
 
     Answer3 <- switch(type,
-                      paste0(
-                          c(greeks("mu"), " > ", parameters$muNought), collapse = ""),
-                      paste0(
-                          c("p\u2080", " > ", parameters$pNought), collapse = ""),
-                      paste0(
-                          c(greeks("mu"), "\u2081", " > ", greeks("mu"), "\u2082"), collapse = "")
+                      paste0(greeks("mu"), " > ", parameters$muNought),
+                      paste0("p\u2080", " > ", parameters$pNought),
+                      paste0(greeks("mu"), "\u2081", " > ", greeks("mu"), "\u2082")
     )
 
     Answer4 <- switch(type,
-                      paste0(
-                          c(greeks("mu"), " =/= ", parameters$muNought), collapse = ""),
-                      paste0(
-                          c("p\u2080", " =/= ", parameters$pNought), collapse = ""),
-                      paste0(
-                          c(greeks("mu"), "\u2081", " =/= ", greeks("mu"), "\u2082"), collapse = "")
+                      paste0(greeks("mu"), " =/= ", parameters$muNought),
+                      paste0("p\u2080", " =/= ", parameters$pNought),
+                      paste0(greeks("mu"), "\u2081", " =/= ", greeks("mu"), "\u2082")
     )
 
     AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
@@ -780,8 +742,7 @@ AskTFormula <- function(type){
                          "proportion",
                          "paired")
 
-    QuestionString <- paste0(c("How do you calculate t for a ", typeString, " t-test"), collapse = "")
-
+    QuestionString <- paste0("How do you calculate t for a ", typeString, " t-test?")
 
     Answer1 <- switch(type,
                       paste0(
@@ -937,27 +898,25 @@ AskRejectionT <- function(parameters, type){
     solution <- ifelse(abs(t) > abs(criticalT), 1, 2)
 
     if(parameters$tail == 3){
-        criticalT <- paste0(c("\u00B1", abs(criticalT)), collapse = "")}
+        criticalT <- paste0("\u00B1", abs(criticalT))}
 
-    QuestionString <- paste0(
-        c("If the critical value for the test statistic is ", criticalT, ", what is the conclusion"),
-        collapse = "")
+    QuestionString <- paste0("If the critical value for the test statistic is ", criticalT, ", what is the conclusion?")
 
     Answer1 <- switch(solution,
                       "Reject H\u2080",
-                      " Reject H\u2081")
+                      "Reject H\u2081")
 
     Answer2 <- switch(solution,
                       "Accept H\u2081",
-                      " Accept H\u2080")
+                      "Accept H\u2080")
 
     Answer3 <- switch(solution,
                       "Reject H\u2081",
-                      " Reject H\u2080")
+                      "Reject H\u2080")
 
     Answer4 <- switch(solution,
                       "Accept H\u2080",
-                      " Accept H\u2081")
+                      "Accept H\u2081")
 
     AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
     AnswersIndex = sample(c(1, 2, 3, 4), 4)
@@ -998,25 +957,23 @@ AskRejectionP <- function(parameters, type){
 
     solution <- ifelse(abs(probP) > abs(criticalP), 1, 2)
 
-    QuestionString <- paste0(
-        c("If the P-value is ", criticalP, ", what is the conclusion"),
-        collapse = "")
+    QuestionString <- paste0("If the P-value is ", criticalP, ", what is the conclusion?")
 
     Answer1 <- switch(solution,
                       "Reject H\u2080",
-                      " Reject H\u2081")
+                      "Reject H\u2081")
 
     Answer2 <- switch(solution,
                       "Accept H\u2081",
-                      " Accept H\u2080")
+                      "Accept H\u2080")
 
     Answer3 <- switch(solution,
                       "Reject H\u2081",
-                      " Reject H\u2080")
+                      "Reject H\u2080")
 
     Answer4 <- switch(solution,
                       "Accept H\u2080",
-                      " Accept H\u2081")
+                      "Accept H\u2081")
 
     AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
     AnswersIndex = sample(c(1, 2, 3, 4), 4)
