@@ -111,7 +111,7 @@ findN <- function(difficulty){
 
 findMu0 <- function(number, difficulty){
 
-    muNaught <- switch(difficulty,
+    muNought <- switch(difficulty,
                        switch(number,
                               sample(c(70, 75, 80), 1),
                               sample(c(70, 75, 80), 1),
@@ -150,10 +150,10 @@ findMu0 <- function(number, difficulty){
                               round(runif(1, 60, 120), 2))
     )
 
-    return(muNaught)
+    return(muNought)
 }
 
-findMu <- function(number, muNaught, tail, difficulty){
+findMu <- function(number, muNought, tail, difficulty){
 
     tailVar <- switch(tail,
                       -1,
@@ -165,7 +165,7 @@ findMu <- function(number, muNaught, tail, difficulty){
                             sample(c(0.05, 0.1, 0.15), 1),
                             round(runif(1, 0.01, 0.2), 2))
 
-    mu <- muNaught*(1 + tailVar*difficultyVar)
+    mu <- muNought*(1 + tailVar*difficultyVar)
 
     # Confirm that generated number fits context
     mu <- switch(number,
@@ -194,7 +194,7 @@ findMu2 <- function(number, mu, tail, difficulty){
 
 }
 
-findSigma <- function(number, muNaught, difficulty){
+findSigma <- function(number, muNought, difficulty){
 
     difficultyVar <- switch(difficulty,
                             sample(c(0.9, 0.95, 1, 1.05, 1.1), 1),
@@ -202,15 +202,15 @@ findSigma <- function(number, muNaught, difficulty){
                             runif(1, 0.8, 1.2))
 
     numberVar <- switch(number,
-                        100 - muNaught,
-                        100 - muNaught,
-                        100 - muNaught,
-                        muNaught,
-                        muNaught,
-                        muNaught,
-                        120 - muNaught,
-                        muNaught,
-                        120 - muNaught)
+                        100 - muNought,
+                        100 - muNought,
+                        100 - muNought,
+                        muNought,
+                        muNought,
+                        muNought,
+                        120 - muNought,
+                        muNought,
+                        120 - muNought)
 
     sigma <- round(difficultyVar*numberVar, max(difficulty - 1, 1))
 
@@ -235,13 +235,13 @@ ParametersMu <- function(number, difficulty){
 
     tail <- findTail(difficulty)
 
-    muNaught <- findMu0(number, difficulty)
+    muNought <- findMu0(number, difficulty)
 
-    mu <- findMu(number, muNaught, tail, difficulty)
+    mu <- findMu(number, muNought, tail, difficulty)
 
-    sigma <- findSigma(number, muNaught, difficulty)
+    sigma <- findSigma(number, muNought, difficulty)
 
-    parameters <- list(n = n, alpha = alpha, mu = mu, muNaught = muNaught, sigma = sigma, tail = tail)
+    parameters <- list(n = n, alpha = alpha, mu = mu, muNought = muNought, sigma = sigma, tail = tail)
 
     return(parameters)
 }
@@ -254,14 +254,14 @@ ParametersP <- function(number, difficulty){
 
     tail <- findTail(difficulty)
 
-    pNaught <- findMu0(number, difficulty)
+    pNought <- findMu0(number, difficulty)
 
-    p <- findMu(number, pNaught, tail, difficulty)
+    p <- findMu(number, pNought, tail, difficulty)
 
-    sigma <- findSigma(number, pNaught, difficulty)
+    sigma <- findSigma(number, pNought, difficulty)
 
 
-    parameters <- list(n = n, alpha = alpha, p = p, pNaught = pNaught, sigma = sigma, tail = tail)
+    parameters <- list(n = n, alpha = alpha, p = p, pNought = pNought, sigma = sigma, tail = tail)
 
     return(parameters)
 }
@@ -274,13 +274,13 @@ ParametersDiff <- function(number, difficulty){
 
     tail <- findTail(difficulty)
 
-    muNaught <- findMu0(number, difficulty)
+    muNought <- findMu0(number, difficulty)
 
-    mu <- findMu(number, muNaught, tail, difficulty)
+    mu <- findMu(number, muNought, tail, difficulty)
 
     mu2 <- findMu2(number, mu, tail, difficulty)
 
-    sigmaDiff <- findSigma(number, muNaught, difficulty)
+    sigmaDiff <- findSigma(number, muNought, difficulty)
 
     parameters <- list(n = n, alpha = alpha, mu = mu, mu2 = mu2, sigmaDiff = sigmaDiff, tail = tail)
 
@@ -446,7 +446,7 @@ PrintQuestion <- function(number, type, parameters, questions){
                            questions[2, number], parameters$n,
                            questions[3, number], parameters$alpha*100,
                            questions[4, number], parameters$mu,
-                           questions[5, number], parameters$muNaught,
+                           questions[5, number], parameters$muNought,
                            questions[6, number], parameters$sigma,
                            questions[7, number]), collapse = ""),
                      paste0(
@@ -454,7 +454,7 @@ PrintQuestion <- function(number, type, parameters, questions){
                            questions[2, number], parameters$n,
                            questions[3, number], parameters$alpha*100,
                            questions[4, number], parameters$p,
-                           questions[5, number], parameters$pNaught/100,
+                           questions[5, number], parameters$pNought/100,
                            questions[6, number], parameters$sigma,
                            questions[7, number]), collapse = ""),
                      paste0(
@@ -470,14 +470,14 @@ PrintQuestion <- function(number, type, parameters, questions){
                            questions[2, number], parameters$alpha,
                            questions[3, number], tailString,
                            questions[4, number], parameters$mu,
-                           questions[5, number], parameters$muNaught,
+                           questions[5, number], parameters$muNought,
                            questions[6, number], parameters$sigma,
                            questions[7, number]), collapse = ""),
                      paste0(
                          c(questions[1, number], parameters$n,
                            questions[2, number], parameters$alpha*100,
                            questions[3, number], tailString,
-                           questions[4, number], parameters$pNaught,
+                           questions[4, number], parameters$pNought,
                            questions[5, number], parameters$sigma,
                            questions[6, number], round(parameters$p*parameters$n/100, 0),
                            questions[7, number]), collapse = ""),
@@ -494,7 +494,7 @@ PrintQuestion <- function(number, type, parameters, questions){
                            questions[2, number], parameters$alpha*100,
                            questions[3, number], parameters$n,
                            questions[4, number], parameters$mu,
-                           questions[5, number], parameters$muNaught,
+                           questions[5, number], parameters$muNought,
                            questions[6, number], parameters$sigma,
                            questions[7, number]), collapse = ""),
                      paste0(
@@ -503,7 +503,7 @@ PrintQuestion <- function(number, type, parameters, questions){
                            questions[3, number], parameters$n,
                            questions[4, number], parameters$p,
                            questions[5, number], tailString,
-                           questions[6, number], parameters$pNaught,
+                           questions[6, number], parameters$pNought,
                            questions[7, number], parameters$sigma,
                            questions[8, number]), collapse = ""),
                      paste0(
@@ -542,8 +542,8 @@ AskParameter <- function(type){
     library("greekLetters")
 
     parameterNames <- switch(type,
-                             c("n", "alpha", "mu", "muNaught", "sigma", "sigmaSquared"),
-                             c("n", "alpha", "p", "pNaught", "sigma", "SigmaSquared"),
+                             c("n", "alpha", "mu", "muNought", "sigma", "sigmaSquared"),
+                             c("n", "alpha", "p", "pNought", "sigma", "SigmaSquared"),
                              c("n", "alpha", "mu", "mu2", "sigmaDiff", "SigmaSquared"))
 
     parameterIndex <- sample(1:length(parameterNames), 1)
@@ -652,36 +652,36 @@ AskH0 <- function(parameters, type, difficulty){
 
     Answer1 <- switch(type,
                       paste0(
-                          c(greeks("mu"), " = ", parameters$muNaught), collapse = ""),
+                          c(greeks("mu"), " = ", parameters$muNought), collapse = ""),
                       paste0(
-                          c("p\u2080", " = ", parameters$pNaught), collapse = ""),
+                          c("p\u2080", " = ", parameters$pNought), collapse = ""),
                       paste0(
                           c(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082"), collapse = "")
     )
 
     Answer2 <- switch(type,
                       paste0(
-                          c(greeks("mu"), " < ", parameters$muNaught), collapse = ""),
+                          c(greeks("mu"), " < ", parameters$muNought), collapse = ""),
                       paste0(
-                          c("p\u2080", " < ", parameters$pNaught), collapse = ""),
+                          c("p\u2080", " < ", parameters$pNought), collapse = ""),
                       paste0(
                           c(greeks("mu"), "\u2081", " < ", greeks("mu"), "\u2082"), collapse = "")
     )
 
     Answer3 <- switch(type,
                       paste0(
-                          c(greeks("mu"), " > ", parameters$muNaught), collapse = ""),
+                          c(greeks("mu"), " > ", parameters$muNought), collapse = ""),
                       paste0(
-                          c("p\u2080", " > ", parameters$pNaught), collapse = ""),
+                          c("p\u2080", " > ", parameters$pNought), collapse = ""),
                       paste0(
                           c(greeks("mu"), "\u2081", " > ", greeks("mu"), "\u2082"), collapse = "")
     )
 
     Answer4 <- switch(type,
                       paste0(
-                          c(greeks("mu"), " =/= ", parameters$muNaught), collapse = ""),
+                          c(greeks("mu"), " =/= ", parameters$muNought), collapse = ""),
                       paste0(
-                          c("p\u2080", " =/= ", parameters$pNaught), collapse = ""),
+                          c("p\u2080", " =/= ", parameters$pNought), collapse = ""),
                       paste0(
                           c(greeks("mu"), "\u2081", " =/= ", greeks("mu"), "\u2082"), collapse = "")
     )
@@ -705,9 +705,9 @@ AskH1 <- function(parameters, type, difficulty){
 
     H0String <- switch(type,
                        paste0(
-                           c(greeks("mu"), " = ", parameters$muNaught), collapse = ""),
+                           c(greeks("mu"), " = ", parameters$muNought), collapse = ""),
                        paste0(
-                           c("p\u2080", " = ", parameters$pNaught), collapse = ""),
+                           c("p\u2080", " = ", parameters$pNought), collapse = ""),
                        paste0(
                            c(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082"), collapse = "")
     )
@@ -723,36 +723,36 @@ AskH1 <- function(parameters, type, difficulty){
 
     Answer1 <- switch(type,
                       paste0(
-                          c(greeks("mu"), " = ", parameters$muNaught), collapse = ""),
+                          c(greeks("mu"), " = ", parameters$muNought), collapse = ""),
                       paste0(
-                          c("p\u2080", " = ", parameters$pNaught), collapse = ""),
+                          c("p\u2080", " = ", parameters$pNought), collapse = ""),
                       paste0(
                           c(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082"), collapse = "")
     )
 
     Answer2 <- switch(type,
                       paste0(
-                          c(greeks("mu"), " < ", parameters$muNaught), collapse = ""),
+                          c(greeks("mu"), " < ", parameters$muNought), collapse = ""),
                       paste0(
-                          c("p\u2080", " < ", parameters$pNaught), collapse = ""),
+                          c("p\u2080", " < ", parameters$pNought), collapse = ""),
                       paste0(
                           c(greeks("mu"), "\u2081", " < ", greeks("mu"), "\u2082"), collapse = "")
     )
 
     Answer3 <- switch(type,
                       paste0(
-                          c(greeks("mu"), " > ", parameters$muNaught), collapse = ""),
+                          c(greeks("mu"), " > ", parameters$muNought), collapse = ""),
                       paste0(
-                          c("p\u2080", " > ", parameters$pNaught), collapse = ""),
+                          c("p\u2080", " > ", parameters$pNought), collapse = ""),
                       paste0(
                           c(greeks("mu"), "\u2081", " > ", greeks("mu"), "\u2082"), collapse = "")
     )
 
     Answer4 <- switch(type,
                       paste0(
-                          c(greeks("mu"), " =/= ", parameters$muNaught), collapse = ""),
+                          c(greeks("mu"), " =/= ", parameters$muNought), collapse = ""),
                       paste0(
-                          c("p\u2080", " =/= ", parameters$pNaught), collapse = ""),
+                          c("p\u2080", " =/= ", parameters$pNought), collapse = ""),
                       paste0(
                           c(greeks("mu"), "\u2081", " =/= ", greeks("mu"), "\u2082"), collapse = "")
     )
@@ -855,8 +855,8 @@ AskPFormula <- function(parameters, type){
                       collapse = "")
 
     Answer2 <- paste0(switch(type,
-                             c("P(", greeks("mu"), " ", tailString, " ", parameters$muNaught, ")"),
-                             c("P(p ", tailString, " ", parameters$pNaught, ")"),
+                             c("P(", greeks("mu"), " ", tailString, " ", parameters$muNought, ")"),
+                             c("P(p ", tailString, " ", parameters$pNought, ")"),
                              c("P(", greeks("mu"), "\u2081 - ", greeks("mu"), "\u2082 ", tailString, " ", 0, ")")),
                       collapse = "")
 
@@ -893,8 +893,8 @@ AskT <- function(parameters, type){
     QuestionString <- paste0('What is T?')
 
     Answer1 <- round(switch(type,
-                            (parameters$mu - parameters$muNaught)/(parameters$sigma/(parameters$n^0.5)),
-                            (parameters$p - parameters$pNaught)/(parameters$sigma/(parameters$n^0.5)),
+                            (parameters$mu - parameters$muNought)/(parameters$sigma/(parameters$n^0.5)),
+                            (parameters$p - parameters$pNought)/(parameters$sigma/(parameters$n^0.5)),
                             (parameters$mu - parameters$mu2)/(parameters$sigmaDiff/(parameters$n^0.5))
     ), 2)
 
@@ -922,8 +922,8 @@ AskT <- function(parameters, type){
 AskRejectionT <- function(parameters, type){
 
     t <- switch(type,
-                (parameters$mu - parameters$muNaught)/(parameters$sigma/(parameters$n^0.5)),
-                (parameters$p - parameters$pNaught)/(parameters$sigma/(parameters$n^0.5)),
+                (parameters$mu - parameters$muNought)/(parameters$sigma/(parameters$n^0.5)),
+                (parameters$p - parameters$pNought)/(parameters$sigma/(parameters$n^0.5)),
                 (parameters$mu - parameters$mu2)/(parameters$sigmaDiff/(parameters$n^0.5))
     )
 
@@ -984,8 +984,8 @@ AskRejectionT <- function(parameters, type){
 AskRejectionP <- function(parameters, type){
 
     t <- switch(type,
-                (parameters$mu - parameters$muNaught)/(parameters$sigma/(parameters$n^0.5)),
-                (parameters$p - parameters$pNaught)/(parameters$sigma/(parameters$n^0.5)),
+                (parameters$mu - parameters$muNought)/(parameters$sigma/(parameters$n^0.5)),
+                (parameters$p - parameters$pNought)/(parameters$sigma/(parameters$n^0.5)),
                 (parameters$mu - parameters$mu2)/(parameters$sigmaDiff/(parameters$n^0.5))
     )
 
