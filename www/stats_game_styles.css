@@ -1,0 +1,7 @@
+body {margin:8mm;}
+
+.text_block {padding-bottom:5mm;}
+
+#submitButton { float:right; }
+#questionBackButton { float:left; }
+#questionNextButton { float:right; }

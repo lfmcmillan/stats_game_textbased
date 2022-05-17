@@ -3,10 +3,10 @@ generate_user_world <- function(username) {
     seed <- sample(1:99999999, 1)
     set.seed(seed)
 
-    while (file.exists(paste0(username,"_world.Rdata"))) {
-        recreate_yesno <- menu(c("Yes","No"),title="World already exists for this username. Recreate?")
-        if (recreate_yesno == 2) return()
-    }
+    # while (file.exists(paste0(username,"_world.Rdata"))) {
+    #     recreate_yesno <- menu(c("Yes","No"),title="World already exists for this username. Recreate?")
+    #     if (recreate_yesno == 2) return()
+    # }
 
     streams <- generate_stream_params(sample(1:2,1))
 

@@ -4,3 +4,5 @@
 .Ruserdata
 *.Rproj
 *.pdf
+*catchit_game.R
+*backup.R
