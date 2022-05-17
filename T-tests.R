@@ -745,39 +745,27 @@ AskTFormula <- function(type){
     QuestionString <- paste0("How do you calculate t for a ", typeString, " t-test?")
 
     Answer1 <- switch(type,
-                      paste0(
-                          c("(",greeks("mu"), " - ", greeks("mu"), "\u2080)/(", greeks("sigma"), "/\U221an)"), collapse = ""),
-                      paste0(
-                          c("(",greeks("p"), " - ", greeks("p"), "\u2080)/(", greeks("sigma"), "/\U221an)"), collapse = ""),
-                      paste0(
-                          c("(",greeks("mu"), "\u2081 - ", greeks("mu"), "\u2082)/(", greeks("sigma"), "/\U221an)"), collapse = "")
+                      paste0("(xbar - ", greeks("mu"), "\u2080)/(", greeks("sigma"), "/\U221an)"),
+                      paste0("(sample_p - ", greeks("p"), "\u2080)/(", greeks("sigma"), "/\U221an)"),
+                      paste0("(xbar\u2081 - xbar\u2082)/(", greeks("sigma"), "/\U221an)")
     )
 
     Answer2 <- switch(type,
-                      paste0(
-                          c("(",greeks("mu"), " - ", greeks("mu"), "\u2080)/(", greeks("sigma"), "\U00b2/n)"), collapse = ""),
-                      paste0(
-                          c("(",greeks("p"), " - ", greeks("p"), "\u2080)/(", greeks("sigma"), "\U00b2/\U221an)"), collapse = ""),
-                      paste0(
-                          c("(",greeks("mu"), "\u2081 - ", greeks("mu"), "\u2082)/(", greeks("sigma"), "\U00b2/n)"), collapse = "")
+                      paste0("(xbar -",greeks("mu"), " - ", greeks("mu"), "\u2080)/(", greeks("sigma"), "\U00b2/n)"),
+                      paste0("(sample_p - ", greeks("p"), "\u2080)/(", greeks("sigma"), "\U00b2/\U221an)"),
+                      paste0("(xbar\u2081 - xbar\u2082)/(", greeks("sigma"), "\U00b2/n)")
     )
 
     Answer3 <- switch(type,
-                      paste0(
-                          c("(",greeks("mu"), " - ", greeks("mu"), "\u2080)/", greeks("sigma")), collapse = ""),
-                      paste0(
-                          c("(",greeks("p"), " - ", greeks("p"), "\u2080)/", greeks("sigma")), collapse = ""),
-                      paste0(
-                          c("(",greeks("mu"), "\u2081 - ", greeks("mu"), "\u2082)/", greeks("sigma")), collapse = "")
+                      paste0("(xbar - ", greeks("mu"), "\u2080)/", greeks("sigma")),
+                      paste0("(sample_p - ", greeks("p"), "\u2080)/", greeks("sigma")),
+                      paste0("(xbar\u2081 - xbar\u2082)/", greeks("sigma"))
     )
 
     Answer4 <- switch(type,
-                      paste0(
-                          c("(",greeks("mu"), ")/(", greeks("sigma"), "\U221an)"), collapse = ""),
-                      paste0(
-                          c("(",greeks("p"), ")/(", greeks("sigma"), "\U221an)"), collapse = ""),
-                      paste0(
-                          c("(",greeks("mu"), "\u2081)/(", greeks("sigma"), "\U221an)"), collapse = "")
+                      paste0("xbar/(", greeks("sigma"), "\U221an)"),
+                      paste0("sample_p/(", greeks("sigma"), "\U221an)"),
+                      paste0("xbar\u2081/(", greeks("sigma"), "\U221an)")
     )
 
     AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
@@ -802,37 +790,38 @@ AskPFormula <- function(parameters, type){
                          "proportion",
                          "paired")
 
-    QuestionString <- paste0(c("What does the P-value for a ", typeString, " t-test represent?"), collapse = "")
+    QuestionString <- paste0("What does the P-value for a ", typeString, " t-test represent?")
+
+    Tvalue <- round(switch(type,
+                           (parameters$mu - parameters$muNought)/(parameters$sigma/(parameters$n^0.5)),
+                           (parameters$p - parameters$pNought)/(parameters$sigma/(parameters$n^0.5)),
+                           (parameters$mu - parameters$mu2)/(parameters$sigmaDiff/(parameters$n^0.5))
+    ), 2)
 
     tailString <- switch(parameters$tail,
                          "<",
                          ">",
                          "=/=")
 
-    Answer1 <- paste0(switch(type,
-                             c("P(", greeks("mu"), " ", tailString, " ", parameters$mu, ")"),
-                             c("P(p ", tailString, " ", parameters$p, ")"),
-                             c("P(", greeks("mu"), "\u2081 - ", greeks("mu"), "\u2082 ", tailString, (parameters$mu - parameters$mu2), ")")),
-                      collapse = "")
+    Answer1 <- switch(type,
+                      paste0("P(|t| >= ", signif(abs(Tvalue),3), " | ", greeks("mu")," = ",signif(parameters$mu,3),")"),
+                      paste0("P(|t| >= ", signif(abs(Tvalue),3), " | p = ", signif(parameters$p,3), ")"),
+                      paste0("P(|t| >= ", signif(abs(Tvalue),3), " | ", greeks("mu"), "\u2081-", greeks("mu"), "\u2082 = ", signif(parameters$mu-parameters$mu2,3), ")"))
 
-    Answer2 <- paste0(switch(type,
-                             c("P(", greeks("mu"), " ", tailString, " ", parameters$muNought, ")"),
-                             c("P(p ", tailString, " ", parameters$pNought, ")"),
-                             c("P(", greeks("mu"), "\u2081 - ", greeks("mu"), "\u2082 ", tailString, " ", 0, ")")),
-                      collapse = "")
+    Answer2 <- switch(type,
+                      paste0("P(|t| > ", signif(parameters$mu,3), " | ", greeks("mu")," = ",signif(parameters$mu,3),")"),
+                      paste0("P(|t| > ", signif(parameters$p,3), " | p = ", signif(parameters$p,3), ")"),
+                      paste0("P(|t| > ", signif(parameters$mu2,3), " | ", greeks("mu"), "\u2081-", greeks("mu"), "\u2082 = ", signif(parameters$mu-parameters$mu2,3), ")"))
 
-    Answer3 <- paste0(switch(type,
-                             c("P(", greeks("mu"), " ", tailString, " ", parameters$alpha, ")"),
-                             c("P(p ", tailString, " ", parameters$alpha, ")"),
-                             c("P(", greeks("mu"), "\u2081 - ", greeks("mu"), "\u2082 ", tailString, " ", parameters$alpha/2, ")")),
-                      collapse = "")
+    Answer3 <- switch(type,
+                      paste0("P(t >= ", signif(abs(Tvalue),3), " | ", greeks("mu")," =/= ",signif(parameters$mu,3),")"),
+                      paste0("P(t >= ", signif(abs(Tvalue),3), " | p =/= ", signif(parameters$p,3), ")"),
+                      paste0("P(t >= ", signif(abs(Tvalue),3), " | ", greeks("mu"), "\u2081-", greeks("mu"), "\u2082 =/= ", signif(parameters$mu-parameters$mu2,3), ")"))
 
-
-    Answer4 <- paste0(switch(type,
-                             c("P(", greeks("mu"), " ", tailString, " ", greeks("mu"), "\u2080)"),
-                             c("P(p ", tailString, " p\u2080)"),
-                             c("P(", greeks("mu"), "\u2081 ", tailString, " ", greeks("mu"), "\u2082)")),
-                      collapse = "")
+    Answer4 <- switch(type,
+                      paste0("P(t = ", signif(abs(Tvalue),3), " | ", greeks("mu")," = ",signif(parameters$mu,3),")"),
+                      paste0("P(t = ", signif(abs(Tvalue),3), " | p = ", signif(parameters$p,3), ")"),
+                      paste0("P(t = ", signif(abs(Tvalue),3), " | ", greeks("mu"), "\u2081-", greeks("mu"), "\u2082 = ", signif(parameters$mu-parameters$mu2,3), ")"))
 
     AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
     AnswersIndex = sample(c(1, 2, 3, 4), 4)
