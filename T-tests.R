@@ -123,7 +123,7 @@ findMuNought <- function(number, difficulty){
 
                               sample(c(75, 80, 85), 1),
                               sample(c(10, 15, 20), 1),
-                              sample(75, 80, 85), 1),
+                              sample(c(75, 80, 85), 1)),
                        switch(number,
                               round(runif(1, 70, 80), 1),
                               round(runif(1, 70, 80), 1),
@@ -546,16 +546,16 @@ AskParameter <- function(type){
     library("greekLetters")
 
     parameterNames <- switch(type,
-                             c("n", "alpha", "xbar", "mu", "s", "sSquared", "sigma", "sigmaSquared"),
-                             c("n", "alpha", "phat", "p", "s", "sSquared", "sigma", "SigmaSquared"),
-                             c("n", "n2", "alpha", "xbar", "xbar2", "mu", "mu2", "s", "s2", "sigma", "sigma2"))
+                             c("alpha", "n", "xbar", "mu", "s", "sSquared", "sigma", "sigmaSquared"),
+                             c("alpha", "n", "phat", "p", "s", "sSquared", "sigma", "SigmaSquared"),
+                             c("alpha", "n", "n2", "xbar", "xbar2", "mu", "mu2", "s", "s2", "sigma", "sigma2"))
 
     parameterIndex <- sample(1:length(parameterNames), 1)
 
     QuestionString <- paste0("What is ", switch(type,
                                                 switch(parameterIndex,
-                                                       "n",
                                                        greeks("alpha"),
+                                                       "n",
                                                        "xbar",
                                                        greeks("mu"),
                                                        "s",
@@ -563,8 +563,8 @@ AskParameter <- function(type){
                                                        greeks("sigma"),
                                                        paste0(greeks("sigma"), "\u00B2")),
                                                 switch(parameterIndex,
-                                                       "n",
                                                        greeks("alpha"),
+                                                       "n",
                                                        "phat",
                                                        "p",
                                                        "s",
@@ -572,9 +572,9 @@ AskParameter <- function(type){
                                                        greeks("sigma"),
                                                        paste0(greeks("sigma"), "\u00B2")),
                                                 switch(parameterIndex,
+                                                       greeks("alpha"),
                                                        "n\u2081",
                                                        "n\u2082",
-                                                       greeks("alpha"),
                                                        "xbar\u2081",
                                                        "xbar\u2082",
                                                        paste0(greeks("mu"),"\u2081"),
@@ -587,81 +587,77 @@ AskParameter <- function(type){
 
     Answer1 <- switch(type,
                       switch(parameterIndex,
-                             "The sample size",
                              "The significance level",
+                             "The sample size",
                              "The sample mean",
                              "The population mean",
+                             "The sample standard deviation",
+                             "The sample variance",
                              "The population standard deviation",
                              "The population variance"),
                       switch(parameterIndex,
-                             "The sample size",
                              "The significance level",
+                             "The sample size",
                              "The sample proportion",
                              "The population proportion",
+                             "The sample standard deviation",
+                             "The sample variance",
                              "The population standard deviation",
                              "The population variance"),
                       switch(parameterIndex,
+                             "The significance level",
                              "The sample size of group 1",
                              "The sample size of group 2",
-                             "The significance level",
                              "The sample mean of group 1",
                              "The sample mean of group 2",
                              "The population mean of group 1",
                              "The population mean of group 2",
-                             "The sample standard deviation for group 1",
-                             "The sample standard deviation for group 2",
-                             "The population standard deviation for group 1",
-                             "The population standard deviation for group 2"))
+                             "The sample standard deviation of group 1",
+                             "The sample standard deviation of group 2",
+                             "The population standard deviation of group 1",
+                             "The population standard deviation of group 2"))
 
-    parameterCorrectAnswerIndex <- switch(type,
-                                          switch(parameterIndex,
-                                                 1,
-                                                 2,
-                                                 7,
-                                                 8,
-                                                 5,
-                                                 6),
-                                          switch(parameterIndex,
-                                                 1,
-                                                 2,
-                                                 9,
-                                                 10,
-                                                 5,
-                                                 6),
-                                          switch(parameterIndex,
-                                                 1,
-                                                 2,
-                                                 3,
-                                                 4,
-                                                 5,
-                                                 6))
+    if (type %in% c(1,2)) {
+        possibleAnswers <- c("The significance level",
+                             "The sample size",
+                             "The sample mean",
+                             "The population mean",
+                             "The sample standard deviation",
+                             "The sample variance",
+                             "The population standard deviation",
+                             "The population variance",
+                             "The sample proportion",
+                             "The population proportion")
+        parameterAnswersIndex <- 1:10
+    } else if (type == 3) {
+        possibleAnswers <- c("The significance level",
+                                 "The sample size",
+                                 "The sample mean",
+                                 "The sample standard deviation",
+                                 "The population mean",
+                                 "The population standard deviation",
+                                 "The sample size of group 1",
+                                 "The sample size of group 2",
+                                 "The sample mean of group 1",
+                                 "The sample mean of group 2",
+                                 "The population mean of group 1",
+                                 "The population mean of group 2",
+                                 "The sample standard deviation of group 1",
+                                 "The sample standard deviation of group 2",
+                                 "The population standard deviation of group 1",
+                                 "The population standard deviation of group 2")
+        parameterAnswersIndex <- 1:16
+    }
 
-    parameterAnswers <- c("The sample size",
-                          "The sample size of group 1",
-                          "The sample size of group 2",
-                          "The significance level",
-                          "The sample mean",
-                          "The sample mean of group 1",
-                          "The sample mean of group 2",
-                          "The sample standard deviation",
-                          "The sample standard deviation of group 1",
-                          "The sample standard deviation of group 2",
-                          "The sample variance",
-                          "The population mean",
-                          "The population standard deviation",
-                          "The population variance",
-                          "The population mean of group 1",
-                          "The population mean of group 2",
-                          "The population proportion",
-                          "The sample proportion")
-    parameterAnswersIndex <- 1:18
+    parameterCorrectAnswerIndex <- switch(type, (1:8)[parameterIndex],
+                                          c(1:2,9:10,5:8)[parameterIndex],
+                                          c(1,7:16)[parameterIndex])
+
     parameterWrongAnswersIndex <- sample(parameterAnswersIndex[which(parameterAnswersIndex != parameterCorrectAnswerIndex)], 3)
 
-    Answer2 <- parameterAnswers[parameterWrongAnswersIndex[1]]
-
-    Answer3 <- parameterAnswers[parameterWrongAnswersIndex[2]]
-
-    Answer4 <- parameterAnswers[parameterWrongAnswersIndex[3]]
+    Answer2 <- possibleAnswers[parameterWrongAnswersIndex[1]]
+    Answer3 <- possibleAnswers[parameterWrongAnswersIndex[2]]
+    Answer4 <- possibleAnswers[parameterWrongAnswersIndex[3]]
 
     AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
     AnswersIndex = sample(c(1, 2, 3, 4), 4)
