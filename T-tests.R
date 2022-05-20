@@ -91,9 +91,9 @@ updateDifficultyManual <- function(difficulty, difficultyTemp){
 findAlpha <- function(difficulty){
 
     alpha <-  switch(difficulty,
-                     0.95,
-                     sample(c(0.9, 0.95, 0.99), 1),
-                     round(runif(1, 0.8, 1), 2))
+                     0.05,
+                     sample(c(0.1, 0.05, 0.01), 1),
+                     round(runif(1, 0.01, 0.1), 2))
 
     return(alpha)
 
@@ -908,14 +908,14 @@ AskRejectionT <- function(parameters, type){
 
     t <- calcT(parameters, type)
 
-    probT <- switch(parameters$tail,
-                    1 - parameters$alpha,
+    criticalProb <- switch(parameters$tail,
                     parameters$alpha,
-                    1 - (1 - parameters$alpha)/2)
+                    parameters$alpha,
+                    parameters$alpha/2)
 
-    criticalT <- round(qnorm(p = probT), 2)
+    criticalT <- round(qnorm(p = criticalProb), 2)
 
-    solution <- ifelse(abs(t) > abs(criticalT), 1, 2)
+    solution <- ifelse(abs(t) >= abs(criticalT), 1, 2)
 
     if(parameters$tail == 3){
         criticalT <- paste0("\u00B1", abs(criticalT))}
@@ -924,7 +924,7 @@ AskRejectionT <- function(parameters, type){
 
     Answer1 <- switch(solution,
                       "Reject H\u2080",
-                      "Reject H\u2081")
+                      "Do not reject H\u2080")
 
     Answer2 <- switch(solution,
                       "Accept H\u2081",
@@ -932,7 +932,7 @@ AskRejectionT <- function(parameters, type){
 
     Answer3 <- switch(solution,
                       "Reject H\u2081",
-                      "Reject H\u2080")
+                      "Do not reject H\u2081")
 
     Answer4 <- switch(solution,
                       "Accept H\u2080",
@@ -964,20 +964,20 @@ AskRejectionP <- function(parameters, type){
 
     t <- calcT(parameters, type)
 
-    probP <- switch(parameters$tail,
-                    1 - parameters$alpha,
-                    1 - parameters$alpha,
-                    (1 - parameters$alpha)/2)
+    criticalP <- switch(parameters$tail,
+                    parameters$alpha,
+                    parameters$alpha,
+                    parameters$alpha/2)
 
-    criticalP <- round(pnorm(q = abs(t), lower.tail = FALSE)*100, 2)/100
+    pval <- signif(1 - pnorm(q = abs(t), lower.tail = FALSE), 2)
 
-    solution <- ifelse(abs(probP) > abs(criticalP), 1, 2)
+    solution <- ifelse(abs(pval) < abs(criticalP), 1, 2)
 
-    QuestionString <- paste0("If the P-value is ", criticalP, ", what is the conclusion?")
+    QuestionString <- paste0("If the P-value is ", pval, ", what is the conclusion?")
 
     Answer1 <- switch(solution,
                       "Reject H\u2080",
-                      "Reject H\u2081")
+                      "Do not reject H\u2080")
 
     Answer2 <- switch(solution,
                       "Accept H\u2081",
@@ -985,7 +985,7 @@ AskRejectionP <- function(parameters, type){
 
     Answer3 <- switch(solution,
                       "Reject H\u2081",
-                      "Reject H\u2080")
+                      "Do not reject H\u2081")
 
     Answer4 <- switch(solution,
                       "Accept H\u2080",
