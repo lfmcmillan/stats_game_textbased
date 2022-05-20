@@ -109,9 +109,9 @@ findN <- function(difficulty){
     return(n)
 }
 
-findMuNought <- function(number, difficulty){
+findMu <- function(number, difficulty){
 
-    muNought <- switch(difficulty,
+    mu <- switch(difficulty,
                        switch(number,
                               sample(c(70, 75, 80), 1),
                               sample(c(70, 75, 80), 1),
@@ -150,10 +150,17 @@ findMuNought <- function(number, difficulty){
                               round(runif(1, 60, 120), 2))
     )
 
-    return(muNought)
+    return(mu)
 }
 
-findXbar <- function(number, muNought, tail, difficulty){
+findMu2 <- function(number, mu, tail, difficulty){
+
+    mu2 <- sample(c(mu, mu + 0.5*abs(mu), mu - 0.5*abs(mu)),1)
+
+    return(mu2)
+}
+
+findXbar <- function(number, mu, tail, difficulty){
 
     tailVar <- switch(tail,
                       -1,
@@ -165,7 +172,7 @@ findXbar <- function(number, muNought, tail, difficulty){
                             sample(c(0.05, 0.1, 0.15), 1),
                             round(runif(1, 0.01, 0.2), 2))
 
-    xbar <- muNought*(1 + tailVar*difficultyVar)
+    xbar <- mu*(1 + tailVar*difficultyVar)
 
     # Confirm that generated number fits context
     xbar <- switch(number,
@@ -182,19 +189,7 @@ findXbar <- function(number, muNought, tail, difficulty){
     round(xbar, (difficulty - 1))
 }
 
-findXbar2 <- function(number, muNought2, tail, difficulty){
-
-    tail <- switch(tail,
-                   2,
-                   1,
-                   3)
-
-    xbar2 <- findXbar(number, muNought2, tail, difficulty)
-    return(xbar2)
-
-}
-
-findS <- function(number, muNought, difficulty){
+findS <- function(number, mu, difficulty){
 
     difficultyVar <- switch(difficulty,
                             sample(c(0.9, 0.95, 1, 1.05, 1.1), 1),
@@ -202,15 +197,15 @@ findS <- function(number, muNought, difficulty){
                             runif(1, 0.8, 1.2))
 
     numberVar <- switch(number,
-                        100 - muNought,
-                        100 - muNought,
-                        100 - muNought,
-                        muNought,
-                        muNought,
-                        muNought,
-                        120 - muNought,
-                        muNought,
-                        120 - muNought)
+                        100 - mu,
+                        100 - mu,
+                        100 - mu,
+                        mu,
+                        mu,
+                        mu,
+                        120 - mu,
+                        mu,
+                        120 - mu)
 
     s <- round(difficultyVar*numberVar, max(difficulty - 1, 1))
 
@@ -221,9 +216,9 @@ findS <- function(number, muNought, difficulty){
 # Tail 2: >
 # Tail 3: !=
 
-findTail <- function(difficulty){
+findTail <- function(){
 
-    tail <- sample(1:difficulty, 1)
+    tail <- sample(1:3, 1)
 
 }
 
@@ -233,15 +228,15 @@ ParametersMu <- function(number, difficulty){
 
     n <- findN(difficulty)
 
-    tail <- findTail(difficulty)
+    tail <- findTail()
 
-    muNought <- findMuNought(number, difficulty)
+    mu <- findMu(number, difficulty)
 
-    xbar <- findXbar(number, muNought, tail, difficulty)
+    xbar <- findXbar(number, mu, tail, difficulty)
 
-    s <- findS(number, muNought, difficulty)
+    s <- findS(number, mu, difficulty)
 
-    parameters <- list(n = n, alpha = alpha, xbar = xbar, muNought = muNought, s = s, tail = tail)
+    parameters <- list(n = n, alpha = alpha, xbar = xbar, mu = mu, s = s, tail = tail)
 
     return(parameters)
 }
@@ -252,15 +247,15 @@ ParametersP <- function(number, difficulty){
 
     n <- findN(difficulty)
 
-    tail <- findTail(difficulty)
+    tail <- findTail()
 
-    pNought <- findMuNought(number, difficulty)
+    p <- findMu(number, difficulty)
 
-    phat <- findXbar(number, pNought, tail, difficulty)
+    phat <- findXbar(number, p, tail, difficulty)
 
-    s <- findS(number, pNought, difficulty)
+    s <- findS(number, p, difficulty)
 
-    parameters <- list(n = n, alpha = alpha, phat = phat, pNought = pNought, s = s, tail = tail)
+    parameters <- list(n = n, alpha = alpha, phat = phat, p = p, s = s, tail = tail)
 
     return(parameters)
 }
@@ -272,22 +267,22 @@ ParametersDiff <- function(number, difficulty){
     n <- findN(difficulty)
     n2 <- findN(difficulty)
 
-    tail <- findTail(difficulty)
+    tail <- findTail()
 
-    muNought <- findMuNought(number, difficulty)
-    muNought2 <- findXbar2(number, muNought, tail, difficulty)
+    mu <- findMu(number, difficulty)
+    mu2 <- findMu2(number, mu, tail, difficulty)
 
-    xbar <- findXbar(number, muNought, tail, difficulty)
-    xbar2 <- findXbar(number, muNought2, tail, difficulty)
+    xbar <- findXbar(number, mu, tail, difficulty)
+    xbar2 <- findXbar(number, mu2, tail, difficulty)
 
-    s <- findS(number, muNought, difficulty)
-    s2 <- findS(number, muNought2, difficulty)
+    s <- findS(number, mu, difficulty)
+    s2 <- findS(number, mu2, difficulty)
 
     sSquared <- s^2
     s2Squared <- s2^2
 
     parameters <- list(n = n, n2 = n2, alpha = alpha, xbar = xbar, xbar2 = xbar2, s = s, s2 = s2,
-                       sSquared = sSquared, s2Squared = s2Squared, tail = tail)
+                       sSquared = sSquared, s2Squared = s2Squared, tail = tail, mu = mu, mu2 = mu2)
 
     return(parameters)
 }
@@ -450,14 +445,14 @@ PrintQuestion <- function(number, type, parameters, questions){
                             questions[2, number], parameters$n,
                             questions[3, number], parameters$alpha*100,
                             questions[4, number], parameters$xbar,
-                            questions[5, number], parameters$muNought,
+                            questions[5, number], parameters$mu,
                             questions[6, number], parameters$s,
                             questions[7, number]),
                      paste0(questions[1, number], tailString,
                             questions[2, number], parameters$n,
                             questions[3, number], parameters$alpha*100,
                             questions[4, number], parameters$phat,
-                            questions[5, number], parameters$pNought/100,
+                            questions[5, number], parameters$p/100,
                             questions[6, number], parameters$s,
                             questions[7, number]),
                      paste0(questions[1, number], tailString,
@@ -473,13 +468,13 @@ PrintQuestion <- function(number, type, parameters, questions){
                             questions[2, number], parameters$alpha,
                             questions[3, number], tailString,
                             questions[4, number], parameters$xbar,
-                            questions[5, number], parameters$muNought,
+                            questions[5, number], parameters$mu,
                             questions[6, number], parameters$s,
                             questions[7, number]),
                      paste0(questions[1, number], parameters$n,
                             questions[2, number], parameters$alpha*100,
                             questions[3, number], tailString,
-                            questions[4, number], parameters$pNought,
+                            questions[4, number], parameters$p,
                             questions[5, number], parameters$s,
                             questions[6, number], round(parameters$phat*parameters$n/100, 0),
                             questions[7, number]),
@@ -496,7 +491,7 @@ PrintQuestion <- function(number, type, parameters, questions){
                             questions[2, number], parameters$alpha*100,
                             questions[3, number], parameters$n,
                             questions[4, number], parameters$xbar,
-                            questions[5, number], parameters$muNought,
+                            questions[5, number], parameters$mu,
                             questions[6, number], parameters$s,
                             questions[7, number]),
                      paste0(questions[1, number], tailString,
@@ -504,7 +499,7 @@ PrintQuestion <- function(number, type, parameters, questions){
                             questions[3, number], parameters$n,
                             questions[4, number], parameters$phat,
                             questions[5, number], tailString,
-                            questions[6, number], parameters$pNought,
+                            questions[6, number], parameters$p,
                             questions[7, number], parameters$s,
                             questions[8, number]),
                      paste0(questions[1, number], tailString,
@@ -542,9 +537,9 @@ AnswerCheck <- function(answerArray){
 
 calcT <- function(parameters, type) {
     switch(type,
-           (parameters$xbar - parameters$muNought)/(parameters$s/sqrt(parameters$n)),
-           (parameters$phat - parameters$pNought)/(parameters$s/sqrt(parameters$n)),
-           (parameters$xbar - parameters$xbar2)/sqrt(parameters$s^2/parameters$n+parameters$s2^2/parameters$n)
+           (parameters$xbar - parameters$mu)/(parameters$s/sqrt(parameters$n)),
+           (parameters$phat - parameters$p)/(parameters$s/sqrt(parameters$n)),
+           (parameters$xbar - parameters$xbar2)/sqrt(parameters$s^2/parameters$n+parameters$s2^2/parameters$n2)
     )
 }
 
@@ -686,26 +681,26 @@ AskH0 <- function(parameters, type, difficulty){
     QuestionString <- paste0("What is H", "\u2080", "?")
 
     Answer1 <- switch(type,
-                      paste0(greeks("mu"), " = ", parameters$muNought),
-                      paste0("p", " = ", parameters$pNought),
+                      paste0(greeks("mu"), " = ", parameters$mu),
+                      paste0("p", " = ", parameters$p),
                       paste0(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082")
     )
 
     Answer2 <- switch(type,
-                      paste0(greeks("mu"), " < ", parameters$muNought),
-                      paste0("p", " < ", parameters$pNought),
+                      paste0(greeks("mu"), " < ", parameters$mu),
+                      paste0("p", " < ", parameters$p),
                       paste0(greeks("mu"), "\u2081", " < ", greeks("mu"), "\u2082")
     )
 
     Answer3 <- switch(type,
-                      paste0(greeks("mu"), " > ", parameters$muNought),
-                      paste0("p", " > ", parameters$pNought),
+                      paste0(greeks("mu"), " > ", parameters$mu),
+                      paste0("p", " > ", parameters$p),
                       paste0(greeks("mu"), "\u2081", " > ", greeks("mu"), "\u2082")
     )
 
     Answer4 <- switch(type,
-                      paste0(greeks("mu"), " ", greeks("notEqual"), " ", parameters$muNought),
-                      paste0("p", " ", greeks("notEqual"), " ", parameters$pNought),
+                      paste0(greeks("mu"), " ", greeks("notEqual"), " ", parameters$mu),
+                      paste0("p", " ", greeks("notEqual"), " ", parameters$p),
                       paste0(greeks("mu"), "\u2081", " ", greeks("notEqual"), " ", greeks("mu"), "\u2082")
     )
 
@@ -728,8 +723,8 @@ AskH0 <- function(parameters, type, difficulty){
 AskH1 <- function(parameters, type, difficulty){
 
     H0String <- switch(type,
-                       paste0(greeks("mu"), " = ", parameters$muNought),
-                       paste0("p = ", parameters$pNought),
+                       paste0(greeks("mu"), " = ", parameters$mu),
+                       paste0("p = ", parameters$p),
                        paste0(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082")
     )
 
@@ -740,26 +735,26 @@ AskH1 <- function(parameters, type, difficulty){
     )
 
     Answer1 <- switch(type,
-                      paste0(greeks("mu"), " = ", parameters$muNought),
-                      paste0("p = ", parameters$pNought),
+                      paste0(greeks("mu"), " = ", parameters$mu),
+                      paste0("p = ", parameters$p),
                       paste0(greeks("mu"), "\u2081", " = ", greeks("mu"), "\u2082")
     )
 
     Answer2 <- switch(type,
-                      paste0(greeks("mu"), " < ", parameters$muNought),
-                      paste0("p < ", parameters$pNought),
+                      paste0(greeks("mu"), " < ", parameters$mu),
+                      paste0("p < ", parameters$p),
                       paste0(greeks("mu"), "\u2081", " < ", greeks("mu"), "\u2082")
     )
 
     Answer3 <- switch(type,
-                      paste0(greeks("mu"), " > ", parameters$muNought),
-                      paste0("p > ", parameters$pNought),
+                      paste0(greeks("mu"), " > ", parameters$mu),
+                      paste0("p > ", parameters$p),
                       paste0(greeks("mu"), "\u2081", " > ", greeks("mu"), "\u2082")
     )
 
     Answer4 <- switch(type,
-                      paste0(greeks("mu"), " ", greeks("notEqual"), " ", parameters$muNought),
-                      paste0("p ", greeks("notEqual"), " ", parameters$pNought),
+                      paste0(greeks("mu"), " ", greeks("notEqual"), " ", parameters$mu),
+                      paste0("p ", greeks("notEqual"), " ", parameters$p),
                       paste0(greeks("mu"), "\u2081", " ", greeks("notEqual"), " ", greeks("mu"), "\u2082")
     )
 
@@ -837,8 +832,8 @@ AskPFormula <- function(parameters, type){
     QuestionString <- paste0("What does the P-value for a ", typeString, " t-test represent?")
 
     Tvalue <- switch(type,
-                     (parameters$xbar - parameters$muNought)/(parameters$s/sqrt(parameters$n)),
-                     (parameters$phat - parameters$pNought)/(parameters$s/sqrt(parameters$n)),
+                     (parameters$xbar - parameters$mu)/(parameters$s/sqrt(parameters$n)),
+                     (parameters$phat - parameters$p)/(parameters$s/sqrt(parameters$n)),
                      (parameters$xbar - parameters$xbar2)/sqrt(parameters$s^2/parameters$n + parameters$s2^2/parameters$n2)
     )
 
