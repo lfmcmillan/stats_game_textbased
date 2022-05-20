@@ -464,9 +464,11 @@ PrintQuestion <- function(number, type, parameters, questions){
                             questions[2, number], parameters$n,
                             questions[3, number], parameters$alpha*100,
                             questions[4, number], parameters$xbar,
-                            questions[5, number], parameters$xbar2,
-                            questions[6, number],  parameters$sigmaDiff,
-                            questions[7, number]),
+                            questions[5, number], parameters$s,
+                            questions[6, number], parameters$n2,
+                            questions[7, number], parameters$xbar2,
+                            questions[8, number], parameters$s2,
+                            questions[9, number]),
                      paste0(questions[1, number], parameters$n,
                             questions[2, number], parameters$alpha,
                             questions[3, number], tailString,
@@ -483,11 +485,13 @@ PrintQuestion <- function(number, type, parameters, questions){
                             questions[7, number]),
                      paste0(questions[1, number], parameters$n,
                             questions[2, number], parameters$alpha*100,
-                            questions[3, number], tailString,
-                            questions[4, number], parameters$xbar2,
+                            questions[3, number], parameters$n2,
+                            questions[4, number], tailString,
                             questions[5, number], parameters$xbar,
-                            questions[6, number], parameters$sigmaDiff,
-                            questions[7, number]),
+                            questions[6, number], parameters$s,
+                            questions[7, number], parameters$xbar2,
+                            questions[8, number], parameters$s2,
+                            questions[9, number]),
                      paste0(questions[1, number], tailString,
                             questions[2, number], parameters$alpha*100,
                             questions[3, number], parameters$n,
@@ -506,10 +510,12 @@ PrintQuestion <- function(number, type, parameters, questions){
                      paste0(questions[1, number], tailString,
                             questions[2, number], parameters$alpha*100,
                             questions[3, number], parameters$n,
-                            questions[4, number], parameters$xbar,
-                            questions[5, number], parameters$xbar2,
-                            questions[6, number], parameters$sigmaDiff,
-                            questions[7, number])
+                            questions[4, number], parameters$n2,
+                            questions[5, number], parameters$xbar,
+                            questions[6, number], parameters$s,
+                            questions[7, number], parameters$xbar2,
+                            questions[8, number], parameters$s2,
+                            questions[9, number])
     )
 
     return(noquote(string))
@@ -776,9 +782,9 @@ AskH1 <- function(parameters, type, difficulty){
 AskTFormula <- function(type){
 
     typeString <- switch(type,
-                         greeks("mu"),
+                         "single mean",
                          "proportion",
-                         "paired")
+                         "difference of means")
 
     QuestionString <- paste0("How do you calculate t for a ", typeString, " t-test?")
 
@@ -824,9 +830,9 @@ AskTFormula <- function(type){
 AskPFormula <- function(parameters, type){
 
     typeString <- switch(type,
-                         greeks("mu"),
+                         "single mean",
                          "proportion",
-                         "paired")
+                         "difference of means")
 
     QuestionString <- paste0("What does the P-value for a ", typeString, " t-test represent?")
 
