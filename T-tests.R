@@ -734,12 +734,12 @@ askRejectionP <- function(parameters, type){
 
     t <- calcT(parameters, type)
 
-    criticalP <- switch(parameters$tail,
-                    parameters$alpha,
-                    parameters$alpha,
-                    parameters$alpha/2)
-
-    pval <- signif(1 - pnorm(q = abs(t), lower.tail = FALSE), 2)
+    criticalP <- parameters$alpha
+    if (parameters$tail == 3) {
+        pval <- signif((1 - pnorm(q = abs(t), lower.tail = FALSE))*2, 2)
+    } else {
+        pval <- signif(1 - pnorm(q = abs(t), lower.tail = FALSE), 2)
+    }
 
     solution <- ifelse(abs(pval) < abs(criticalP), 1, 2)
 
@@ -761,7 +761,7 @@ askRejectionP <- function(parameters, type){
                       "Accept H\u2080",
                       "Accept H\u2081")
 
-    if (solution) {
+    if (solution == 1) {
         answers = c(Answer1, Answer2)
         distractors = c(Answer3, Answer4)
     } else {
