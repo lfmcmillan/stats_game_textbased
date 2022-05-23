@@ -133,7 +133,7 @@ findTail <- function(){
 
 }
 
-ParametersMu <- function(number, difficulty){
+findParametersMu <- function(number, difficulty){
 
     alpha <- findAlpha(difficulty)
 
@@ -152,7 +152,7 @@ ParametersMu <- function(number, difficulty){
     return(parameters)
 }
 
-ParametersP <- function(number, difficulty){
+findParametersP <- function(number, difficulty){
 
     alpha <- findAlpha(difficulty)
 
@@ -171,7 +171,7 @@ ParametersP <- function(number, difficulty){
     return(parameters)
 }
 
-ParametersDiff <- function(number, difficulty){
+findParametersDiff <- function(number, difficulty){
 
     alpha <- findAlpha(difficulty)
 
@@ -198,12 +198,12 @@ ParametersDiff <- function(number, difficulty){
     return(parameters)
 }
 
-Parameters <- function(number, type, difficulty){
+findParameters <- function(number, type, difficulty){
 
     parameters <- switch(type,
-                         ParametersMu(number, difficulty),
-                         ParametersP(number, difficulty),
-                         ParametersDiff(number, difficulty)
+                         findParametersMu(number, difficulty),
+                         findParametersP(number, difficulty),
+                         findParametersDiff(number, difficulty)
     )
 
     return(parameters)
@@ -223,39 +223,39 @@ questionStage <- function(parameters, type, difficulty, stage){
 
     AnswerArray <- switch(difficulty$Concept,
                           switch(stage,
-                                 AskParameter(type),
-                                 AskH0(parameters, type, difficulty$Calculation),
-                                 AskH1(parameters, type, difficulty$Calculation),
-                                 AskTFormula(type),
-                                 AskPFormula(parameters, type),
-                                 AskT(parameters, type),
-                                 AskT(parameters, type),
+                                 askParameter(type),
+                                 askH0(parameters, type, difficulty$Calculation),
+                                 askH1(parameters, type, difficulty$Calculation),
+                                 askTFormula(type),
+                                 askPFormula(parameters, type),
+                                 askT(parameters, type),
+                                 askT(parameters, type),
                                  switch(solutionMethod,
-                                        AskRejectionT(parameters, type),
-                                        AskRejectionP(parameters, type))),
+                                        askRejectionT(parameters, type),
+                                        askRejectionP(parameters, type))),
                           switch(stage,
-                                 AskH0(parameters, type, difficulty$Calculation),
-                                 AskH1(parameters, type, difficulty$Calculation),
-                                 AskTFormula(type),
-                                 AskPFormula(parameters, type),
-                                 AskT(parameters, type),
-                                 AskT(parameters, type),
+                                 askH0(parameters, type, difficulty$Calculation),
+                                 askH1(parameters, type, difficulty$Calculation),
+                                 askTFormula(type),
+                                 askPFormula(parameters, type),
+                                 askT(parameters, type),
+                                 askT(parameters, type),
                                  switch(solutionMethod,
-                                        AskRejectionT(parameters, type),
-                                        AskRejectionP(parameters, type))),
+                                        askRejectionT(parameters, type),
+                                        askRejectionP(parameters, type))),
                           switch(stage,
-                                 AskH1(parameters, type, difficulty$Calculation),
-                                 AskT(parameters, type),
-                                 AskT(parameters, type),
+                                 askH1(parameters, type, difficulty$Calculation),
+                                 askT(parameters, type),
+                                 askT(parameters, type),
                                  switch(solutionMethod,
-                                        AskRejectionT(parameters, type),
-                                        AskRejectionP(parameters, type)))
+                                        askRejectionT(parameters, type),
+                                        askRejectionP(parameters, type)))
     )
 
     return(AnswerArray)
 }
 
-PrintQuestion <- function(number, type, parameters, questions){
+printQuestion <- function(number, type, parameters, questions){
 
     tailString <- switch(number,
                          switch(parameters$tail,
@@ -372,7 +372,7 @@ PrintQuestion <- function(number, type, parameters, questions){
     return(noquote(string))
 }
 
-AskParameter <- function(type){
+askParameter <- function(type){
     library("greekLetters")
 
     parameterNames <- switch(type,
@@ -496,7 +496,7 @@ AskParameter <- function(type){
     return(qna)
 }
 
-AskH0 <- function(parameters, type, difficulty){
+askH0 <- function(parameters, type, difficulty){
 
     QuestionString <- paste0("What is H", "\u2080", "?")
 
@@ -531,7 +531,7 @@ AskH0 <- function(parameters, type, difficulty){
     return(qna)
 }
 
-AskH1 <- function(parameters, type, difficulty){
+askH1 <- function(parameters, type, difficulty){
 
     H0String <- switch(type,
                        paste0(greeks("mu"), " = ", parameters$mu),
@@ -578,7 +578,7 @@ AskH1 <- function(parameters, type, difficulty){
 }
 
 
-AskTFormula <- function(type){
+askTFormula <- function(type){
 
     typeString <- switch(type,
                          "single mean",
@@ -618,7 +618,7 @@ AskTFormula <- function(type){
     return(qna)
 }
 
-AskPFormula <- function(parameters, type){
+askPFormula <- function(parameters, type){
 
     typeString <- switch(type,
                          "single mean",
@@ -664,7 +664,7 @@ AskPFormula <- function(parameters, type){
     return(qna)
 }
 
-AskT <- function(parameters, type){
+askT <- function(parameters, type){
 
     QuestionString <- paste0('What is T?')
 
@@ -682,7 +682,7 @@ AskT <- function(parameters, type){
     return(qna)
 }
 
-AskRejectionT <- function(parameters, type){
+askRejectionT <- function(parameters, type){
 
     t <- calcT(parameters, type)
 
@@ -730,7 +730,7 @@ AskRejectionT <- function(parameters, type){
     return(qna)
 }
 
-AskRejectionP <- function(parameters, type){
+askRejectionP <- function(parameters, type){
 
     t <- calcT(parameters, type)
 

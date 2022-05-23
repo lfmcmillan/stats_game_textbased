@@ -1,4 +1,4 @@
-QuestionSelect <- function(){
+selectQuestion <- function(){
 
     QuestionString <- "Would you like to select a particular question?"
     answers <- c("Yes", "No")
@@ -91,10 +91,10 @@ updateDifficultyManual <- function(difficulty, difficultyTemp){
 Game <- function(number, difficulty, questionsDF){
 
     type <- ((number - 1)%%3) + 1
-    parameters <- Parameters(number, type, difficulty$Calculation)
+    parameters <- findParameters(number, type, difficulty$Calculation)
 
     print(noquote(""))
-    questionString <- strwrap(PrintQuestion(number, type, parameters, questionsDF))
+    questionString <- strwrap(printQuestion(number, type, parameters, questionsDF))
     print(questionString)
     print(noquote(""))
 
@@ -118,21 +118,21 @@ Game <- function(number, difficulty, questionsDF){
 
         correctAnswerArray <- switch(stage,
                                      if(difficulty$Concept < 2){
-                                         AskParameter(type)}else(next),
+                                         askParameter(type)}else(next),
                                      if(difficulty$Concept < 3){
-                                         AskH0(parameters, type)}else(next),
-                                     AskH1(parameters, type, difficulty$Calculation),
+                                         askH0(parameters, type)}else(next),
+                                     askH1(parameters, type, difficulty$Calculation),
                                      if(difficulty$Concept < 3){
-                                         AskTFormula(type)}else(next),
-                                     AskT(parameters, type),
+                                         askTFormula(type)}else(next),
+                                     askT(parameters, type),
                                      if(difficulty$Concept < 3){
-                                         AskPFormula(parameters, type)}else(next),
+                                         askPFormula(parameters, type)}else(next),
                                      switch(solutionMethod,
-                                            AskRejectionT(parameters, type),
-                                            AskRejectionP(parameters, type))
+                                            askRejectionT(parameters, type),
+                                            askRejectionP(parameters, type))
         )
 
-        checkArray <- AnswerCheck(correctAnswerArray)
+        checkArray <- checkAnswer(correctAnswerArray)
 
         point <- checkArray$point
         string <- checkArray$string
@@ -147,7 +147,7 @@ Game <- function(number, difficulty, questionsDF){
     return(difficultyTemp)
 }
 
-AnswerCheck <- function(answerArray){
+checkAnswer <- function(answerArray){
 
     input <- menu(answerArray$answers, title = answerArray$question)
 
@@ -179,7 +179,7 @@ Run <- function(){
 
     while(TRUE){
 
-        number <- QuestionSelect()
+        number <- selectQuestion()
 
         difficultyTemp <- Game(number, difficulty, questions)
         difficulty <- switch(difficulty$UpdateAnswer,
@@ -205,7 +205,7 @@ Run <- function(){
     print(noquote(ConclusionString2))
 }
 
-AnswerCheckShiny <- function(correct, index, input){
+checkAnswerShiny <- function(correct, index, input){
 
     result <- ifelse(input %in% index, "Correct", "Incorrect")
 
@@ -232,7 +232,7 @@ serverQuestion <- function(input, output, questionString, answerArray){
     id <- NULL
 
     observeEvent(input$select,{
-        check$string <- AnswerCheckShiny(answerArray, input$button)$string
+        check$string <- checkAnswerShiny(answerArray, input$button)$string
 
         if(!is.null(id)){
             removeNotification(id)}
@@ -240,7 +240,7 @@ serverQuestion <- function(input, output, questionString, answerArray){
     })
 
     observeEvent(input$close, {
-        point <- AnswerCheckShiny(answerArray, input$button)$point
+        point <- checkAnswerShiny(answerArray, input$button)$point
         stopApp(point)})
 }
 
