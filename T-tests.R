@@ -23,42 +23,42 @@ findN <- function(difficulty){
 findMu <- function(number, difficulty){
 
     mu <- switch(difficulty,
-                       switch(number,
-                              sample(c(70, 75, 80), 1),
-                              sample(c(70, 75, 80), 1),
-                              sample(c(70, 75, 80), 1),
+                 switch(number,
+                        sample(c(70, 75, 80), 1),
+                        sample(c(70, 75, 80), 1),
+                        sample(c(70, 75, 80), 1),
 
-                              sample(c(15, 20, 25), 1),
-                              sample(c(8, 10, 12), 1),
-                              sample(c(15, 20, 25), 1),
+                        sample(c(15, 20, 25), 1),
+                        sample(c(8, 10, 12), 1),
+                        sample(c(15, 20, 25), 1),
 
-                              sample(c(75, 80, 85), 1),
-                              sample(c(10, 15, 20), 1),
-                              sample(c(75, 80, 85), 1)),
-                       switch(number,
-                              round(runif(1, 70, 80), 1),
-                              round(runif(1, 70, 80), 1),
-                              round(runif(1, 70, 80), 1),
+                        sample(c(75, 80, 85), 1),
+                        sample(c(10, 15, 20), 1),
+                        sample(c(75, 80, 85), 1)),
+                 switch(number,
+                        round(runif(1, 70, 80), 1),
+                        round(runif(1, 70, 80), 1),
+                        round(runif(1, 70, 80), 1),
 
-                              round(runif(1, 15, 25), 1),
-                              round(runif(1, 8, 12), 1),
-                              round(runif(1, 15, 25), 1),
+                        round(runif(1, 15, 25), 1),
+                        round(runif(1, 8, 12), 1),
+                        round(runif(1, 15, 25), 1),
 
-                              round(runif(1, 75, 85), 1),
-                              round(runif(1, 10, 20), 1),
-                              round(runif(1, 75, 85), 1)),
-                       switch(number,
-                              round(runif(1, 50, 95), 2),
-                              round(runif(1, 50, 95), 2),
-                              round(runif(1, 50, 95), 2),
+                        round(runif(1, 75, 85), 1),
+                        round(runif(1, 10, 20), 1),
+                        round(runif(1, 75, 85), 1)),
+                 switch(number,
+                        round(runif(1, 50, 95), 2),
+                        round(runif(1, 50, 95), 2),
+                        round(runif(1, 50, 95), 2),
 
-                              round(runif(1, 10, 30), 2),
-                              round(runif(1, 5, 15), 2),
-                              round(runif(1, 10, 30), 2),
+                        round(runif(1, 10, 30), 2),
+                        round(runif(1, 5, 15), 2),
+                        round(runif(1, 10, 30), 2),
 
-                              round(runif(1, 60, 100), 2),
-                              round(runif(1, 5, 25), 2),
-                              round(runif(1, 60, 120), 2))
+                        round(runif(1, 60, 100), 2),
+                        round(runif(1, 5, 25), 2),
+                        round(runif(1, 60, 120), 2))
     )
 
     return(mu)
@@ -217,42 +217,35 @@ calcT <- function(parameters, type) {
     )
 }
 
-questionStage <- function(parameters, type, difficulty, stage){
+questionStage <- function(parameters, type, difficulty){
 
-    solutionMethod <- sample(1:2, 1)
+    solutionMethod <- sample(1:2, 1, prob=c(0.1,0.9))
 
-    AnswerArray <- switch(difficulty$Concept,
-                          switch(stage,
-                                 askParameter(type),
-                                 askH0(parameters, type, difficulty$Calculation),
-                                 askH1(parameters, type, difficulty$Calculation),
-                                 askTFormula(type),
-                                 askPFormula(parameters, type),
-                                 askT(parameters, type),
-                                 askT(parameters, type),
-                                 switch(solutionMethod,
-                                        askRejectionT(parameters, type),
-                                        askRejectionP(parameters, type))),
-                          switch(stage,
-                                 askH0(parameters, type, difficulty$Calculation),
-                                 askH1(parameters, type, difficulty$Calculation),
-                                 askTFormula(type),
-                                 askPFormula(parameters, type),
-                                 askT(parameters, type),
-                                 askT(parameters, type),
-                                 switch(solutionMethod,
-                                        askRejectionT(parameters, type),
-                                        askRejectionP(parameters, type))),
-                          switch(stage,
-                                 askH1(parameters, type, difficulty$Calculation),
-                                 askT(parameters, type),
-                                 askT(parameters, type),
-                                 switch(solutionMethod,
-                                        askRejectionT(parameters, type),
-                                        askRejectionP(parameters, type)))
+    qna <- switch(difficulty$Concept,
+                  list(askParameter(type),
+                       askH0(parameters, type),
+                       askH1(parameters, type, difficulty$Calculation),
+                       askTFormula(type),
+                       askPFormula(parameters, type),
+                       askT(parameters, type),
+                       askT(parameters, type),
+                       askRejectionP(parameters, type)),
+                  list(askH0(parameters, type),
+                       askH1(parameters, type, difficulty$Calculation),
+                       askTFormula(type),
+                       askPFormula(parameters, type),
+                       askT(parameters, type),
+                       askT(parameters, type),
+                       askRejectionP(parameters, type)),
+                  list(askH1(parameters, type),
+                       askT(parameters, type),
+                       askT(parameters, type),
+                       switch(solutionMethod,
+                              askRejectionT(parameters, type),
+                              askRejectionP(parameters, type)))
     )
 
-    return(AnswerArray)
+    return(qna)
 }
 
 printQuestion <- function(number, type, parameters, questions){
@@ -461,21 +454,21 @@ askParameter <- function(type){
         parameterAnswersIndex <- 1:10
     } else if (type == 3) {
         possibleAnswers <- c("The significance level",
-                                 "The sample size",
-                                 "The sample mean",
-                                 "The sample standard deviation",
-                                 "The population mean",
-                                 "The population standard deviation",
-                                 "The sample size of group 1",
-                                 "The sample size of group 2",
-                                 "The sample mean of group 1",
-                                 "The sample mean of group 2",
-                                 "The population mean of group 1",
-                                 "The population mean of group 2",
-                                 "The sample standard deviation of group 1",
-                                 "The sample standard deviation of group 2",
-                                 "The population standard deviation of group 1",
-                                 "The population standard deviation of group 2")
+                             "The sample size",
+                             "The sample mean",
+                             "The sample standard deviation",
+                             "The population mean",
+                             "The population standard deviation",
+                             "The sample size of group 1",
+                             "The sample size of group 2",
+                             "The sample mean of group 1",
+                             "The sample mean of group 2",
+                             "The population mean of group 1",
+                             "The population mean of group 2",
+                             "The sample standard deviation of group 1",
+                             "The sample standard deviation of group 2",
+                             "The population standard deviation of group 1",
+                             "The population standard deviation of group 2")
         parameterAnswersIndex <- 1:16
     }
 
@@ -496,7 +489,7 @@ askParameter <- function(type){
     return(qna)
 }
 
-askH0 <- function(parameters, type, difficulty){
+askH0 <- function(parameters, type){
 
     QuestionString <- paste0("What is H", "\u2080", "?")
 
@@ -569,6 +562,7 @@ askH1 <- function(parameters, type, difficulty){
                       paste0(greeks("mu"), "\u2081", " ", greeks("notEqual"), " ", greeks("mu"), "\u2082")
     )
 
+    AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
     correctIndex <- parameters$tail + 1
 
     qna = list(question = QuestionString,
@@ -612,8 +606,8 @@ askTFormula <- function(type){
     )
 
     qna = list(question = QuestionString,
-                       answers = Answer1,
-                       distractors = c(Answer2, Answer3, Answer4))
+               answers = Answer1,
+               distractors = c(Answer2, Answer3, Answer4))
 
     return(qna)
 }
@@ -687,9 +681,9 @@ askRejectionT <- function(parameters, type){
     t <- calcT(parameters, type)
 
     criticalProb <- switch(parameters$tail,
-                    parameters$alpha,
-                    parameters$alpha,
-                    parameters$alpha/2)
+                           parameters$alpha,
+                           parameters$alpha,
+                           parameters$alpha/2)
 
     criticalT <- round(qnorm(p = criticalProb), 2)
 
