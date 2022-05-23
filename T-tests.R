@@ -209,6 +209,14 @@ Parameters <- function(number, type, difficulty){
     return(parameters)
 }
 
+calcT <- function(parameters, type) {
+    switch(type,
+           (parameters$xbar - parameters$mu)/(parameters$s/sqrt(parameters$n)),
+           (parameters$phat - parameters$p)/(parameters$s/sqrt(parameters$n)),
+           (parameters$xbar - parameters$xbar2)/sqrt(parameters$s^2/parameters$n+parameters$s2^2/parameters$n2)
+    )
+}
+
 questionStage <- function(parameters, type, difficulty, stage){
 
     solutionMethod <- sample(1:2, 1)
@@ -243,7 +251,6 @@ questionStage <- function(parameters, type, difficulty, stage){
                                         AskRejectionT(parameters, type),
                                         AskRejectionP(parameters, type)))
     )
-
 
     return(AnswerArray)
 }
@@ -287,7 +294,6 @@ PrintQuestion <- function(number, type, parameters, questions){
                                 "low",
                                 "high",
                                 "abnormal")
-
     )
 
     string <- switch(number,
@@ -364,14 +370,6 @@ PrintQuestion <- function(number, type, parameters, questions){
     )
 
     return(noquote(string))
-}
-
-calcT <- function(parameters, type) {
-    switch(type,
-           (parameters$xbar - parameters$mu)/(parameters$s/sqrt(parameters$n)),
-           (parameters$phat - parameters$p)/(parameters$s/sqrt(parameters$n)),
-           (parameters$xbar - parameters$xbar2)/sqrt(parameters$s^2/parameters$n+parameters$s2^2/parameters$n2)
-    )
 }
 
 AskParameter <- function(type){
@@ -491,20 +489,11 @@ AskParameter <- function(type){
     Answer3 <- possibleAnswers[parameterWrongAnswersIndex[2]]
     Answer4 <- possibleAnswers[parameterWrongAnswersIndex[3]]
 
-    AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
-    AnswersIndex = sample(c(1, 2, 3, 4), 4)
-    Answers <- c(AnswersBase[AnswersIndex[1]], AnswersBase[AnswersIndex[2]], AnswersBase[AnswersIndex[3]], AnswersBase[AnswersIndex[4]])
+    qna = list(question = QuestionString,
+               answers = Answer1,
+               distractors = c(Answer2, Answer3, Answer4))
 
-    correctAnswer <- Answer1
-
-    correctAnswerIndex <- which(Answers == correctAnswer)
-
-    answerArray = list(question = QuestionString,
-                       answers = Answers,
-                       correct = correctAnswer,
-                       index = correctAnswerIndex)
-
-    return(answerArray)
+    return(qna)
 }
 
 AskH0 <- function(parameters, type, difficulty){
@@ -535,20 +524,11 @@ AskH0 <- function(parameters, type, difficulty){
                       paste0(greeks("mu"), "\u2081", " ", greeks("notEqual"), " ", greeks("mu"), "\u2082")
     )
 
-    AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
-    AnswersIndex = sample(c(1, 2, 3, 4), 4)
-    Answers <- c(AnswersBase[AnswersIndex[1]], AnswersBase[AnswersIndex[2]], AnswersBase[AnswersIndex[3]], AnswersBase[AnswersIndex[4]])
+    qna = list(question = QuestionString,
+               answers = Answer1,
+               distractors = c(Answer2, Answer3, Answer4))
 
-    correctAnswer <- Answer1
-
-    correctAnswerIndex <- which(Answers == correctAnswer)
-
-    answerArray = list(question = QuestionString,
-                       answers = Answers,
-                       correct = correctAnswer,
-                       index = correctAnswerIndex)
-
-    return(answerArray)
+    return(qna)
 }
 
 AskH1 <- function(parameters, type, difficulty){
@@ -589,19 +569,12 @@ AskH1 <- function(parameters, type, difficulty){
                       paste0(greeks("mu"), "\u2081", " ", greeks("notEqual"), " ", greeks("mu"), "\u2082")
     )
 
-    AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
-    AnswersIndex = sample(c(1, 2, 3, 4), 4)
-    Answers <- c(AnswersBase[AnswersIndex[1]], AnswersBase[AnswersIndex[2]], AnswersBase[AnswersIndex[3]], AnswersBase[AnswersIndex[4]])
+    correctIndex <- parameters$tail + 1
 
-    correctAnswer <- AnswersBase[parameters$tail + 1]
-    correctAnswerIndex <- which(Answers == correctAnswer)
-
-    answerArray = list(question = QuestionString,
-                       answers = Answers,
-                       correct = correctAnswer,
-                       index = correctAnswerIndex)
-
-    return(answerArray)
+    qna = list(question = QuestionString,
+               answers = AnswersBase[correctIndex],
+               distractors = AnswersBase[-correctIndex])
+    return(qna)
 }
 
 
@@ -638,19 +611,11 @@ AskTFormula <- function(type){
                       paste0("xbar\u2081/(s\u2081\U221an)")
     )
 
-    AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
-    AnswersIndex = sample(c(1, 2, 3, 4), 4)
-    Answers <- c(AnswersBase[AnswersIndex[1]], AnswersBase[AnswersIndex[2]], AnswersBase[AnswersIndex[3]], AnswersBase[AnswersIndex[4]])
+    qna = list(question = QuestionString,
+                       answers = Answer1,
+                       distractors = c(Answer2, Answer3, Answer4))
 
-    correctAnswer <- Answer1
-    correctAnswerIndex <- which(Answers == correctAnswer)
-
-    answerArray = list(question = QuestionString,
-                       answers = Answers,
-                       correct = correctAnswer,
-                       index = correctAnswerIndex)
-
-    return(answerArray)
+    return(qna)
 }
 
 AskPFormula <- function(parameters, type){
@@ -693,19 +658,10 @@ AskPFormula <- function(parameters, type){
                       paste0("P(t = ", signif(abs(Tvalue),3), " | p = ", signif(parameters$phat,3), ")"),
                       paste0("P(t = ", signif(abs(Tvalue),3), " | ", greeks("mu"), "\u2081-", greeks("mu"), "\u2082 = ", signif(parameters$xbar-parameters$xbar2,3), ")"))
 
-    AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
-    AnswersIndex = sample(c(1, 2, 3, 4), 4)
-    Answers <- c(AnswersBase[AnswersIndex[1]], AnswersBase[AnswersIndex[2]], AnswersBase[AnswersIndex[3]], AnswersBase[AnswersIndex[4]])
-
-    correctAnswer <- Answer1
-    correctAnswerIndex <- which(Answers == correctAnswer)
-
-    answerArray <- list(question = QuestionString,
-                        answers = Answers,
-                        correct = correctAnswer,
-                        index = correctAnswerIndex)
-
-    return(answerArray)
+    qna = list(question = QuestionString,
+               answers = Answer1,
+               distractors = c(Answer2, Answer3, Answer4))
+    return(qna)
 }
 
 AskT <- function(parameters, type){
@@ -720,19 +676,10 @@ AskT <- function(parameters, type){
 
     Answer4 <- signif(sample(c(1, -1), 1)*runif(1, 0.95, 1.05)*Answer1, 2)
 
-    AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
-    AnswersIndex = sample(c(1, 2, 3, 4), 4)
-    Answers <- c(AnswersBase[AnswersIndex[1]], AnswersBase[AnswersIndex[2]], AnswersBase[AnswersIndex[3]], AnswersBase[AnswersIndex[4]])
-
-    correctAnswer <- Answer1
-    correctAnswerIndex <- which(Answers == correctAnswer)
-
-    answerArray <- list(question = QuestionString,
-                        answers = Answers,
-                        correct = correctAnswer,
-                        index = correctAnswerIndex)
-
-    return(answerArray)
+    qna = list(question = QuestionString,
+               answers = Answer1,
+               distractors = c(Answer2, Answer3, Answer4))
+    return(qna)
 }
 
 AskRejectionT <- function(parameters, type){
@@ -769,27 +716,19 @@ AskRejectionT <- function(parameters, type){
                       "Accept H\u2080",
                       "Accept H\u2081")
 
-    AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
-    AnswersIndex = sample(c(1, 2, 3, 4), 4)
-    Answers <- c(AnswersBase[AnswersIndex[1]], AnswersBase[AnswersIndex[2]], AnswersBase[AnswersIndex[3]], AnswersBase[AnswersIndex[4]])
+    if (solution) {
+        answers = c(Answer1, Answer2)
+        distractors = c(Answer3, Answer4)
+    } else {
+        answers = c(Answer1)
+        distractors = c(Answer2, Answer3, Answer4)
+    }
 
-    correctAnswer <- switch(solution,
-                            c(Answer1, Answer2),
-                            Answer1)
-
-    correctAnswerIndex <- switch(solution,
-                                 c(which(Answers == AnswersBase[1]), which(Answers == AnswersBase[2])),
-                                 which(Answers == (AnswersBase[1]))
-    )
-
-    answerArray = list(question = QuestionString,
-                       answers = Answers,
-                       correct = correctAnswer,
-                       index = correctAnswerIndex)
-
-    return(answerArray)
+    qna = list(question = QuestionString,
+               answers = answers,
+               distractors = distractors)
+    return(qna)
 }
-
 
 AskRejectionP <- function(parameters, type){
 
@@ -822,23 +761,16 @@ AskRejectionP <- function(parameters, type){
                       "Accept H\u2080",
                       "Accept H\u2081")
 
-    AnswersBase <- c(Answer1, Answer2, Answer3, Answer4)
-    AnswersIndex = sample(c(1, 2, 3, 4), 4)
-    Answers <- c(AnswersBase[AnswersIndex[1]], AnswersBase[AnswersIndex[2]], AnswersBase[AnswersIndex[3]], AnswersBase[AnswersIndex[4]])
+    if (solution) {
+        answers = c(Answer1, Answer2)
+        distractors = c(Answer3, Answer4)
+    } else {
+        answers = c(Answer1)
+        distractors = c(Answer2, Answer3, Answer4)
+    }
 
-    correctAnswer <- switch(solution,
-                            c(Answer1, Answer2),
-                            Answer1)
-
-    correctAnswerIndex <- switch(solution,
-                                 c(which(Answers == AnswersBase[1]), which(Answers == AnswersBase[2])),
-                                 which(Answers == (AnswersBase[1]))
-    )
-
-    answerArray = list(question = QuestionString,
-                       answers = Answers,
-                       correct = correctAnswer,
-                       index = correctAnswerIndex)
-
-    return(answerArray)
+    qna = list(question = QuestionString,
+               answers = answers,
+               distractors = distractors)
+    return(qna)
 }
