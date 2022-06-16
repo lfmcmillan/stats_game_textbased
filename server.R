@@ -192,7 +192,7 @@ server <- function(input, output, session){
             hide("levelPage")
         }
 
-        output$levelText <- renderText({paste0("This is level ",progress$level,".")})
+        output$levelText <- renderText({level_text[[progress$level]]})
         show("levelPage")
         hide("introPage")
         hide("progressPage")
