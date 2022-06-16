@@ -1,7 +1,8 @@
 source("stats_game_text_elements.R")
 source("stats_game_worlddata.R")
 source("basic_statistics_generator.R")
-source("basic_plot_generator.R")
+source("basic_numerical_categorical.R")
+source("weather_plot_generator.R")
 
 library(cli)
 library(greekLetters)
@@ -70,6 +71,8 @@ server <- function(input, output, session){
     progress <- reactiveValues(level=first_level, done_intro=FALSE,
                                question_stats=setup_question_stats())
 
+    # plots <- list()
+    plot_details <- list()
     nplots <- reactiveVal(0)
     current_plot <- reactiveVal(1)
     nquestions <- reactiveVal(0)
@@ -87,6 +90,7 @@ server <- function(input, output, session){
 
     observeGameStartButton <- observe({
         # show("userPage")
+        show("levelPage")
         hide("startPage")
     })
     bindEvent(observeGameStartButton, input$gameStartButton)
@@ -96,49 +100,17 @@ server <- function(input, output, session){
 
         if (progress$level <= max_level) {
             levelText <- renderText({level_text[[progress$level]]})
-            plots <- list()
-            switch(as.character(progress$level),
-                   "1" = {
-                       level_topic <<- "basic_stats"
-                       samples <- generate_samples(world$seed, 2, world$streams)
-                       generated_questions <<- generate_sample_question_set(samples, "lowest")
-                       plots <- plot_summary_stat_barplots(samples)
-                   },
-                   "2" = {
-                       level_topic <<- "basic_stats"
-                       generated_questions <<- generate_weather_questions(world$monthly_weather)
-                       plots <- plot_weather_plots(world$monthly_weather)
-                   },
-                   "3" = {
-                       level_topic <<- "basic_stats"
-                       generated_questions <<- generate_histogram_question_set(world$daily_weather$windspeed)
-                       plots <- plot_histogram(world$daily_weather$windspeed)
-                   },
-                   "4" = {
-                       level_topic <<- "basic_stats"
-                       samples <- generate_samples(1, 2, world$shelter_materials)
-                       generated_questions <<- generate_boxplot_question_set(samples)
-                       plots <- plot_boxplot(samples, "Total rain leaked (mm)")
-                   },
-                   "5" = {
-                       level_topic <<- "basic_stats"
-                       generated_questions <<- generate_scatterplot_question_set(world$trauma_assessments, linear=TRUE)
-                       plots <- plot_scatterplot(world$trauma_assessments)
-                   },
-                   "6" = {
-                       level_topic <<- "basic_stats"
-                       samples <- generate_samples(1, 2, world$fruit_rot)
-                       generated_questions <<- generate_dotplot_question_set(samples,
-                                                                             direction = sample(c("lowest","highest"),1))
-                       plots <- plot_dotplot(samples, "Days from picking till first rot")
-                   })
+            # plots <- list()
+
+            source("levels.R", local=TRUE)
 
             current_question(0)
             nquestions(length(generated_questions$qna))
             level_answers <<- rep(NA, nquestions())
 
             current_plot(1)
-            nplots(length(plots))
+            # nplots(length(plots))
+            nplots(length(plot_details))
 
             if (nplots() < 2) {
                 hide("plotLeftButton")
@@ -155,7 +127,9 @@ server <- function(input, output, session){
                 if (nump == 1) {
 
                     output$plot_1 <- renderPlot({
-                        plots[[1]]
+                        # plot(1:10)
+                        # plots[[1]]
+                        plot_any_type(plot_details[[1]])
                     })
                     tagList(
                         plotOutput("plot_1")
@@ -168,7 +142,8 @@ server <- function(input, output, session){
                         output[[output_name]] <- renderPlot({
                             # plot.new()
                             # replayPlot(plots[[i]])
-                            plots[[i]]
+                            # plots[[i]]
+                            plot_any_type(plot_details[[i]])
                         })
                         if (i == 1) {
                             tagList(
@@ -183,7 +158,6 @@ server <- function(input, output, session){
                         }
 
                     })
-
                 }
             })
 
@@ -234,23 +208,28 @@ server <- function(input, output, session){
     # Submit answer ----
     observeSubmitButton <- observe({
 
-        i <- current_question()
-        if (displayed[as.numeric(input$answerSelect)] %in% generated_questions$qna[[i]]$answers) {
-            level_answers[i] <<- TRUE
+        if (is.null(input$answerSelect)) {
+            output$answerText <- renderText({"You have not selected an option. Please select an option."})
         } else {
-            level_answers[i] <<- FALSE
-        }
 
-        if (level_answers_immediate_display) {
-            if (level_answers[i]) {
-                output$answerText <- renderText({correct_answer_text})
+            i <- current_question()
+            if (displayed[as.numeric(input$answerSelect)] %in% generated_questions$qna[[i]]$answers) {
+                level_answers[i] <<- TRUE
             } else {
-                output$answerText <- renderText({wrong_answer_text})
+                level_answers[i] <<- FALSE
             }
-        }
 
-        disable("answerSelect")
-        disable("submitButton")
+            if (level_answers_immediate_display) {
+                if (level_answers[i]) {
+                    output$answerText <- renderText({correct_answer_text})
+                } else {
+                    output$answerText <- renderText({wrong_answer_text})
+                }
+            }
+
+            disable("answerSelect")
+            disable("submitButton")
+        }
     })
     bindEvent(observeSubmitButton, input$submitButton)
 
@@ -277,8 +256,12 @@ server <- function(input, output, session){
 
                 if (any(displayed == "2020") && length(displayed) > 4) browser()
             }
+
+            ## Note that locally-run apps don't mind the radiobuttons being given
+            ## numeric choiceNames, but the shiny Server doesn't like numeric
+            ## entries for choiceNames, so convert them to character before passing
             updateRadioButtons(session, inputId = "answerSelect",
-                               label = qna[[qq]]$question, choiceNames = displayed,
+                               label = qna[[qq]]$question, choiceNames = as.character(displayed),
                                choiceValues = 1:length(displayed), selected = character(0))
             output$answerText <- renderText({""})
             enable("answerSelect")
@@ -317,8 +300,12 @@ server <- function(input, output, session){
             } else {
                 displayed <<- sort(displayed)
             }
+
+            ## Note that locally-run apps don't mind the radiobuttons being given
+            ## numeric choiceNames, but the shiny Server doesn't like numeric
+            ## entries for choiceNames, so convert them to character before passing
             updateRadioButtons(session, inputId = "answerSelect",
-                               label = qna[[qq]]$question, choiceNames = displayed,
+                               label = qna[[qq]]$question, choiceNames = as.character(displayed),
                                choiceValues = 1:length(displayed), selected = character(0))
             disable("answerSelect")
 

@@ -124,6 +124,13 @@ generate_sample_question_set <- function(samples, direction, display_is_plot=TRU
     list(display=display, qna=qna, shuffle=FALSE)
 }
 
+prepare_summary_stat_barplots <- function(samples) {
+    lapply(c("mean","median","min","max"), function(stat) {
+        stat_vals <- unlist(lapply(samples, stat))
+        list(plot_type="bar",y=stat_vals, x=names(samples), title=stat, ylab=stat, xlab="", plot_type="bar")
+    })
+}
+
 plot_summary_stat_barplots <- function(samples) {
     if(!is.null(dev.list())) dev.off()
     plots <- list()
@@ -150,6 +157,10 @@ table_stats_samples <- function(samples) {
     rownames(tab) <- names(samples)
     colnames(tab) <- c("Mean","Median","Min","Max","SD")
     print(tab)
+}
+
+prepare_boxplot <- function(samples, ylab) {
+    list(list(plot_type="box",y=samples, x=names(samples), ylab=ylab, xlab="", title="", plot_type="box"))
 }
 
 plot_boxplot <- function(samples, ylab) {
@@ -181,6 +192,17 @@ generate_boxplot_question_set <- function(samples) {
                               following questions."), width=100)
 
     list(display=display, qna=qna, shuffle=FALSE)
+}
+
+prepare_dotplot <- function(samples, xlab) {
+    values <- do.call(c, samples)
+    values <- round(values, 1)
+    sample_names_list <- lapply(1:length(samples), function(s) {
+        rep(names(samples)[s], times=length(samples[[s]]))
+    })
+    sample_names <- unlist(sample_names_list)
+
+    list(list(plot_type="dot",y=values, x=sample_names, ylab="", xlab=xlab, title="", plot_type="dot"))
 }
 
 plot_dotplot <- function(samples, xlab) {
@@ -233,17 +255,146 @@ generate_dotplot_question_set <- function(samples, direction) {
     list(display=display, qna=qna, shuffle=FALSE)
 }
 
+prepare_scatterplot <- function(scatter_data) {
+    list(list(plot_type="scatter",x=scatter_data$x, y=scatter_data$y,
+         xlab=scatter_data$xlab, ylab=scatter_data$ylab))
+}
 
-# samples <- generate_samples(1, 3)
-# generated <- generate_sample_question_set(samples, direction="highest", display_is_plot=TRUE)
-# plot_summary_stat_barplots(samples)
-# show_questions(generated)
-#
-# table_stats_samples(samples)
-# generated <- generate_sample_question_set(samples, direction="highest", display_is_plot=FALSE)
-# show_questions(generated)
-#
-# samples <- generate_samples(10, 3)
-# generated <- generate_boxplot_question_set(samples)
-# plot_boxplot(samples, ylab="Amount (mm)")
-# show_questions(generated)
+plot_scatterplot <- function(scatter_data) {
+    if(!is.null(dev.list())) dev.off()
+
+    plot(scatter_data$x, scatter_data$y, xlab=scatter_data$xlab,
+         ylab=scatter_data$ylab)
+
+    # plot.new()
+    # dev.control("enable")
+    plots <- list()
+    plots[[1]] <- recordPlot()
+    # dev.off()
+    plots
+}
+
+generate_scatterplot_question_set <- function(scatter_data, linear) {
+    actual_correlation <- cor(scatter_data$x,scatter_data$y)
+    if (abs(actual_correlation) < 0.5) stop("Correlation is too low for linear answers")
+
+    linearity_question <- paste0("Is there a linear relationship between ",
+                                 scatter_data$xlab," and ",scatter_data$ylab,"?")
+    if (linear) {
+        linearity_answers <- "Yes"
+        linearity_distractors <- "No"
+
+        direction_question <- paste0("Is the relationship positive or negative?")
+        if (actual_correlation > 0) {
+            direction_answers <- "Positive"
+            direction_distractors <- "Negative"
+        } else {
+            direction_answers <- "Negative"
+            direction_distractors <- "Positive"
+        }
+
+        correlation_question <- paste0("Which of these correlations do you think is closest to the true correlation?")
+        correlation_answers <- round(actual_correlation,1)
+        if (actual_correlation > 0.5) {
+            correlation_distractors <- c(round(runif(1,0,0.3),1),
+                                         round(runif(1,-0.4,0),1),
+                                         round(runif(1,-1,-0.6),1))
+        } else if (actual_correlation < -0.5) {
+            correlation_distractors <- c(round(runif(1,-0.3,0),1),
+                                         round(runif(1,0,0.4),1),
+                                         round(runif(1,0.6,1),1))
+        }
+
+        linearity_qna <- list(question=linearity_question,
+                              answers=linearity_answers,
+                              distractors=linearity_distractors)
+        direction_qna <- list(question=direction_question,
+                              answers=direction_answers,
+                              distractors=direction_distractors)
+        correlation_qna <- list(question=correlation_question,
+                                answers=correlation_answers,
+                                distractors=correlation_distractors)
+        qna <- list(linearity_qna, direction_qna, correlation_qna)
+    } else {
+        linearity_answers <- "No"
+        linearity_distractors <- "Yes"
+        qna <- list(list(question=linearity_question, answers=linearity_answers,
+                         distractors=linearity_distractors))
+    }
+    list(display="",qna=qna, shuffle=TRUE)
+}
+
+prepare_histogram <- function(hist_data) {
+    list(list(plot_type="hist",x=hist_data$df$value, xlab=hist_data$xlab, title=hist_data$plot_title))
+}
+
+plot_histogram <- function(hist_data) {
+    if(!is.null(dev.list())) dev.off()
+
+    hist(hist_data$df$value, xlab=hist_data$xlab, main=hist_data$plot_title, col="lightblue")
+
+    plots <- list()
+    plots[[1]] <- recordPlot()
+    plots
+}
+
+generate_histogram_question_set <- function(hist_data) {
+    value <- hist_data$df$value
+
+    h <- hist(value, plot=FALSE)
+    min_approx <- h$breaks[1]
+    max_approx <- tail(h$breaks,1)
+    range_approx <- max_approx - min_approx
+    skewed <- hist_data$skewed
+    question_name <- hist_data$question_name
+
+    mode_question <- paste0("What is the approximate mode for ",question_name,"?")
+    mode_bin_idx <- which.max(h$density)
+    mode_bin_name <- paste(h$breaks[mode_bin_idx],"to",h$breaks[mode_bin_idx+1])
+    mode_answers <- mode_bin_name
+
+    other_bin_idxs <- sample((1:length(h$density))[-mode_bin_idx],2)
+    mode_distractors <- sapply(other_bin_idxs, function(idx) {
+        paste(h$breaks[idx],"to",h$breaks[idx+1])
+    })
+    mode_qna <- list(question=mode_question, answers=mode_answers,
+                     distractors=mode_distractors)
+
+    min_question <- paste0("What is the approximate minimum ",question_name,"?")
+    min_answers <- min_approx
+    all_possible_min_distractors <- round(unique(c(max(0,min_approx - range_approx/4),
+                                                   max(0,min_approx - range_approx/6),
+                                                   min_approx + range_approx/6,
+                                                   min_approx + range_approx/4)))
+    all_possible_min_distractors <- all_possible_min_distractors[all_possible_min_distractors != min_approx]
+    min_distractors <- sample(all_possible_min_distractors, 2)
+    min_qna <- list(question=min_question, answers=min_answers,
+                    distractors=min_distractors)
+
+    max_question <- paste0("What is the approximate maximum ",question_name,"?")
+    max_answers <- max_approx
+    all_possible_max_distractors <- round(c(max_approx - range_approx/4,
+                                            max_approx - range_approx/6,
+                                            max_approx + range_approx/6,
+                                            max_approx + range_approx/4))
+    max_distractors <- sample(all_possible_max_distractors, 2)
+    max_qna <- list(question=max_question, answers=max_answers,
+                    distractors=max_distractors)
+
+    use_skewed <- sample(c("skewed","symmetric"),1)
+    if (use_skewed == "skewed") {
+        skewed_question <- "Is this distribution skewed?"
+        skewed_answers <- ifelse(skewed,"Yes","No")
+        skewed_distractors <- ifelse(skewed,"No","Yes")
+    } else {
+        skewed_question <- "Is this distribution approximately symmetric?"
+        skewed_answers <- ifelse(skewed,"No","Yes")
+        skewed_distractors <- ifelse(skewed,"Yes","No")
+    }
+    skewed_qna <- list(question=skewed_question, answers=skewed_answers,
+                       distractors=skewed_distractors)
+
+    qna <- list(mode_qna, min_qna, max_qna, skewed_qna)
+    list(display="",qna=qna, shuffle=TRUE)
+}
+

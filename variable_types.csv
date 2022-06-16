@@ -1,0 +1,13 @@
+variable,type,min_level
+amount of contamination per stream,numerical,1
+rainfall,numerical,1
+wind speed,numerical,1
+temperature,numerical,1
+type of building material,categorical,1
+amount of trauma,numerical,1
+time taken to rot,numerical,1
+proportion of food that rotted,numerical,1
+type of fruit,categorical,1
+did seed germinate?,categorical,1
+did plant sprout?,categorical,1
+did roof leak?,categorical,1

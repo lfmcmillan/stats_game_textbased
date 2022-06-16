@@ -4,7 +4,7 @@ plot_any_type <- function(plot_details) {
                          main=plot_details$title, ylab=plot_details$ylab, col="darkblue"),
            "box"=boxplot(plot_details$y, names=plot_details$x, col="lightblue", ylab=plot_details$ylab),
            "dot"=stripchart(values ~ sample_names,
-                            data=data.frame(values=plot_details$x,sample_names=plot_details$y),
+                            data=data.frame(values=plot_details$y,sample_names=plot_details$x),
                             xlab=plot_details$xlab, pch=1, cex=1.3, method="stack"),
            "scatter"=plot(plot_details$x, plot_details$y,
                           xlab=plot_details$xlab, ylab=plot_details$ylab),
