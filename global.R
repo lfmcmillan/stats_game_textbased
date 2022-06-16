@@ -9,6 +9,12 @@ plot_any_type <- function(plot_details) {
            "scatter"=plot(plot_details$x, plot_details$y,
                           xlab=plot_details$xlab, ylab=plot_details$ylab),
            "hist"=hist(plot_details$x, xlab=plot_details$xlab, main=plot_details$title, col="lightblue"),
+           "two_hist"={
+                    par(mfrow=c(2,1))
+                    hist(plot_details$x1, xlab=plot_details$xlab1, main="", col="lightblue", xlim=plot_details$xlim)
+                    hist(plot_details$x2, xlab=plot_details$xlab2, main="", col="lightblue", xlim=plot_details$xlim)
+                    par(mfrow=c(1,1))
+               },
            "weather_timeseries"={
                colours <- palette("Dark2")
                plot(plot_details$x[[1]], plot_details$y[[1]],

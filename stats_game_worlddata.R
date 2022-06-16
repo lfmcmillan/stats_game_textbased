@@ -13,7 +13,8 @@ generate_user_world <- function(username) {
     monthly_weather <- list(rainfall=generate_monthly_weather_data("rainfall"),
                             max_temp=generate_monthly_weather_data("max_temp"),
                             min_temp=generate_monthly_weather_data("min_temp"))
-    daily_weather <- list(windspeed=generate_daily_weather_data("windspeed"))
+    daily_weather <- list(windspeed=generate_daily_weather_data("windspeed"),
+                          windspeed_comparison=generate_daily_weather_data("windspeed_comparison"))
 
     shelter_materials <- generate_shelter_material_params(sample(1:2,1))
 
@@ -160,11 +161,57 @@ generate_daily_weather_data <- function(type) {
                xlab <- "Daily Mean Wind Speed (km/h)"
                plot_title <- paste("Daily wind speed for all years in",month_name)
                question_name <- "daily wind speed"
-           })
 
-    df <- data.frame(month_num=idx, month_name=month_name, value=value)
-    output <- list(type=type, xlab=xlab, plot_title=plot_title,
-                   question_name=question_name, skewed=skewed, df=df)
+               df <- data.frame(month_num=idx, month_name=month_name, value=value)
+               output <- list(type=type, xlab=xlab, plot_title=plot_title,
+                              question_name=question_name, skewed=skewed, df=df)
+           },
+           "windspeed_comparison"={
+               wind1 <- read.csv("daily_windspeed_hong_kong_longformat_waglan_island.csv", header=TRUE)
+               wind2 <- read.csv("daily_windspeed_hong_kong_longformat_sha_chau.csv", header=TRUE)
+
+               years1 <- unique(wind1$Year)
+               years2 <- unique(wind2$Year)
+
+               results_ok <- FALSE
+               while(!results_ok) {
+                   year1 <- sample(years1,1)
+                   year2 <- sample(years2,1)
+
+                   value1 <- wind1$WindSpeed[wind1$Year == year1]
+                   value2 <- wind2$WindSpeed[wind2$Year == year2]
+
+                   h1 <- hist(value1, plot=FALSE)
+                   h2 <- hist(value2, plot=FALSE)
+                   mode_bin_idx1 <- which.max(h1$density)
+                   mode_bin_idx2 <- which.max(h2$density)
+                   min_approx1 <- h1$breaks[1]
+                   min_approx2 <- h2$breaks[1]
+                   max_approx1 <- tail(h1$breaks,1)
+                   max_approx2 <- tail(h2$breaks,1)
+                   range_approx1 <- max_approx1 - min_approx1
+                   range_approx2 <- max_approx2 - min_approx2
+
+                   matching_vals <- rep(0,4)
+                   if (mode_bin_idx1 == mode_bin_idx2) matching_vals[1] <- 1
+                   if (min_approx1 == min_approx2) matching_vals[2] <- 1
+                   if (max_approx1 == max_approx2) matching_vals[3] <- 1
+                   if (range_approx1 == range_approx2) matching_vals[4] <- 1
+
+                   if (sum(matching_vals) <= 1) {
+                       results_ok <- TRUE
+                   }
+               }
+               xlab1 <- "Daily Mean Wind Speed at East Point (km/h)"
+               xlab2 <- "Daily Mean Wind Speed at West Point (km/h)"
+               var1 <- "East Point wind speed"
+               var2 <- "West Point wind speed"
+
+               df1 <- data.frame(value=value1)
+               df2 <- data.frame(value=value2)
+               output <- list(type=type, xlab1=xlab1, xlab2=xlab2,
+                              var1=var1, var2=var2, df1=df1, df2=df2)
+           })
 
     output
 }
@@ -210,7 +257,6 @@ generate_trauma_assessments <- function() {
          x=psychologist_assessments_jitter, y=self_assessments_jitter,
          xlab="Psychologist Assessment", ylab="Self Assessment")
 }
-
 
 generate_crop_params <- function(crop_names, crop_values, value_type) {
     ncrops <- length(crop_names)

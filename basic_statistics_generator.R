@@ -338,6 +338,31 @@ plot_histogram <- function(hist_data) {
     plots
 }
 
+prepare_two_histograms <- function(hist_data) {
+    all_vals <- c(hist_data$df1$value,hist_data$df2$value)
+    list(list(plot_type="two_hist",x1=hist_data$df1$value, x2=hist_data$df2$value,
+              xlab1=hist_data$xlab1, xlab2=hist_data$xlab2,
+              xlim=c(min(all_vals),max(all_vals))))
+}
+
+plot_two_histograms <- function(hist_data) {
+    if(!is.null(dev.list())) dev.off()
+
+    max_val <- max(c(hist_data$df1$value,hist_data$df2$value))
+    min_val <- min(c(hist_data$df1$value,hist_data$df2$value))
+
+    par(mfrow=c(2,1))
+
+    hist(hist_data$df1$value, xlab=hist_data$xlab1, main="", col="lightblue", xlim=c(min_val,max_val))
+    hist(hist_data$df2$value, xlab=hist_data$xlab2, main="", col="lightblue", xlim=c(min_val,max_val))
+
+    plots <- list()
+    plots[[1]] <- recordPlot()
+
+    par(mfrow=c(1,1))
+    plots
+}
+
 generate_histogram_question_set <- function(hist_data) {
     value <- hist_data$df$value
 
@@ -398,3 +423,82 @@ generate_histogram_question_set <- function(hist_data) {
     list(display="",qna=qna, shuffle=TRUE)
 }
 
+generate_two_histograms_question_set <- function(hist_data) {
+    var1 <- hist_data$var1
+    var2 <- hist_data$var2
+    value1 <- hist_data$df1$value
+    value2 <- hist_data$df2$value
+
+    h1 <- hist(value1, plot=FALSE)
+    h2 <- hist(value2, plot=FALSE)
+    mode1 <- h1$mids[which.max(h1$density)]
+    mode2 <- h2$mids[which.max(h2$density)]
+    min_approx1 <- h1$breaks[1]
+    min_approx2 <- h2$breaks[1]
+    max_approx1 <- tail(h1$breaks,1)
+    max_approx2 <- tail(h2$breaks,1)
+    range_approx1 <- max_approx1 - min_approx1
+    range_approx2 <- max_approx2 - min_approx2
+
+    qna <- list()
+    i <- 1
+    if (mode1 != mode2) {
+        switch(sample(1:2,1),
+               {
+                   mode_question <- paste0("Which has the higher mode?")
+                   if (mode1 > mode2) {
+                       mode_qna <- list(question=mode_question, answers=var1,
+                                        distractors=var2)
+                   } else {
+                       mode_qna <- list(question=mode_question, answers=var2,
+                                        distractors=var1)
+                   }
+               }, {
+                   mode_question <- paste0("Which has the lower mode?")
+                   if (mode1 < mode2) {
+                       mode_qna <- list(question=mode_question, answers=var1,
+                                        distractors=var2)
+                   } else {
+                       mode_qna <- list(question=mode_question, answers=var2,
+                                        distractors=var1)
+                   }
+               },)
+        qna[[i]] <- mode_qna
+        i <- i+1
+    }
+
+    if (min_approx1 != min_approx2) {
+
+        min_question <- paste0("Which has the lower minimum?")
+        if (min_approx1 < min_approx2) {
+            min_qna <- list(question=min_question, answers=var1, distractors=var2)
+        } else {
+            min_qna <- list(question=min_question, answers=var2, distractors=var1)
+        }
+        qna[[i]] <- min_qna
+        i <- i+1
+    }
+
+    if (max_approx1 != max_approx2) {
+        max_question <- paste0("Which has the higher maximum?")
+        if (max_approx1 > max_approx2) {
+            max_qna <- list(question=max_question, answers=var1, distractors=var2)
+        } else {
+            max_qna <- list(question=max_question, answers=var2, distractors=var1)
+        }
+        qna[[i]] <- max_qna
+        i <- i+1
+    }
+
+    if (range_approx1 != range_approx2) {
+        range_question <- paste0("Which has the greater spread?")
+        if (range_approx1 > range_approx2) {
+            range_qna <- list(question=range_question, answers=var1, distractors=var2)
+        } else {
+            range_qna <- list(question=range_question, answers=var2, distractors=var1)
+        }
+        qna[[i]] <- range_qna
+    }
+
+    list(display="",qna=qna, shuffle=FALSE)
+}

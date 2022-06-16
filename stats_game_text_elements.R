@@ -76,6 +76,10 @@ level_text <- list("1"=c("A few hours after you find the hut, one of the survivo
                          and then checked them frequently to see how many days it
                          took them to develop brown patches or mould.",
                          "You can look at the data for the two types of fruit to
-                         answer the question.")
+                         answer the question."),
+                   "8"=c("The survivors have been trying to work out where the
+                         best place is to set up storage huts. You can compare
+                         the recorded wind data for the west and east points of
+                         the island to see which site has calmer weather.")
 )
 

@@ -1,21 +1,6 @@
-?0 numerical vs. categorical
-5 single histograms - rain per day
-    # what is the approximate mode?
-    # what is the approximate minimum?
-    # what is the approximate maximum?
-    # is this distribution skewed? / is this distribution approximately symmetric?
-6 dot plots - 2 different fruits, days after picking till it rots
-    # which sample has greater spread?
-    # which sample has higher average?
-    # which sample is more skewed?
-7 comparing two histograms
-    # which of these two distributions is more skewed?
-    # which of these two distributions has a lower mode?
-    # which of these two distributions has a higher maximum?
-    # which of these two distribution has greater spread?
-7 bar charts for 2 variables - coping well/not coping well vs.
+9 bar charts for 2 variables - coping well/not coping well vs.
     OR 3 types of leftover tinned food vs. size, for % of tins spoiled
-8 estimates vs. parameters (normal distribution)
+10 estimates vs. parameters (normal distribution)
     Provide table of summary statistics
     # what is xbar for this data?
     # what is mu for this data?
@@ -23,13 +8,13 @@
     # what is s for this data?
     # what is sigma for this data?
     # what is s estimating?
-9 sampling variability
+11 sampling variability
     # would other samples of the same size from this population have the same sample mean?
     # would other samples of the same size from this population have the same sample median?
     # would other samples of the same size from this population have the same sample spread?
     # if you increase the sample size, would the typical spread increase or decrease?
     # if you decrease the sample size, would the typical spread increase or decrease?
-10 mixture of plots (different factors related to trauma):
+12 mixture of plots (different factors related to trauma):
     Is there any relationship between this variable and the level of trauma suffered?
     # age
     # number of flights taken/countries visited in the past
@@ -37,14 +22,17 @@
     # weight
     # income
     # education level
-11 estimates vs. parameters (proportions - rainy vs. dry days OR percentage of spoiled food tins)
+13 estimates vs. parameters (proportions - rainy vs. dry days OR percentage of spoiled food tins)
     Provide table of summary statistics
     # what is phat for this data?
     # what is p for this data?
     # what is phat estimating?
     # what is the estimated variance for this data?
     # what is the true variance for this data?
-12 probability?
+14 probability?
+15 T-tests for means
+16 sign test?
+17 T-tests for difference of means
 
 
 

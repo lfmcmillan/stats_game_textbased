@@ -55,8 +55,8 @@ server <- function(input, output, session){
         }
     })
 
-    max_level <- 6
     first_level <- 6
+    max_level <- 8
 
     # Option for whether to instantly display the question answers or not
     level_answers_immediate_display <- TRUE

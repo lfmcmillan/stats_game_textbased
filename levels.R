@@ -37,4 +37,9 @@ switch(as.character(progress$level),
            generated_questions <<- generate_dotplot_question_set(samples,
                                                                  direction = sample(c("lowest","highest"),1))
            plot_details <<- prepare_dotplot(samples, "Days from picking till first rot")
+       },
+       "8" = {
+           level_topic <<- "basic_stats"
+           generated_questions <<- generate_two_histograms_question_set(world$daily_weather$windspeed_comparison)
+           plot_details <<- prepare_two_histograms(world$daily_weather$windspeed_comparison)
        })
