@@ -26,7 +26,10 @@ level_text <- list("1"=c("A few hours after you find the hut, one of the survivo
                          time, the researchers measured the mass of contaminants
                          found in every 100ml of water from the stream. Analyse the
                          results to see which stream is less contaminated."),
-                   "2"=c("Somehow, the survivors all find places to sleep, in the
+                   "2"=c("There are all sorts of info about the island in the hut,
+                         but you'll need to work out how to analyse each type of
+                         data."),
+                   "3"=c("Somehow, the survivors all find places to sleep, in the
                          few existing huts or in makeshift shelters. At least the
                          nights don't seem to be too cold here. You start to
                          wonder what the typical weather is like on this island.",
@@ -35,10 +38,10 @@ level_text <- list("1"=c("A few hours after you find the hut, one of the survivo
                          of the daily temperature, rainfall and highest wind
                          speed. So you can look through them to see what the
                          island's weather patterns are like."),
-                   "3"=c("You are still examining the island's weather data,
+                   "4"=c("You are still examining the island's weather data,
                          now looking at the daily wind speed patterns for this
                          month."),
-                   "4"=c("Later in the day, another survivor comes to find you.
+                   "5"=c("Later in the day, another survivor comes to find you.
                          We've got two different materials we can build shelter
                          roofs from: palm leaves, or some kind of tree that looks
                          like a variety of willow. Is there any data on which one
@@ -50,7 +53,7 @@ level_text <- list("1"=c("A few hours after you find the hut, one of the survivo
                          rain got in on each rainy day. That won't account for
                          how well-built the shelters were, but it would be a good
                          place to start."),
-                   "5"=c("A few days later, on the tenth day since the crash,
+                   "6"=c("A few days later, on the tenth day since the crash,
                          the psychiatrist comes to find you.",
                          "I want to evaluate how traumatised all of the survivors
                          are, but it's very time consuming. I could use the
@@ -64,7 +67,7 @@ level_text <- list("1"=c("A few hours after you find the hut, one of the survivo
                          to 10 meaning 'Feeling very bad'. Would you please
                          compare them, to see whether the self-assessments would
                          be good enough for me to use for triage?"),
-                   "6"=c("A survivor comes to find you, saying 'We have been
+                   "7"=c("A survivor comes to find you, saying 'We have been
                          picking fruit from the trees to eat, but some of it rots
                          quickly. We'd like to know if one type of fruit rots
                          more quickly than another, so we picked 20 fruits of

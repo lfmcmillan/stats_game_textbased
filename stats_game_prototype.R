@@ -2,13 +2,14 @@ source("stats_game_text_elements.R")
 source("stats_game_worlddata.R")
 source("basic_statistics_generator.R")
 source("basic_plot_generator.R")
+source("basic_numerical_categorical.R")
 
 library(cli)
 library(greekLetters)
 library(RColorBrewer)
 library(truncnorm)
 library(TruncatedDistributions)
-library(heavy) # For the truncated gamma distribution functions
+# library(heavy) # For the truncated gamma distribution functions
 
 game <- function(first_level=1) {
     user_response <- menu(c("New user","Load user"),
@@ -83,7 +84,7 @@ run_level <- function(username) {
 
     quit <- FALSE
 
-    max_level <- 6
+    max_level <- 7
     if (progress$level <= max_level) show_text(level_text[[progress$level]])
     switch(as.character(progress$level),
            "1" = {
@@ -93,25 +94,29 @@ run_level <- function(username) {
                correct_answer <- show_questions(generated)
            },
            "2" = {
-               correct_answer <- show_weather_questions(world$monthly_weather)
+               generated <- generate_variable_type_question_set(level=2)
+               correct_answer <- show_questions(generated)
            },
            "3" = {
+               correct_answer <- show_weather_questions(world$monthly_weather)
+           },
+           "4" = {
                generated <- generate_histogram_question_set(world$daily_weather$windspeed)
                plot_histogram(world$daily_weather$windspeed)
                correct_answer <- show_questions(generated)
            },
-           "4" = {
+           "5" = {
                samples <- generate_samples(1, 2, world$shelter_materials)
                generated <- generate_boxplot_question_set(samples)
                plot_boxplot(samples, "Total rain leaked (mm)")
                correct_answer <- show_questions(generated)
            },
-           "5" = {
+           "6" = {
                plot_scatterplot(world$trauma_assessments)
                generated <- generate_scatterplot_question_set(world$trauma_assessments, linear=TRUE)
                correct_answer <- show_questions(generated)
            },
-           "6" = {
+           "7" = {
                samples <- generate_samples(1, 2, world$fruit_rot)
                plot_dotplot(samples, "Days from picking till first rot")
                generated <- generate_dotplot_question_set(samples,
