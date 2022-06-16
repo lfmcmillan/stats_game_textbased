@@ -186,18 +186,25 @@ generate_shelter_material_params <- function(most_effective_idx) {
 }
 
 generate_trauma_assessments <- function() {
-    psychologist_assessments <- rtgamma(30, shape=2.8, scale=0.5, b=10)
-    slope_param <- runif(1,0.6,1.3)
-    self_assessments <- -0.5 + slope_param*psychologist_assessments + rnorm(30, 0, 1.5)
+    results_ok <- FALSE
+    while (!results_ok) {
 
-    psychologist_assessments <- ceiling(psychologist_assessments)
-    self_assessments <- ceiling(self_assessments)
-    self_assessments[self_assessments > 10] <- 10
+        psychologist_assessments <- rtgamma(30, shape=4, scale=1, a=1, b=10)
+        slope_param <- runif(1,0.6,1.3)
+        self_assessments <- -0.5 + slope_param*psychologist_assessments + rnorm(30, 0, 1.5)
 
-    ## Add some jitter to split up the points for plotting (because the raw
-    ## assessment values are integers from 1 to 10)
-    psychologist_assessments_jitter <- jitter(psychologist_assessments, amount=0.1)
-    self_assessments_jitter <- jitter(self_assessments, amount=0.1)
+        psychologist_assessments <- ceiling(psychologist_assessments)
+        self_assessments <- ceiling(self_assessments)
+        self_assessments[self_assessments > 10] <- 10
+        self_assessments[self_assessments <= 0] <- 1
+
+        ## Add some jitter to split up the points for plotting (because the raw
+        ## assessment values are integers from 1 to 10)
+        psychologist_assessments_jitter <- jitter(psychologist_assessments, amount=0.1)
+        self_assessments_jitter <- jitter(self_assessments, amount=0.1)
+
+        if (abs(cor(psychologist_assessments_jitter, self_assessments_jitter)) > 0.5) results_ok <- TRUE
+    }
 
     list(xraw=psychologist_assessments, yraw=self_assessments,
          x=psychologist_assessments_jitter, y=self_assessments_jitter,
