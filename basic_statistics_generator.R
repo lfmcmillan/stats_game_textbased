@@ -127,7 +127,7 @@ generate_sample_question_set <- function(samples, direction, display_is_plot=TRU
 prepare_summary_stat_barplots <- function(samples) {
     lapply(c("mean","median","min","max"), function(stat) {
         stat_vals <- unlist(lapply(samples, stat))
-        list(plot_type="bar",y=stat_vals, x=names(samples), title=stat, ylab=stat, xlab="", plot_type="bar")
+        list(plot_type="summary_bar",y=stat_vals, x=names(samples), title=stat, ylab=stat, xlab="", plot_type="bar")
     })
 }
 

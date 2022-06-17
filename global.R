@@ -1,6 +1,6 @@
 plot_any_type <- function(plot_details) {
     switch(plot_details$plot_type,
-           "bar"=barplot(plot_details$y, names.arg=plot_details$x,
+           "summary_bar"=barplot(plot_details$y, names.arg=plot_details$x,
                          main=plot_details$title, ylab=plot_details$ylab, col="darkblue"),
            "box"=boxplot(plot_details$y, names=plot_details$x, col="lightblue", ylab=plot_details$ylab),
            "dot"=stripchart(values ~ sample_names,
